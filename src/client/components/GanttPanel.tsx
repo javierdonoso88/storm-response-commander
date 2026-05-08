@@ -1,17 +1,21 @@
 import { useState } from 'react';
 import { AgentId, AgentState } from '../types';
 
-function Tooltip({ text, children }: { text: string; children: React.ReactNode }) {
+function Tooltip({ text, children, position = 'top' }: { text: string; children: React.ReactNode; position?: 'top' | 'bottom' }) {
   const [show, setShow] = useState(false);
+  const isTop = position === 'top';
   return (
     <div className="relative" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
       {children}
       {show && (
-        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-52 rounded px-2.5 py-2 text-xs text-slate-200 leading-snug pointer-events-none"
+        <div
+          className={`absolute left-1/2 -translate-x-1/2 z-50 w-52 rounded px-2.5 py-2 text-xs text-slate-200 leading-snug pointer-events-none ${isTop ? 'bottom-full mb-2' : 'top-full mt-2'}`}
           style={{ background: '#1a2540', border: '1px solid #2d3f5e', boxShadow: '0 4px 16px rgba(0,0,0,0.6)' }}>
           {text}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0"
-            style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #2d3f5e' }} />
+          {isTop
+            ? <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #2d3f5e' }} />
+            : <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: '5px solid #2d3f5e' }} />
+          }
         </div>
       )}
     </div>
@@ -66,7 +70,7 @@ export function GanttPanel({ agents, conflicts }: Props) {
       <div className="flex-1 overflow-y-auto p-3 flex flex-col items-center gap-3" style={{ minHeight: 0 }}>
 
         {/* Supervisor card */}
-        <Tooltip text={AGENT_TOOLTIP['orchestrator']}>
+        <Tooltip text={AGENT_TOOLTIP['orchestrator']} position="bottom">
           <SupervisorCard />
         </Tooltip>
         <Arrow />
