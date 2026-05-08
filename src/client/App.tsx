@@ -105,7 +105,7 @@ export default function App() {
               <LogPanel logs={state.agentLogs} running={state.running} />
             </div>
             <div className="overflow-hidden flex-shrink-0" style={{ flex: '0 0 36%' }}>
-              <StatsPanel messages={state.commsMessages} />
+              <StatsPanel messages={state.commsMessages} actionMessages={state.actionMessages} />
             </div>
           </div>
 

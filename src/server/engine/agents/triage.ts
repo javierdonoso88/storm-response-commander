@@ -55,6 +55,7 @@ export async function runTriage(
             if (!criticalFaultIds.includes(id)) criticalFaultIds.push(id);
           }
         }
+        emit({ type: 'action', agent: 'triage', system: 'SAP S/4HANA Asset Management', msg: `${state.faults.length} activos analizados — ${criticalFaultIds.length} sitios críticos registrados en S/4HANA` });
         return 'Triage finalizado correctamente.';
       },
     },

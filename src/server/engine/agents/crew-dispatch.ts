@@ -54,6 +54,7 @@ export async function runCrewDispatch(
         fault.status = 'crew-en-route';
         dispatches.push({ crewId: crew.id, faultId: fault.id });
         emit({ type: 'asset_update', id: fault.id, status: 'crew-en-route' });
+        emit({ type: 'action', agent: 'crew-dispatch', system: 'SAP Field Service Management', msg: `Orden de trabajo creada: ${crew.id} → ${fault.id} (${fault.zone}) — ETA ${input.eta} min` });
         return `OK: ${crew.id} despachado a ${fault.id} — ETA ${input.eta}min. ${fault.affectedClients.toLocaleString()} clientes afectados.`;
       },
     },

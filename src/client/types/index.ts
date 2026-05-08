@@ -51,6 +51,13 @@ export interface ConflictEvent {
   reason: string;
 }
 
+export interface ActionMessage {
+  agent: AgentId | 'orchestrator';
+  system: string;
+  msg: string;
+  ts: number;
+}
+
 export interface AgentLog {
   agent: AgentId | 'orchestrator';
   label: string;
@@ -68,4 +75,5 @@ export type SimEvent =
   | { type: 'safety_tick'; elapsed: number; limit: number }
   | { type: 'kpi'; sla: number; safety: number; efficiency: number }
   | { type: 'conflict'; winner: AgentId; loser: AgentId; reason: string }
+  | { type: 'action'; agent: AgentId | 'orchestrator'; system: string; msg: string }
   | { type: 'done'; elapsed: string };

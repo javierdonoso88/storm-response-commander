@@ -24,6 +24,8 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     limitedParts: params.limitedParts,
   });
 
+  emit({ type: 'action', agent: 'orchestrator', system: 'SAP AI Core Orchestration', msg: `Incidente registrado en AI Core — ${state.faults.length} fallos detectados, ${state.totalClients.toLocaleString()} clientes afectados` });
+
   const safetyLimitMin = params.storm2Window === 'T+4h' ? 240
     : params.storm2Window === 'T+6h' ? 360
     : params.storm2Window === 'T+8h' ? 480
@@ -141,6 +143,7 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     const efficiencyScore = Math.min(100, Math.round(addressedFaults.length / state.faults.length * 100));
 
     emit({ type: 'kpi', sla: slaScore, safety: safetyScore, efficiency: efficiencyScore });
+    emit({ type: 'action', agent: 'orchestrator', system: 'SAP AI Core Orchestration', msg: `Ciclo cerrado en AI Core — KPIs: SLA ${slaScore}%, Seguridad ${safetyScore}%, Eficiencia ${efficiencyScore}%` });
     emit({ type: 'done', elapsed: simTime(Date.now() - startTime) });
     return `Misión finalizada. KPIs: SLA=${slaScore}%, Seguridad=${safetyScore}%, Eficiencia=${efficiencyScore}%`;
   });

@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react';
 import {
-  AgentId, AgentLog, AgentState, AgentStatus, CommsMessage, ConflictEvent,
+  AgentId, AgentLog, AgentState, AgentStatus, ActionMessage, CommsMessage, ConflictEvent,
   Fault, KPIState, SimEvent, SimParams
 } from '../types';
 
@@ -30,6 +30,7 @@ export interface SimulationState {
   faults: Fault[];
   kpi: KPIState;
   commsMessages: CommsMessage[];
+  actionMessages: ActionMessage[];
   conflicts: ConflictEvent[];
   safetyElapsed: number;
   safetyLimit: number;
@@ -45,6 +46,7 @@ export function useSimulation(initialFaults: Fault[]) {
     faults: initialFaults,
     kpi: { sla: 0, safety: 100, efficiency: 0 },
     commsMessages: [],
+    actionMessages: [],
     conflicts: [],
     safetyElapsed: 0,
     safetyLimit: 360 * 60,
@@ -61,6 +63,7 @@ export function useSimulation(initialFaults: Fault[]) {
       faults: initialFaults.map(f => ({ ...f, status: 'fault' as const })),
       kpi: { sla: 0, safety: 100, efficiency: 0 },
       commsMessages: [],
+      actionMessages: [],
       conflicts: [],
       safetyElapsed: 0,
     }));
@@ -167,6 +170,12 @@ export function useSimulation(initialFaults: Fault[]) {
           return {
             ...prev,
             conflicts: [{ winner: event.winner, loser: event.loser, reason: event.reason }, ...prev.conflicts].slice(0, 5),
+          };
+
+        case 'action':
+          return {
+            ...prev,
+            actionMessages: [{ agent: event.agent, system: event.system, msg: event.msg, ts: Date.now() }, ...prev.actionMessages].slice(0, 40),
           };
 
         case 'done':

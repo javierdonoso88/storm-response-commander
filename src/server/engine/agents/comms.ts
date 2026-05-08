@@ -30,6 +30,7 @@ export async function runComms(
         const msg = input.text as string;
         commsMessages.push({ channel: 'sms', msg });
         emit({ type: 'comms', channel: 'sms', msg });
+        emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: `SMS masivo enviado vía SAP CX — ${msg.slice(0, 60)}${msg.length > 60 ? '…' : ''}` });
         return 'SMS enviado.';
       },
     },
@@ -47,6 +48,7 @@ export async function runComms(
         const msg = input.text as string;
         commsMessages.push({ channel: 'press', msg });
         emit({ type: 'comms', channel: 'press', msg });
+        emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: `Nota de prensa publicada vía SAP CX → medios locales Girona (El Punt Avui, Diari de Girona)` });
         return 'Nota de prensa enviada.';
       },
     },
@@ -64,6 +66,7 @@ export async function runComms(
         const msg = input.text as string;
         commsMessages.push({ channel: 'regulatory', msg });
         emit({ type: 'comms', channel: 'regulatory', msg });
+        emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: `Notificación regulatoria enviada vía SAP CX → CTEPC/CNMC` });
         return 'Notificación regulatoria enviada.';
       },
     },

@@ -56,6 +56,7 @@ export async function runPriority(
         const msg = input.text as string;
         commsMessages.push({ channel: 'regulatory', msg });
         emit({ type: 'comms', channel: 'regulatory', msg });
+        emit({ type: 'action', agent: 'priority', system: 'SAP Event Mesh + Business Rules', msg: 'Alerta regulatoria publicada en Event Mesh → CTEPC/CNMC' });
         return 'Notificación regulatoria enviada.';
       },
     },
@@ -71,6 +72,7 @@ export async function runPriority(
       },
       handler: async (input) => {
         summary = input.summary as string;
+        emit({ type: 'action', agent: 'priority', system: 'SAP Event Mesh + Business Rules', msg: `Reglas de priorización ejecutadas — ${orderedIds.length} fallos físicos rankeados` });
         return 'Priorización finalizada.';
       },
     },
