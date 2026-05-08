@@ -1,4 +1,22 @@
+import { useState } from 'react';
 import { AgentId, AgentState } from '../types';
+
+function Tooltip({ text, children }: { text: string; children: React.ReactNode }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative" onMouseEnter={() => setShow(true)} onMouseLeave={() => setShow(false)}>
+      {children}
+      {show && (
+        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50 w-52 rounded px-2.5 py-2 text-xs text-slate-200 leading-snug pointer-events-none"
+          style={{ background: '#1a2540', border: '1px solid #2d3f5e', boxShadow: '0 4px 16px rgba(0,0,0,0.6)' }}>
+          {text}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0"
+            style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #2d3f5e' }} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface Props {
   agents: AgentState[];
@@ -48,7 +66,9 @@ export function GanttPanel({ agents, conflicts }: Props) {
       <div className="flex-1 overflow-y-auto p-3 flex flex-col items-center gap-3" style={{ minHeight: 0 }}>
 
         {/* Supervisor card */}
-        <SupervisorCard />
+        <Tooltip text={AGENT_TOOLTIP['orchestrator']}>
+          <SupervisorCard />
+        </Tooltip>
         <Arrow />
 
         {/* Phase 1 */}
@@ -56,9 +76,11 @@ export function GanttPanel({ agents, conflicts }: Props) {
         <div className="flex items-center gap-2 w-full justify-center">
           {PHASE1.map((id, i) => (
             <div key={id} className="flex items-center gap-2">
-              <AgentCard id={id} agent={agentMap.get(id)} />
-              {i < PHASE1.length - 1 && <FlowArrow />}
-            </div>
+                <Tooltip text={AGENT_TOOLTIP[id]}>
+                  <AgentCard id={id} agent={agentMap.get(id)} />
+                </Tooltip>
+                {i < PHASE1.length - 1 && <FlowArrow />}
+              </div>
           ))}
         </div>
         <Arrow />
@@ -68,9 +90,11 @@ export function GanttPanel({ agents, conflicts }: Props) {
         <div className="flex items-center gap-2 w-full justify-center">
           {PHASE2.map((id, i) => (
             <div key={id} className="flex items-center gap-2">
-              <AgentCard id={id} agent={agentMap.get(id)} />
-              {i < PHASE2.length - 1 && <FlowArrow />}
-            </div>
+                <Tooltip text={AGENT_TOOLTIP[id]}>
+                  <AgentCard id={id} agent={agentMap.get(id)} />
+                </Tooltip>
+                {i < PHASE2.length - 1 && <FlowArrow />}
+              </div>
           ))}
         </div>
 
@@ -92,7 +116,7 @@ export function GanttPanel({ agents, conflicts }: Props) {
 
 function SupervisorCard() {
   return (
-    <div title={AGENT_TOOLTIP['orchestrator']} className="flex flex-col items-center gap-1 bg-[#1a2540] border border-[#2d3f5e] rounded-lg p-3 w-28 cursor-help">
+    <div className="flex flex-col items-center gap-1 bg-[#1a2540] border border-[#2d3f5e] rounded-lg p-3 w-28">
       <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
         style={{ background: 'linear-gradient(135deg, #c2410c, #ea580c)' }}>
         SV
@@ -112,7 +136,7 @@ function AgentCard({ id, agent }: { id: AgentId; agent?: AgentState }) {
   return (
     <div
       title={AGENT_TOOLTIP[id]}
-      className="flex flex-col items-center gap-1 rounded-lg p-2.5 transition-all duration-300 cursor-help"
+      className="flex flex-col items-center gap-1 rounded-lg p-2.5 transition-all duration-300"
       style={{
         background: '#1a2540',
         border: `1px solid ${isRunning ? meta.ring : isDone ? '#1e3a1e' : '#1e2d45'}`,
