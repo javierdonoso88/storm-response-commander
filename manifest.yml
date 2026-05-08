@@ -1,6 +1,7 @@
 applications:
 - name: storm-response-commander
-  memory: 512M
+  memory: 64M
+  disk_quota: 512M
   buildpacks:
     - nodejs_buildpack
   command: node dist/server/index.js
