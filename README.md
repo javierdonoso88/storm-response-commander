@@ -123,11 +123,10 @@ npm run dev
 ## Despliegue en Cloud Foundry
 
 ```bash
-npm run build
 cf push
 ```
 
-El buildpack ejecuta `heroku-postbuild` → `npm run build` automáticamente en cada push, por lo que no es necesario compilar localmente antes de desplegar.
+El buildpack ejecuta `heroku-postbuild` → `npm run build` automáticamente durante el staging, por lo que no es necesario compilar localmente antes de desplegar.
 
 Variables de entorno en CF:
 

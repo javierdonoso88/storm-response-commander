@@ -173,8 +173,8 @@ Cierre             : finalize
 ## Estados de un fallo
 
 ```
-fault → switching → restored          (telecontrol, Rerouting)
-fault → crew-en-route → repairing → repaired   (brigada, Crew-Dispatch)
+fault → switching → restored      (telecontrol, agente Rerouting)
+fault → crew-en-route             (brigada asignada, agente Crew-Dispatch)
 ```
 
 El frontend mapea cada estado a un color en el mapa:
@@ -185,5 +185,5 @@ El frontend mapea cada estado a un color en el mapa:
 | `switching` | Amarillo parpadeando |
 | `restored` | Verde |
 | `crew-en-route` | Naranja |
-| `repairing` | Amarillo |
-| `repaired` | Verde oscuro |
+
+> Los estados `repairing` y `repaired` están definidos en `types.ts` para uso futuro pero no se asignan en la simulación actual — las brigadas despachadas permanecen en `crew-en-route` hasta el cierre del ciclo.

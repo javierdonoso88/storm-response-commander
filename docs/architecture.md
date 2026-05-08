@@ -190,7 +190,8 @@ Eficiencia = fallos_atendidos / fallos_totales × 100
 # manifest.yml
 applications:
 - name: storm-response-commander
-  memory: 512M
+  memory: 64M
+  disk_quota: 512M
   buildpacks: [nodejs_buildpack]
   command: node dist/server/index.js
   env:
