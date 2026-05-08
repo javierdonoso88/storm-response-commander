@@ -45,6 +45,7 @@ Cada `emit()` se serializa como un evento SSE y se envía al cliente inmediatame
 | `agent_done` | `{ agent, summary }` | Cierra bloque en Gantt |
 | `asset_update` | `{ id, status }` | Cambia color del nodo en el mapa |
 | `comms` | `{ channel, msg }` | Añade mensaje al feed de comunicaciones |
+| `action` | `{ agent, system, msg }` | Añade entrada al feed de Acciones SAP |
 | `conflict` | `{ winner, loser, reason }` | Muestra alerta de conflicto |
 | `safety_tick` | `{ elapsed, limit }` | Actualiza barra de progreso de seguridad |
 | `kpi` | `{ sla, safety, efficiency }` | Actualiza métricas finales |

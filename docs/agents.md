@@ -2,6 +2,18 @@
 
 Todos los agentes comparten la misma interfaz de entrada/salida y usan el bucle genérico de `agentRunner.ts`. El estado del escenario (`ScenarioState`) se pasa por referencia — las herramientas lo mutan directamente.
 
+Cada agente emite eventos `action` vinculados a su sistema SAP de integración ficticia. Estos eventos alimentan el panel **Acciones SAP** del frontend en tiempo real.
+
+| Agente | Sistema SAP |
+|--------|------------|
+| Orchestrator | SAP AI Core Orchestration |
+| Triage | SAP S/4HANA Asset Management |
+| Rerouting | SAP Asset Intelligence Network |
+| Priority | SAP Event Mesh + Business Rules |
+| Crew-Dispatch | SAP Field Service Management |
+| Resource | SAP Integrated Business Planning |
+| Comms | SAP Customer Experience |
+
 ---
 
 ## Orchestrator
@@ -31,6 +43,10 @@ Cierre             : finalize
 | `invoke_comms` | Ejecuta el agente Comms |
 | `finalize` | Calcula KPIs y emite `kpi` + `done` |
 
+**Eventos `action` emitidos**:
+- Al iniciar: `SAP AI Core Orchestration` — incidente registrado con recuento de fallos y clientes
+- Al cerrar (`finalize`): `SAP AI Core Orchestration` — ciclo finalizado con KPIs calculados
+
 ---
 
 ## Triage
@@ -45,6 +61,9 @@ Cierre             : finalize
 |-------------|-----------|--------|
 | `classify_fault` | `faultId, severity, criticalSite, batteryRisk` | Registra clasificación (read-only) |
 | `complete_triage` | `summary, criticalFaultIds[]` | Cierra el agente con resumen ejecutivo |
+
+**Eventos `action` emitidos** (`SAP S/4HANA Asset Management`):
+- En `complete_triage`: número de activos analizados y sitios críticos registrados en S/4HANA
 
 **Criterios de clasificación**:
 - `critical` — sitio crítico con batería < SLA o < 30 min
@@ -66,6 +85,9 @@ Cierre             : finalize
 |-------------|-----------|-----------------|
 | `attempt_remote_switch` | `faultId` | `fault.status: fault → switching → restored`, emite `asset_update` ×2 |
 | `complete_rerouting` | `summary, smsText` | Cierra agente + emite `comms:sms` |
+
+**Eventos `action` emitidos** (`SAP Asset Intelligence Network`):
+- Por cada `attempt_remote_switch` exitosa: conmutación ejecutada con ID de fallo, zona y clientes reconectados
 
 **Restricciones**:
 - Solo puede operar `params.switchableFaults` conmutaciones (límite autorizado del día)
@@ -89,6 +111,10 @@ Cierre             : finalize
 | `send_regulatory_alert` | `text` | Emite `comms:regulatory` |
 | `complete_prioritization` | `summary` | Cierra agente |
 
+**Eventos `action` emitidos** (`SAP Event Mesh + Business Rules`):
+- En `send_regulatory_alert`: alerta publicada en Event Mesh hacia CTEPC/CNMC
+- En `complete_prioritization`: reglas de priorización ejecutadas con recuento de fallos rankeados
+
 **Regla de priorización**:
 1. Sitios críticos ordenados por batería restante ASC (menor batería = más urgente)
 2. Residenciales por clientes afectados DESC
@@ -109,6 +135,9 @@ Cierre             : finalize
 | `dispatch_crew` | `crewId, faultId, eta, reason` | `crew.status = 'busy'`, `fault.status = 'crew-en-route'`, emite `asset_update` |
 | `skip_fault` | `faultId, reason` | Registra fallo sin asignar (sin efecto en estado) |
 | `complete_dispatch` | `summary` | Cierra agente |
+
+**Eventos `action` emitidos** (`SAP Field Service Management`):
+- Por cada `dispatch_crew` exitoso: orden de trabajo creada con brigada, fallo, zona y ETA
 
 **Skills**:
 - Skill **A** → reparación de transformadores
@@ -133,6 +162,10 @@ Cierre             : finalize
 | `flag_conflict` | `faultId, reason` | Emite `conflict`, activa `hadConflict = true` |
 | `complete_resources` | `summary` | Cierra agente |
 
+**Eventos `action` emitidos** (`SAP Integrated Business Planning`):
+- Por cada `allocate_resource`: material reservado en IBP (tipo y fallo destino)
+- Por cada `flag_conflict`: solicitud de reposición de material registrada en IBP
+
 **`resourceType`**: `transformer` \| `cable` \| `mobile_generator`
 
 **Escenario de conflicto** (`limitedParts = 1`): solo hay 1 transformador en inventario para 7 fallos de transformador. Claude debe asignar el transformador al sitio crítico con menos batería y registrar conflicto para los restantes. El `hadConflict` se propaga al agente Comms para que lo mencione en la notificación regulatoria.
@@ -155,6 +188,11 @@ Cierre             : finalize
 | `complete_comms` | — | Cierra agente |
 
 **Orden obligatorio**: SMS → Nota de prensa → Regulatorio → complete_comms.
+
+**Eventos `action` emitidos** (`SAP Customer Experience`):
+- En `send_sms`: SMS masivo enviado vía SAP CX con preview del texto
+- En `send_press_release`: nota de prensa publicada hacia medios locales de Girona
+- En `send_regulatory`: notificación regulatoria enviada hacia CTEPC/CNMC
 
 ---
 

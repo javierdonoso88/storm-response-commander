@@ -25,6 +25,7 @@ Cada agente recibe el estado del escenario, usa herramientas concretas para toma
 ┌─────────────────────────────────────────────────────────────────┐
 │  React Frontend                                                  │
 │  MapPanel · LogPanel · GanttPanel · ParametersPanel · StatsPanel│
+│  (Comms Feed + Acciones SAP)                                     │
 └────────────────────┬────────────────────────────────────────────┘
                      │  SSE /api/simulate
 ┌────────────────────▼────────────────────────────────────────────┐
@@ -152,7 +153,7 @@ src/
 │   │   ├── LogPanel.tsx         # Logs CoT en tiempo real por agente
 │   │   ├── ParametersPanel.tsx  # Controles + KPIs
 │   │   ├── GanttPanel.tsx       # Timeline de ejecución de agentes
-│   │   └── StatsPanel.tsx       # Feed de comunicaciones
+│   │   └── StatsPanel.tsx       # Comms Feed + Acciones SAP (integración por agente)
 │   └── data/mapData.ts          # Posiciones geográficas
 └── server/
     ├── index.ts                 # Express server
