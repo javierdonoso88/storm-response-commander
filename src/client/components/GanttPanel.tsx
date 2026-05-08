@@ -76,7 +76,7 @@ export function GanttPanel({ agents, conflicts }: Props) {
           <div className="w-full border-t border-[#1e2d45] pt-1">
             <div className="text-[11px] text-red-400 uppercase tracking-wider mb-0.5">⚡ Conflictos</div>
             {conflicts.slice(0, 2).map((c, i) => (
-              <div key={i} className="text-[11px] text-slate-500 bg-red-900/20 rounded px-2 py-0.5 mb-0.5 leading-snug">
+              <div key={i} title={c.reason} className="text-[11px] text-slate-500 bg-red-900/20 rounded px-2 py-0.5 mb-0.5 leading-snug cursor-help">
                 <span className="text-red-400">{c.winner.toUpperCase()}</span> &gt; <span>{c.loser.toUpperCase()}</span>
               </div>
             ))}
