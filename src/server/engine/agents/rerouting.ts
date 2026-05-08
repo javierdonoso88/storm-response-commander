@@ -1,0 +1,98 @@
+import { SimParams, ScenarioState, AgentResult, SimEvent } from '../types';
+import { runAgent, ToolDef } from '../agentRunner';
+
+export async function runRerouting(
+  params: SimParams,
+  state: ScenarioState,
+  emit: (e: SimEvent) => void
+): Promise<AgentResult> {
+  let summary = 'Rerouting completado.';
+  const restoredFaultIds: string[] = [];
+  const commsMessages: { channel: 'sms' | 'press' | 'regulatory'; msg: string }[] = [];
+  let switchCount = 0;
+
+  const switchable = state.faults.filter(f => f.type === 'switchable' && f.status === 'fault');
+
+  const faultList = switchable.map(f =>
+    `${f.id} | zona:${f.zone} | clientes:${f.affectedClients}`
+  ).join('\n');
+
+  const tools: ToolDef[] = [
+    {
+      name: 'attempt_remote_switch',
+      description: 'Ejecuta una conmutación remota (telecontrol) para restaurar suministro en un fallo conmutable.',
+      input_schema: {
+        type: 'object' as const,
+        properties: {
+          faultId: { type: 'string', description: 'ID del fallo conmutable a restaurar' },
+        },
+        required: ['faultId'],
+      },
+      handler: async (input) => {
+        if (switchCount >= params.switchableFaults) {
+          return `Error: límite de operaciones de telecontrol alcanzado (${params.switchableFaults})`;
+        }
+        const fault = state.faults.find(f => f.id === input.faultId);
+        if (!fault) return `Error: fallo ${input.faultId} no encontrado`;
+        if (fault.type !== 'switchable') return `Error: ${input.faultId} no es conmutable`;
+        if (fault.status !== 'fault') return `Error: ${input.faultId} ya procesado (estado: ${fault.status})`;
+
+        switchCount++;
+        fault.status = 'switching';
+        emit({ type: 'asset_update', id: fault.id, status: 'switching' });
+        await new Promise(r => setTimeout(r, 600));
+        fault.status = 'restored';
+        emit({ type: 'asset_update', id: fault.id, status: 'restored' });
+        restoredFaultIds.push(fault.id);
+        return `Conmutación exitosa: ${fault.id} (${fault.zone}) restaurado — ${fault.affectedClients.toLocaleString()} clientes reconectados`;
+      },
+    },
+    {
+      name: 'complete_rerouting',
+      description: 'Finaliza el rerouting con resumen y envía SMS de notificación.',
+      input_schema: {
+        type: 'object' as const,
+        properties: {
+          summary: { type: 'string', description: 'Resumen de operaciones de conmutación' },
+          smsText: { type: 'string', description: 'Texto SMS para clientes afectados (máx 160 chars)' },
+        },
+        required: ['summary', 'smsText'],
+      },
+      handler: async (input) => {
+        summary = input.summary as string;
+        const msg = input.smsText as string;
+        commsMessages.push({ channel: 'sms', msg });
+        emit({ type: 'comms', channel: 'sms', msg });
+        return 'Rerouting finalizado y SMS enviado.';
+      },
+    },
+  ];
+
+  await runAgent({
+    systemPrompt: `Eres el agente REROUTING del sistema de Respuesta a Tormentas de Iberdrola (Girona).
+Tu misión: ejecutar conmutaciones remotas (telecontrol) para restaurar suministro sin enviar brigadas.
+Solo puedes hacer ${params.switchableFaults} operaciones de telecontrol (límite autorizado).
+Llama a attempt_remote_switch para cada fallo que quieras restaurar (hasta el límite).
+Al finalizar, llama a complete_rerouting con el resumen y un SMS conciso para los clientes.
+Responde en español. Sé directo y operacional.`,
+    userMessage: `FALLOS CONMUTABLES DISPONIBLES (${switchable.length} total):
+${faultList}
+
+Operaciones de telecontrol autorizadas: ${params.switchableFaults}
+SLA: ${params.minuteSLA} min | Ventana tormenta 2: ${params.storm2Window}
+
+Ejecuta las conmutaciones usando attempt_remote_switch, luego llama a complete_rerouting.`,
+    tools,
+    emit,
+    agentId: 'rerouting',
+    maxTokens: 8192,
+  });
+
+  return {
+    agentId: 'rerouting',
+    summary,
+    restoredFaults: restoredFaultIds,
+    dispatches: [],
+    commsMessages,
+  };
+}

@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  body {
+    background-color: #0d1520;
+    color: #e2e8f0;
+    font-family: 'IBM Plex Sans', Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    height: 100vh;
+  }
+
+  #root {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #0d1520; }
+  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #475569; }
+}
+
+@layer components {
+  .panel-card {
+    @apply rounded border;
+    background: #111827;
+    border-color: #1e2d45;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.4);
+  }
+
+  .panel-header {
+    @apply px-3 py-2 border-b flex items-center gap-2;
+    background: #0d1520;
+    border-color: #1e2d45;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .btn-primary {
+    @apply flex items-center justify-center gap-2 py-2 px-4 rounded text-sm font-semibold text-white transition-colors duration-150;
+    background: #2563eb;
+  }
+  .btn-primary:hover:not(:disabled) { background: #1d4ed8; }
+  .btn-primary:active:not(:disabled) { background: #1e40af; }
+  .btn-primary:disabled { background: #1e3a5f; cursor: not-allowed; }
+
+  .sap-tag {
+    @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold;
+  }
+
+  .sap-status-dot {
+    @apply w-2 h-2 rounded-full inline-block flex-shrink-0;
+  }
+
+  .kpi-card {
+    @apply rounded border p-3 flex flex-col gap-1;
+    background: #0d1520;
+    border-color: #1e2d45;
+  }
+}
+
+@layer utilities {
+  .animate-blink {
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  @keyframes ping {
+    75%, 100% { transform: scale(1.6); opacity: 0; }
+  }
+}
+
+/* ── Leaflet / Map overrides ─────────────────────────────────── */
+
+.map-tooltip {
+  background: #1a2540 !important;
+  border: 1px solid #2d3f5e !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important;
+  padding: 8px 10px !important;
+  color: #e2e8f0 !important;
+  font-family: 'IBM Plex Sans', Arial, sans-serif !important;
+  font-size: 12px !important;
+}
+
+.leaflet-tooltip-top.map-tooltip::before {
+  border-top-color: #2d3f5e !important;
+}
+
+@keyframes pulse-ring {
+  0%   { stroke-opacity: 0.7; stroke-width: 2px; }
+  70%  { stroke-opacity: 0;   stroke-width: 12px; }
+  100% { stroke-opacity: 0;   stroke-width: 12px; }
+}
+.node-pulse-ring { animation: pulse-ring 1.6s ease-out infinite; }
+
+.leaflet-control-zoom a {
+  background: #1a2540 !important;
+  color: #e2e8f0 !important;
+  border-color: #2d3f5e !important;
+  font-size: 16px !important;
+}
+.leaflet-control-zoom a:hover {
+  background: #243050 !important;
+  color: #f59e0b !important;
+}
+.leaflet-control-attribution { display: none !important; }

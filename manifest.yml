@@ -1,0 +1,9 @@
+applications:
+- name: storm-response-commander
+  memory: 512M
+  buildpacks:
+    - nodejs_buildpack
+  command: node dist/server/index.js
+  env:
+    NODE_ENV: production
+    NPM_CONFIG_PRODUCTION: false

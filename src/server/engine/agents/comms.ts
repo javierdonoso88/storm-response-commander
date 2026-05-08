@@ -1,0 +1,120 @@
+import { SimParams, ScenarioState, AgentResult, SimEvent } from '../types';
+import { runAgent, ToolDef } from '../agentRunner';
+
+export async function runComms(
+  params: SimParams,
+  state: ScenarioState,
+  hadConflict: boolean,
+  emit: (e: SimEvent) => void
+): Promise<AgentResult> {
+  let summary = 'Comunicaciones enviadas.';
+  const commsMessages: { channel: 'sms' | 'press' | 'regulatory'; msg: string }[] = [];
+
+  const restoredFaults = state.faults.filter(f => f.status === 'restored');
+  const crewEnRouteFaults = state.faults.filter(f => f.status === 'crew-en-route');
+  const restoredClients = restoredFaults.reduce((s, f) => s + f.affectedClients, 0);
+  const criticalFaults = state.faults.filter(f => f.criticalSite);
+
+  const tools: ToolDef[] = [
+    {
+      name: 'send_sms',
+      description: 'Envía SMS masivo a clientes afectados. Máximo 160 caracteres. Debe mencionar Iberdrola.',
+      input_schema: {
+        type: 'object' as const,
+        properties: {
+          text: { type: 'string', description: 'Texto del SMS (máx 160 chars)' },
+        },
+        required: ['text'],
+      },
+      handler: async (input) => {
+        const msg = input.text as string;
+        commsMessages.push({ channel: 'sms', msg });
+        emit({ type: 'comms', channel: 'sms', msg });
+        return 'SMS enviado.';
+      },
+    },
+    {
+      name: 'send_press_release',
+      description: 'Publica nota de prensa para medios de comunicación locales de Girona.',
+      input_schema: {
+        type: 'object' as const,
+        properties: {
+          text: { type: 'string', description: 'Texto de la nota de prensa' },
+        },
+        required: ['text'],
+      },
+      handler: async (input) => {
+        const msg = input.text as string;
+        commsMessages.push({ channel: 'press', msg });
+        emit({ type: 'comms', channel: 'press', msg });
+        return 'Nota de prensa enviada.';
+      },
+    },
+    {
+      name: 'send_regulatory',
+      description: 'Envía notificación formal al regulador (CTEPC/CNMC) sobre el incidente.',
+      input_schema: {
+        type: 'object' as const,
+        properties: {
+          text: { type: 'string', description: 'Texto de la notificación regulatoria' },
+        },
+        required: ['text'],
+      },
+      handler: async (input) => {
+        const msg = input.text as string;
+        commsMessages.push({ channel: 'regulatory', msg });
+        emit({ type: 'comms', channel: 'regulatory', msg });
+        return 'Notificación regulatoria enviada.';
+      },
+    },
+    {
+      name: 'complete_comms',
+      description: 'Finaliza el ciclo de comunicaciones.',
+      input_schema: {
+        type: 'object' as const,
+        properties: {
+          summary: { type: 'string', description: 'Resumen de comunicaciones enviadas' },
+        },
+        required: ['summary'],
+      },
+      handler: async (input) => {
+        summary = input.summary as string;
+        return 'Comunicaciones finalizadas.';
+      },
+    },
+  ];
+
+  await runAgent({
+    systemPrompt: `Eres el agente COMMS del sistema de Respuesta a Tormentas de Iberdrola (Girona).
+Tu misión: redactar y enviar 3 comunicaciones obligatorias en este orden:
+1. send_sms: conciso (≤160 chars), menciona Iberdrola, número de clientes y tiempo estimado de restauración
+2. send_press_release: nota formal para medios locales (El Punt Avui, Diari de Girona, RAC1, Catalunya Ràdio). Puedes escribirla en catalán.
+3. send_regulatory: notificación técnica formal para CTEPC/CNMC con datos del incidente${hadConflict ? '\nIMPORTANTE: Hay conflicto de recursos (material limitado). Menciónalo en la notificación regulatoria.' : ''}
+Llama a send_sms, send_press_release y send_regulatory (en ese orden), luego complete_comms.
+Responde en español/catalán según el canal. Sé profesional y preciso.`,
+    userMessage: `SITUACIÓN ACTUAL DEL INCIDENTE — Comarques de Girona
+
+Fallos totales      : ${state.faults.length}
+Restaurados telecon.: ${restoredFaults.length} (${restoredClients.toLocaleString()} clientes reconectados)
+Brigadas en camino  : ${crewEnRouteFaults.length} fallos en atención activa
+Clientes afectados  : ${state.totalClients.toLocaleString()} total
+Sitios críticos     : ${criticalFaults.length} (${criticalFaults.map(f => f.criticalSite).join(', ') || 'ninguno'})
+${hadConflict ? '⚠️ CONFLICTO DE RECURSOS: transformadores insuficientes — protocolo de priorización activado' : '✓ Sin conflictos de recursos'}
+
+SLA objetivo: ${params.minuteSLA}min | Ventana tormenta 2: ${params.storm2Window}
+
+Redacta y envía las 3 comunicaciones con send_sms, send_press_release, send_regulatory, luego complete_comms.`,
+    tools,
+    emit,
+    agentId: 'comms',
+    maxTokens: 8192,
+  });
+
+  return {
+    agentId: 'comms',
+    summary,
+    restoredFaults: [],
+    dispatches: [],
+    commsMessages,
+  };
+}
