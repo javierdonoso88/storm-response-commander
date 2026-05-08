@@ -59,7 +59,7 @@ export function MapPanel({ faults }: Props) {
       <div className="panel-header">
         <span className="text-green-400">◉</span>
         RED ELÉCTRICA — GIRONA
-        <div className="ml-auto flex items-center gap-3 text-[10px]">
+        <div className="ml-auto flex items-center gap-3 text-[12px]">
           <LegendDot color="#ef4444" label={`Avería (${faultCount})`} />
           <LegendDot color="#f97316" label={`Activo (${enRouteCount})`} />
           <LegendDot color="#22c55e" label={`OK (${switchedCount})`} />
@@ -157,7 +157,7 @@ export function MapPanel({ faults }: Props) {
                     opacity={0.95}
                     className="map-tooltip"
                   >
-                    <div style={{ fontSize: 11, lineHeight: 1.5, minWidth: 160 }}>
+                    <div style={{ fontSize: 13, lineHeight: 1.5, minWidth: 160 }}>
                       <div style={{ fontWeight: 700, color: color, marginBottom: 2 }}>
                         {fault.id} — {fault.zone}
                       </div>

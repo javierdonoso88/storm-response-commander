@@ -9,7 +9,7 @@
     background-color: #0d1520;
     color: #e2e8f0;
     font-family: 'IBM Plex Sans', Arial, Helvetica, sans-serif;
-    font-size: 14px;
+    font-size: 15px;
     margin: 0;
     padding: 0;
     overflow: hidden;
@@ -40,7 +40,7 @@
     @apply px-3 py-2 border-b flex items-center gap-2;
     background: #0d1520;
     border-color: #1e2d45;
-    font-size: 0.6875rem;
+    font-size: 0.8rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -57,7 +57,7 @@
   .btn-primary:disabled { background: #1e3a5f; cursor: not-allowed; }
 
   .sap-tag {
-    @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold;
+    @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold;
   }
 
   .sap-status-dot {
@@ -96,7 +96,7 @@
   padding: 8px 10px !important;
   color: #e2e8f0 !important;
   font-family: 'IBM Plex Sans', Arial, sans-serif !important;
-  font-size: 12px !important;
+  font-size: 13px !important;
 }
 
 .leaflet-tooltip-top.map-tooltip::before {

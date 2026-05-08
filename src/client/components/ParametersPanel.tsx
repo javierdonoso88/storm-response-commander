@@ -16,7 +16,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
 
       {/* Section header */}
       <div className="px-3 py-2 border-b" style={{ background: '#0d1520', borderColor: '#1e2d45' }}>
-        <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">Parámetros</span>
+        <span className="text-[13px] font-semibold uppercase tracking-widest text-slate-500">Parámetros</span>
       </div>
 
       <div className="flex flex-col gap-4 p-3 flex-1 overflow-y-auto">
@@ -59,7 +59,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
             </button>
           </div>
           {params.limitedParts === 1 && (
-            <div className="text-[10px] rounded px-2 py-1 border" style={{ color: '#f97316', background: '#451a03', borderColor: '#7c2d12' }}>
+            <div className="text-[12px] rounded px-2 py-1 border" style={{ color: '#f97316', background: '#451a03', borderColor: '#7c2d12' }}>
               Solo 1 transformador disponible
             </div>
           )}
@@ -73,7 +73,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
               <button
                 key={opt}
                 onClick={() => onChange({ storm2Window: opt })}
-                className="text-[10px] py-1 px-2 rounded border transition-all font-mono"
+                className="text-[12px] py-1 px-2 rounded border transition-all font-mono"
                 style={
                   params.storm2Window === opt
                     ? { background: '#1d4ed8', color: '#fff', borderColor: '#2563eb' }
@@ -109,7 +109,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
 
         {/* KPIs */}
         <div className="border-t pt-3 flex flex-col gap-2.5" style={{ borderColor: '#1e2d45' }}>
-          <span className="text-[11px] font-semibold uppercase tracking-widest text-slate-600">KPIs</span>
+          <span className="text-[13px] font-semibold uppercase tracking-widest text-slate-600">KPIs</span>
           <KPIRow label="SLA" sub="clientes cubiertos" value={kpi.sla} color={kpi.sla >= 80 ? '#22c55e' : kpi.sla >= 55 ? '#f97316' : '#ef4444'} />
           <KPIRow label="Seguridad" sub="sitios críticos" value={kpi.safety} color={kpi.safety === 100 ? '#22c55e' : kpi.safety >= 70 ? '#f97316' : '#ef4444'} />
           <KPIRow label="Eficiencia" sub="fallos gestionados" value={kpi.efficiency} color={kpi.efficiency >= 80 ? '#22c55e' : kpi.efficiency >= 50 ? '#3b82f6' : '#64748b'} />
@@ -137,7 +137,7 @@ function SliderField({ label, value, valueColor, min, max, step, current, onChan
         className="w-full h-1 rounded-full appearance-none cursor-pointer"
         style={{ accentColor: accent, background: '#1e2d45' }}
       />
-      <div className="flex justify-between text-[10px]" style={{ color: '#334155' }}>
+      <div className="flex justify-between text-[12px]" style={{ color: '#334155' }}>
         <span>{min}</span><span>{max}</span>
       </div>
     </div>
@@ -149,10 +149,10 @@ function KPIRow({ label, sub, value, color }: { label: string; sub: string; valu
     <div className="flex flex-col gap-1">
       <div className="flex items-baseline justify-between">
         <div className="flex flex-col">
-          <span className="text-[10px] font-semibold text-slate-400">{label}</span>
-          <span className="text-[9px] text-slate-600">{sub}</span>
+          <span className="text-[12px] font-semibold text-slate-400">{label}</span>
+          <span className="text-[13px] text-slate-600">{sub}</span>
         </div>
-        <span className="text-[11px] font-bold font-mono" style={{ color }}>{value}%</span>
+        <span className="text-[13px] font-bold font-mono" style={{ color }}>{value}%</span>
       </div>
       <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#1e2d45' }}>
         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${value}%`, background: color }} />

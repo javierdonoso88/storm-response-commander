@@ -36,7 +36,7 @@ export function LogPanel({ logs, running }: Props) {
         <span className="text-purple-400">◈</span>
         LOG DE AGENTES
         {running && (
-          <span className="ml-auto flex items-center gap-1 text-purple-400 text-[10px]">
+          <span className="ml-auto flex items-center gap-1 text-purple-400 text-[12px]">
             <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" /> LIVE
           </span>
         )}
@@ -52,7 +52,7 @@ export function LogPanel({ logs, running }: Props) {
         {/* Orchestrator — same height as other sections */}
         {orchestratorLog && (
           <div className="flex flex-col min-h-0" style={{ flex: '1 1 0' }}>
-            <div className="text-[9px] text-amber-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
+            <div className="text-[13px] text-amber-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
               ── ORCHESTRATOR ──────────────────────────────
             </div>
             <div className="flex-1 min-h-0">
@@ -64,7 +64,7 @@ export function LogPanel({ logs, running }: Props) {
         {/* Phase 1 — fills remaining space */}
         {phase1Logs.some(Boolean) && (
           <div className="flex flex-col min-h-0" style={{ flex: hasPhases && phase2Logs.some(Boolean) ? '1 1 0' : '1 1 0' }}>
-            <div className="text-[9px] text-blue-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
+            <div className="text-[13px] text-blue-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
               ── PREPARATION PHASE (PARALLEL) ─────────────
             </div>
             <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
@@ -82,7 +82,7 @@ export function LogPanel({ logs, running }: Props) {
         {/* Phase 2 — fills remaining space */}
         {phase2Logs.some(Boolean) && (
           <div className="flex flex-col min-h-0" style={{ flex: '1 1 0' }}>
-            <div className="text-[9px] text-blue-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
+            <div className="text-[13px] text-blue-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
               ── EXECUTION PHASE ────────────────────────────
             </div>
             <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
@@ -133,7 +133,7 @@ function LogBlock({ log, placeholder = false }: {
         style={{ borderColor: `${color}20` }}
       >
         <span
-          className="text-[9px] font-bold font-mono px-1.5 py-0.5 rounded"
+          className="text-[13px] font-bold font-mono px-1.5 py-0.5 rounded"
           style={{ color, backgroundColor: `${color}18` }}
         >
           {log.label}
@@ -144,7 +144,7 @@ function LogBlock({ log, placeholder = false }: {
             style={{ backgroundColor: color, animation: 'pulse 1s ease-in-out infinite' }}
           />
         ) : log.complete ? (
-          <span className="text-[9px] text-slate-500">✓</span>
+          <span className="text-[13px] text-slate-500">✓</span>
         ) : null}
       </div>
 
@@ -154,7 +154,7 @@ function LogBlock({ log, placeholder = false }: {
         className="overflow-y-auto overflow-x-hidden whitespace-pre-wrap break-words p-1.5"
         style={{
           fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-          fontSize: '9.5px',
+          fontSize: '11px',
           lineHeight: 1.55,
           color: placeholder ? '#334155' : '#a5f3fc',
           margin: 0,

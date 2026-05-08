@@ -67,9 +67,9 @@ export function GanttPanel({ agents, conflicts }: Props) {
         {/* Conflicts */}
         {conflicts.length > 0 && (
           <div className="w-full mt-2 border-t border-[#1e2d45] pt-2">
-            <div className="text-[9px] text-red-400 uppercase tracking-wider mb-1">⚡ Conflictos</div>
+            <div className="text-[13px] text-red-400 uppercase tracking-wider mb-1">⚡ Conflictos</div>
             {conflicts.slice(0, 2).map((c, i) => (
-              <div key={i} className="text-[9px] text-slate-500 bg-red-900/20 rounded px-2 py-1 mb-1 leading-snug">
+              <div key={i} className="text-[13px] text-slate-500 bg-red-900/20 rounded px-2 py-1 mb-1 leading-snug">
                 <span className="text-red-400">{c.winner.toUpperCase()}</span> &gt; <span>{c.loser.toUpperCase()}</span>
               </div>
             ))}
@@ -88,7 +88,7 @@ function SupervisorCard() {
         SV
       </div>
       <span className="text-xs font-bold text-white">Supervisor</span>
-      <span className="text-[10px] text-slate-400">Orchestrator</span>
+      <span className="text-[12px] text-slate-400">Orchestrator</span>
     </div>
   );
 }
@@ -125,21 +125,21 @@ function AgentCard({ id, agent }: { id: AgentId; agent?: AgentState }) {
           />
         )}
       </div>
-      <span className="text-[10px] font-semibold text-center text-white leading-tight">
+      <span className="text-[12px] font-semibold text-center text-white leading-tight">
         {AGENT_SHORT[id]}
       </span>
       <StatusBadge status={status} color={meta.ring} />
       {agent?.startTime && (
-        <span className="text-[9px] text-slate-600 font-mono">{agent.startTime}</span>
+        <span className="text-[13px] text-slate-600 font-mono">{agent.startTime}</span>
       )}
     </div>
   );
 }
 
 function StatusBadge({ status, color }: { status: AgentState['status']; color: string }) {
-  if (status === 'pending')  return <span className="text-[9px] text-slate-500">Pending</span>;
-  if (status === 'running')  return <span className="text-[9px] font-bold" style={{ color }}>Running…</span>;
-  return <span className="text-[9px] text-green-400">Done ✓</span>;
+  if (status === 'pending')  return <span className="text-[13px] text-slate-500">Pending</span>;
+  if (status === 'running')  return <span className="text-[13px] font-bold" style={{ color }}>Running…</span>;
+  return <span className="text-[13px] text-green-400">Done ✓</span>;
 }
 
 function Arrow() {
@@ -156,7 +156,7 @@ function FlowArrow() {
 
 function PhaseLabel({ label, parallel }: { label: string; parallel: boolean }) {
   return (
-    <div className="text-[9px] font-bold tracking-widest text-blue-400 uppercase">
+    <div className="text-[13px] font-bold tracking-widest text-blue-400 uppercase">
       {label}{parallel ? ' (PARALLEL)' : ' (SEQUENTIAL)'}
     </div>
   );
