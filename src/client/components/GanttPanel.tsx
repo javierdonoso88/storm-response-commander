@@ -107,9 +107,11 @@ export function GanttPanel({ agents, conflicts }: Props) {
           <div className="w-full mt-2 border-t border-[#1e2d45] pt-2">
             <div className="text-[13px] text-red-400 uppercase tracking-wider mb-1">⚡ Conflictos</div>
             {conflicts.slice(0, 2).map((c, i) => (
-              <div key={i} title={c.reason} className="text-[13px] text-slate-500 bg-red-900/20 rounded px-2 py-1 mb-1 leading-snug cursor-help">
-                <span className="text-red-400">{c.winner.toUpperCase()}</span> &gt; <span>{c.loser.toUpperCase()}</span>
-              </div>
+              <Tooltip key={i} text={c.reason} position="top">
+                <div className="text-[13px] text-slate-500 bg-red-900/20 rounded px-2 py-1 mb-1 leading-snug cursor-help">
+                  <span className="text-red-400">{c.winner.toUpperCase()}</span> &gt; <span>{c.loser.toUpperCase()}</span>
+                </div>
+              </Tooltip>
             ))}
           </div>
         )}
