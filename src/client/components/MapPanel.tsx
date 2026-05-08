@@ -115,6 +115,7 @@ export function MapPanel({ faults }: Props) {
                   <CircleMarker
                     center={coords}
                     radius={radius + 10}
+                    interactive={false}
                     pathOptions={{
                       fillColor: color,
                       fillOpacity: 0,
@@ -130,6 +131,7 @@ export function MapPanel({ faults }: Props) {
                   <CircleMarker
                     center={coords}
                     radius={radius + 5}
+                    interactive={false}
                     pathOptions={{
                       fillColor: 'transparent',
                       fillOpacity: 0,
