@@ -175,7 +175,7 @@ export function useSimulation(initialFaults: Fault[]) {
         case 'action':
           return {
             ...prev,
-            actionMessages: [{ agent: event.agent, system: event.system, msg: event.msg, ts: Date.now() }, ...prev.actionMessages].slice(0, 40),
+            actionMessages: [{ agent: event.agent, system: event.system, msg: event.msg, ts: Date.now() }, ...prev.actionMessages].slice(0, 200),
           };
 
         case 'done':

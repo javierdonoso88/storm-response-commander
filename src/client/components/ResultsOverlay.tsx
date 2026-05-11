@@ -128,8 +128,8 @@ export function ResultsOverlay({ faults, kpi, agents, commsMessages, actionMessa
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(4,8,16,0.87)', backdropFilter: 'blur(14px)', opacity: vis ? 1 : 0, transition: 'opacity 0.3s' }}
+      className="fixed inset-0 flex items-center justify-center p-4"
+      style={{ background: 'rgba(4,8,16,0.87)', backdropFilter: 'blur(14px)', opacity: vis ? 1 : 0, transition: 'opacity 0.3s', zIndex: 2000 }}
     >
       <div
         className="w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl flex flex-col"
