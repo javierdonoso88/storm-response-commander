@@ -1,4 +1,4 @@
-# ⚡ Storm-Response Commander
+# ⚡ Storm Response Commander
 
 Sistema multi-agente de IA para la simulación de respuesta a incidentes eléctricos por tormenta. Modela la operativa real de Iberdrola en las Comarques de Girona: 47 fallos activos, 22 brigadas, sitios críticos con batería y ventana de segunda tormenta.
 
