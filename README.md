@@ -8,6 +8,8 @@ Sistema multi-agente de IA para la simulación de respuesta a incidentes eléctr
 
 ## Qué hace
 
+Al abrir la aplicación se muestra una **pantalla de presentación** con el caso de uso, las métricas clave del escenario y la arquitectura multi-agente. Desde ahí se accede al simulador interactivo.
+
 Al iniciar una simulación, un orquestador Claude coordina 6 agentes especializados que razonan sobre el escenario en tiempo real:
 
 | Fase | Agentes | Modo |
@@ -24,8 +26,8 @@ Cada agente recibe el estado del escenario, usa herramientas concretas para toma
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  React Frontend                                                  │
-│  MapPanel · LogPanel · GanttPanel · ParametersPanel · StatsPanel│
-│  (Comms Feed + Acciones SAP)                                     │
+│  LandingPage · MapPanel · LogPanel · GanttPanel                  │
+│  ParametersPanel · StatsPanel (Comms Feed + Acciones SAP)        │
 └────────────────────┬────────────────────────────────────────────┘
                      │  SSE /api/simulate
 ┌────────────────────▼────────────────────────────────────────────┐
@@ -149,6 +151,7 @@ src/
 │   ├── App.tsx                  # Layout principal y orquestación de estado
 │   ├── hooks/useSimulation.ts   # Gestión de SSE y estado de simulación
 │   ├── components/
+│   │   ├── LandingPage.tsx      # Pantalla inicial: caso de uso + arquitectura
 │   │   ├── MapPanel.tsx         # Mapa de Girona con nodos de fallo
 │   │   ├── LogPanel.tsx         # Logs CoT en tiempo real por agente
 │   │   ├── ParametersPanel.tsx  # Controles + KPIs
