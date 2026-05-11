@@ -41,10 +41,7 @@ export default function App() {
       <header className="flex items-center gap-3 px-4 h-11 flex-shrink-0 border-b"
         style={{ background: '#0a0f1a', borderColor: '#1e2d45' }}>
         <span className="text-white font-bold text-sm tracking-wide flex items-center gap-2">
-          <svg width="32" height="18" viewBox="0 0 32 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="32" height="18" rx="2" fill="#009999"/>
-            <text x="50%" y="13.5" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="bold" fontSize="11" fill="white" letterSpacing="0.5">SAP</text>
-          </svg>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 18, width: 'auto' }} />
           Storm-Response Commander
         </span>
 
