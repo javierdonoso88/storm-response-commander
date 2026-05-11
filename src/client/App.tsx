@@ -6,6 +6,7 @@ import { LogPanel } from './components/LogPanel';
 import { GanttPanel } from './components/GanttPanel';
 import { MapPanel } from './components/MapPanel';
 import { StatsPanel } from './components/StatsPanel';
+import { LandingPage } from './components/LandingPage';
 
 const DEFAULT_PARAMS: SimParams = {
   minuteSLA: 60,
@@ -18,6 +19,7 @@ const DEFAULT_PARAMS: SimParams = {
 export default function App() {
   const [params, setParams] = useState<SimParams>(DEFAULT_PARAMS);
   const [initialFaults, setInitialFaults] = useState<Fault[]>([]);
+  const [showLanding, setShowLanding] = useState(true);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { state, startSimulation, tickAgentProgress } = useSimulation(initialFaults);
@@ -33,6 +35,10 @@ export default function App() {
   }, [state.running, tickAgentProgress]);
 
   const safetyPct = state.safetyLimit > 0 ? Math.min(100, (state.safetyElapsed / state.safetyLimit) * 100) : 0;
+
+  if (showLanding) {
+    return <LandingPage onEnter={() => setShowLanding(false)} />;
+  }
 
   return (
     <div className="flex flex-col h-screen" style={{ background: '#0d1520' }}>
