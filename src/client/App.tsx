@@ -7,6 +7,7 @@ import { GanttPanel } from './components/GanttPanel';
 import { MapPanel } from './components/MapPanel';
 import { StatsPanel } from './components/StatsPanel';
 import { LandingPage } from './components/LandingPage';
+import { ResultsOverlay } from './components/ResultsOverlay';
 
 const DEFAULT_PARAMS: SimParams = {
   minuteSLA: 60,
@@ -20,6 +21,7 @@ export default function App() {
   const [params, setParams] = useState<SimParams>(DEFAULT_PARAMS);
   const [initialFaults, setInitialFaults] = useState<Fault[]>([]);
   const [showLanding, setShowLanding] = useState(true);
+  const [showResults, setShowResults] = useState(false);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { state, startSimulation, tickAgentProgress } = useSimulation(initialFaults);
@@ -33,6 +35,13 @@ export default function App() {
     else if (tickRef.current) clearInterval(tickRef.current);
     return () => { if (tickRef.current) clearInterval(tickRef.current); };
   }, [state.running, tickAgentProgress]);
+
+  useEffect(() => {
+    if (state.done) {
+      const t = setTimeout(() => setShowResults(true), 800);
+      return () => clearTimeout(t);
+    }
+  }, [state.done]);
 
   const safetyPct = state.safetyLimit > 0 ? Math.min(100, (state.safetyElapsed / state.safetyLimit) * 100) : 0;
 
@@ -117,6 +126,19 @@ export default function App() {
 
         </div>
       </div>
+
+      {showResults && (
+        <ResultsOverlay
+          faults={state.faults}
+          kpi={state.kpi}
+          agents={state.agents}
+          commsMessages={state.commsMessages}
+          actionMessages={state.actionMessages}
+          conflicts={state.conflicts}
+          elapsedLabel={state.elapsedLabel}
+          onClose={() => setShowResults(false)}
+        />
+      )}
     </div>
   );
 }
