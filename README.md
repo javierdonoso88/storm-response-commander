@@ -8,7 +8,7 @@ Sistema multi-agente de IA para la simulación de respuesta a incidentes eléctr
 
 ## Qué hace
 
-Al abrir la aplicación se muestra una **pantalla de presentación** con el caso de uso, las métricas clave del escenario y la arquitectura multi-agente. Desde ahí se accede al simulador interactivo.
+Al abrir la aplicación se muestra una **pantalla de presentación** con el caso de uso, las métricas clave del escenario y la arquitectura multi-agente. Desde ahí se accede al simulador interactivo, con navegación de vuelta a la landing en cualquier momento desde el botón "Inicio" del header.
 
 Al iniciar una simulación, un orquestador Claude coordina 6 agentes especializados que razonan sobre el escenario en tiempo real:
 
@@ -18,6 +18,15 @@ Al iniciar una simulación, un orquestador Claude coordina 6 agentes especializa
 | 2 — Ejecución | Crew-Dispatch → Resource → Comms | Secuencial |
 
 Cada agente recibe el estado del escenario, usa herramientas concretas para tomar decisiones (conmutar fallos, despachar brigadas, asignar material, enviar comunicaciones) y emite eventos SSE que actualizan el mapa, los logs y los KPIs en tiempo real.
+
+Al finalizar, aparece automáticamente un **Resumen Ejecutivo** con:
+- KPIs visuales con gauges circulares SVG (SLA, Seguridad, Eficiencia operativa)
+- Indicadores operativos: clientes restaurados, fallos atendidos, sitios críticos cubiertos, acciones pendientes
+- KPIs de integración SAP: sistemas tocados, órdenes FSM, conmutaciones AIN, materiales IBP, mensajes CX, activos S/4HANA
+- Resumen narrativo del orquestador (texto CoT limpio de markdown)
+- Acciones pendientes con recomendaciones de mitigación priorizadas
+
+El informe puede cerrarse y reabrirse mediante el botón **"Ver Informe"** del header (visible tras completar la simulación). Al lanzar una nueva simulación el botón desaparece hasta que finalice.
 
 ---
 
@@ -148,7 +157,7 @@ cf restage storm-response-commander
 ```
 src/
 ├── client/
-│   ├── App.tsx                  # Layout principal y orquestación de estado
+│   ├── App.tsx                  # Layout principal, navegación landing↔simulador, control de overlay
 │   ├── hooks/useSimulation.ts   # Gestión de SSE y estado de simulación
 │   ├── components/
 │   │   ├── LandingPage.tsx      # Pantalla inicial: caso de uso + arquitectura
@@ -156,7 +165,8 @@ src/
 │   │   ├── LogPanel.tsx         # Logs CoT en tiempo real por agente
 │   │   ├── ParametersPanel.tsx  # Controles + KPIs
 │   │   ├── GanttPanel.tsx       # Timeline de ejecución de agentes
-│   │   └── StatsPanel.tsx       # Comms Feed + Acciones SAP (integración por agente)
+│   │   ├── StatsPanel.tsx       # Comms Feed + Acciones SAP (integración por agente)
+│   │   └── ResultsOverlay.tsx   # Resumen ejecutivo final: KPIs, SAP, análisis orquestador, acciones pendientes
 │   └── data/mapData.ts          # Posiciones geográficas
 └── server/
     ├── index.ts                 # Express server

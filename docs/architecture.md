@@ -185,6 +185,28 @@ Eficiencia = fallos_atendidos / fallos_totales × 100
 
 ---
 
+## Resumen Ejecutivo (`ResultsOverlay.tsx`)
+
+Aparece automáticamente 800 ms después de recibir el evento `done`. Puede cerrarse y reabrirse con el botón "Ver Informe" del header hasta que se lance una nueva simulación.
+
+**Secciones:**
+
+| Sección | Fuente de datos |
+|---------|----------------|
+| KPI gauges circulares (SLA · Seguridad · Eficiencia) | `kpi` state del evento `kpi` |
+| Indicadores operativos (clientes, fallos, críticos, pendientes) | `faults` array |
+| KPIs de integración SAP (6 sistemas) | `actionMessages` + `faults` |
+| Análisis del orquestador | `agentLogs.find(l => l.agent === 'orchestrator').text` |
+| Acciones pendientes con mitigación | `faults.filter(f => f.status === 'fault')` |
+
+**Limpieza de texto CoT:** `cleanText()` elimina `##`, `**bold**`, `*italic*`, reglas horizontales, bloques de código, emojis y saltos de línea excesivos del texto generado por Claude para presentarlo como texto plano.
+
+**Gauges SVG:** Arco de círculo calculado con `strokeDasharray = (value/100) × 2πr`. El arco vacío usa `#1e2d45` y el lleno el color del umbral (verde ≥80, naranja ≥60, rojo <60). `zIndex: 2000` para solapar el mapa Leaflet (z-index máximo ~1000).
+
+**AIN switches:** Se calcula como `restored.length` (fallos con `status === 'restored'`) en lugar de contar desde `actionMessages`, que puede truncarse en escenarios con muchas acciones.
+
+---
+
 ## Despliegue en BTP Cloud Foundry
 
 ```yaml

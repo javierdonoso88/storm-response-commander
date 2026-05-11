@@ -73,6 +73,20 @@ export default function App() {
           )}
         </div>
 
+        {/* Ver informe button */}
+        {state.done && !state.running && (
+          <button
+            onClick={() => setShowResults(v => !v)}
+            className="flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-lg"
+            style={{ background: showResults ? 'rgba(34,211,238,0.15)' : 'rgba(34,211,238,0.06)', color: '#22d3ee', border: '1px solid rgba(34,211,238,0.25)', cursor: 'pointer' }}
+          >
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            Ver Informe
+          </button>
+        )}
+
         {/* Safety window bar */}
         <div className="ml-auto flex items-center gap-2" style={{ minWidth: 240 }}>
           <span className="text-xs text-slate-500 font-mono whitespace-nowrap">VENTANA {params.storm2Window}</span>
@@ -85,6 +99,18 @@ export default function App() {
           </div>
           <span className="text-xs text-slate-500 font-mono whitespace-nowrap">{state.elapsedLabel}</span>
         </div>
+
+        {/* Back to landing */}
+        <button
+          onClick={() => setShowLanding(true)}
+          className="flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-lg"
+          style={{ background: 'rgba(255,255,255,0.03)', color: '#475569', border: '1px solid #1e2d45', cursor: 'pointer' }}
+        >
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Inicio
+        </button>
       </header>
 
       {/* Main */}
@@ -95,7 +121,7 @@ export default function App() {
           <ParametersPanel
             params={params}
             onChange={p => setParams(prev => ({ ...prev, ...p }))}
-            onSimulate={() => startSimulation(params)}
+            onSimulate={() => { setShowResults(false); startSimulation(params); }}
             running={state.running}
             kpi={state.kpi}
           />
@@ -131,7 +157,7 @@ export default function App() {
         <ResultsOverlay
           faults={state.faults}
           kpi={state.kpi}
-          agents={state.agents}
+          agentLogs={state.agentLogs}
           commsMessages={state.commsMessages}
           actionMessages={state.actionMessages}
           conflicts={state.conflicts}
