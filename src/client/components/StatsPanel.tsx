@@ -63,41 +63,6 @@ export function StatsPanel({ messages, actionMessages }: Props) {
   return (
     <div className="panel-card flex flex-col h-full overflow-hidden">
 
-      {/* ── Comms Feed ── */}
-      <div className="panel-header">
-        <span className="text-cyan-400">◎</span>
-        COMMS FEED
-        {messages.length > 0 && (
-          <span className="ml-auto text-[12px] bg-cyan-900/40 text-cyan-400 px-1.5 py-0.5 rounded">
-            {messages.length} enviados
-          </span>
-        )}
-      </div>
-      <div className="overflow-y-auto p-2 flex flex-col gap-2" style={{ flex: '1 1 0', minHeight: 0 }}>
-        {messages.length === 0 && (
-          <div className="text-xs text-slate-600 italic text-center mt-4">
-            Las comunicaciones aparecerán aquí durante la simulación
-          </div>
-        )}
-        {messages.map((msg, i) => (
-          <div key={i} className="bg-[#1a2540] border border-[#1e2d45] rounded p-2 flex flex-col gap-1">
-            <div className="flex items-center gap-1.5">
-              <span className="text-sm">{CHANNEL_ICON[msg.channel]}</span>
-              <span className={`text-[12px] font-bold font-mono ${CHANNEL_COLOR[msg.channel]}`}>
-                {CHANNEL_LABEL[msg.channel]}
-              </span>
-              <span className="ml-auto text-[12px] text-slate-600">{timeAgo(msg.ts)}</span>
-            </div>
-            <p className="text-[12px] text-slate-400 leading-snug line-clamp-3" title={msg.msg}>
-              {msg.msg}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* ── Divider ── */}
-      <div className="border-t" style={{ borderColor: '#1e2d45' }} />
-
       {/* ── Actions ── */}
       <div className="panel-header">
         <span className="text-emerald-400">⚙</span>
@@ -126,6 +91,41 @@ export function StatsPanel({ messages, actionMessages }: Props) {
             </div>
             <p className="text-[11px] text-slate-400 leading-snug line-clamp-2 pl-3" title={a.msg}>
               {a.msg}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      {/* ── Divider ── */}
+      <div className="border-t" style={{ borderColor: '#1e2d45' }} />
+
+      {/* ── Comunicaciones ── */}
+      <div className="panel-header">
+        <span className="text-cyan-400">◎</span>
+        COMUNICACIONES
+        {messages.length > 0 && (
+          <span className="ml-auto text-[12px] bg-cyan-900/40 text-cyan-400 px-1.5 py-0.5 rounded">
+            {messages.length} enviados
+          </span>
+        )}
+      </div>
+      <div className="overflow-y-auto p-2 flex flex-col gap-2" style={{ flex: '1 1 0', minHeight: 0 }}>
+        {messages.length === 0 && (
+          <div className="text-xs text-slate-600 italic text-center mt-4">
+            Las comunicaciones aparecerán aquí durante la simulación
+          </div>
+        )}
+        {messages.map((msg, i) => (
+          <div key={i} className="bg-[#1a2540] border border-[#1e2d45] rounded p-2 flex flex-col gap-1">
+            <div className="flex items-center gap-1.5">
+              <span className="text-sm">{CHANNEL_ICON[msg.channel]}</span>
+              <span className={`text-[12px] font-bold font-mono ${CHANNEL_COLOR[msg.channel]}`}>
+                {CHANNEL_LABEL[msg.channel]}
+              </span>
+              <span className="ml-auto text-[12px] text-slate-600">{timeAgo(msg.ts)}</span>
+            </div>
+            <p className="text-[12px] text-slate-400 leading-snug line-clamp-3" title={msg.msg}>
+              {msg.msg}
             </p>
           </div>
         ))}

@@ -199,7 +199,7 @@ Aparece automáticamente 800 ms después de recibir el evento `done`. Puede cerr
 | Análisis del orquestador | `agentLogs.find(l => l.agent === 'orchestrator').text` |
 | Acciones pendientes con mitigación | `faults.filter(f => f.status === 'fault')` |
 
-**Limpieza de texto CoT:** `cleanText()` elimina `##`, `**bold**`, `*italic*`, reglas horizontales, bloques de código, emojis y saltos de línea excesivos del texto generado por Claude para presentarlo como texto plano.
+**Limpieza y formateo de texto CoT:** `renderMarkdown()` convierte el texto generado por Claude a JSX con formato visual: encabezados `##`/`###` como etiquetas cian en mayúsculas, `**bold**` en blanco brillante, `*italic*` en slate claro, `` `código` `` con fondo cian oscuro, y listas `- item` como viñetas. Las líneas que empiezan por `**` (negrita) se distinguen correctamente de los bullets (`- ` / `* `) mediante regex precisas (`/^[-*]\s/`) para evitar bucles infinitos durante el render.
 
 **Gauges SVG:** Arco de círculo calculado con `strokeDasharray = (value/100) × 2πr`. El arco vacío usa `#1e2d45` y el lleno el color del umbral (verde ≥80, naranja ≥60, rojo <60). `zIndex: 2000` para solapar el mapa Leaflet (z-index máximo ~1000).
 

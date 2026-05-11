@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActionMessage, AgentLog, CommsMessage, ConflictEvent, Fault, KPIState } from '../types';
 
 interface Props {
@@ -24,17 +24,107 @@ function kpiGrade(v: number) {
   return v >= 80 ? 'ÓPTIMO' : v >= 60 ? 'ACEPTABLE' : 'CRÍTICO';
 }
 
-function cleanText(text: string = ''): string {
-  return text
-    .replace(/^#{1,6}\s*/gm, '')
-    .replace(/\*\*(.*?)\*\*/gs, '$1')
-    .replace(/\*(.*?)\*/gs, '$1')
+function stripEmoji(text: string): string {
+  return text.replace(/[\u{1F000}-\u{1FFFF}]|[\u{2600}-\u{27BF}]|[\u{1F300}-\u{1FAFF}]/gu, '').trim();
+}
+
+function renderMarkdown(raw: string) {
+  const lines = raw
     .replace(/^[=\-]{3,}\s*$/gm, '')
-    .replace(/`{1,3}[^`]*`{1,3}/g, '')
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-    .replace(/[\u{1F000}-\u{1FFFF}]|[\u{2600}-\u{27BF}]|[\u{1F300}-\u{1FAFF}]/gu, '')
     .replace(/\n{3,}/g, '\n\n')
-    .trim();
+    .split('\n');
+
+  const nodes: React.ReactNode[] = [];
+  let key = 0;
+
+  const renderInline = (text: string): React.ReactNode => {
+    const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`[^`]+`)/g);
+    return parts.map((p, i) => {
+      if (p.startsWith('**') && p.endsWith('**'))
+        return <strong key={i} style={{ color: '#e2e8f0', fontWeight: 700 }}>{p.slice(2, -2)}</strong>;
+      if (p.startsWith('*') && p.endsWith('*'))
+        return <em key={i} style={{ color: '#cbd5e1' }}>{p.slice(1, -1)}</em>;
+      if (p.startsWith('`') && p.endsWith('`'))
+        return <code key={i} className="px-1 rounded text-xs font-mono" style={{ background: 'rgba(34,211,238,0.08)', color: '#22d3ee' }}>{p.slice(1, -1)}</code>;
+      return p;
+    });
+  };
+
+  let i = 0;
+  while (i < lines.length) {
+    const line = stripEmoji(lines[i]);
+
+    if (!line) { i++; continue; }
+
+    // H2 / H3
+    if (/^#{2,3}\s+/.test(line)) {
+      const text = line.replace(/^#{2,3}\s+/, '');
+      nodes.push(
+        <div key={key++} className="text-[10px] font-black tracking-widest mt-4 mb-1.5 first:mt-0" style={{ color: '#22d3ee' }}>
+          {text.toUpperCase()}
+        </div>
+      );
+      i++; continue;
+    }
+
+    // H1
+    if (/^#\s+/.test(line)) {
+      const text = line.replace(/^#\s+/, '');
+      nodes.push(
+        <div key={key++} className="text-xs font-black tracking-widest mt-4 mb-2 first:mt-0" style={{ color: '#22d3ee' }}>
+          {text.toUpperCase()}
+        </div>
+      );
+      i++; continue;
+    }
+
+    // Bullet list — collect consecutive items
+    if (/^[-*]\s+/.test(line)) {
+      const items: string[] = [];
+      while (i < lines.length && /^[-*]\s+/.test(stripEmoji(lines[i]))) {
+        items.push(stripEmoji(lines[i]).replace(/^[-*]\s+/, ''));
+        i++;
+      }
+      nodes.push(
+        <ul key={key++} className="flex flex-col gap-1 my-1.5 ml-1">
+          {items.map((item, j) => (
+            <li key={j} className="flex gap-2 text-sm leading-relaxed" style={{ color: '#94a3b8' }}>
+              <span className="mt-[6px] w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#334155' }} />
+              <span>{renderInline(item)}</span>
+            </li>
+          ))}
+        </ul>
+      );
+      continue;
+    }
+
+    // Horizontal rule
+    if (/^---+$/.test(line)) {
+      nodes.push(<div key={key++} className="my-3" style={{ height: 1, background: '#1e2d45' }} />);
+      i++; continue;
+    }
+
+    // Paragraph — collect until blank line or next block element
+    const paraLines: string[] = [];
+    while (i < lines.length) {
+      const l = stripEmoji(lines[i]);
+      if (!l) break;
+      if (/^#{1,6}\s/.test(l) || /^[-*]\s/.test(l) || /^---+$/.test(l)) break;
+      paraLines.push(l);
+      i++;
+    }
+    if (paraLines.length) {
+      nodes.push(
+        <p key={key++} className="text-sm leading-relaxed my-1" style={{ color: '#94a3b8' }}>
+          {renderInline(paraLines.join(' '))}
+        </p>
+      );
+    } else {
+      i++; // safety: skip unrecognised line to avoid infinite loop
+    }
+  }
+
+  return nodes;
 }
 
 function getMitigation(fault: Fault): { action: string; urgency: 'high' | 'medium' | 'low' } {
@@ -100,7 +190,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
 
   // Orchestrator narrative
   const orchLog = agentLogs.find(l => l.agent === 'orchestrator');
-  const orchText = cleanText(orchLog?.text ?? '');
+  const orchRaw = orchLog?.text ?? '';
 
   // Operational KPIs
   const totalClients = faults.reduce((s, f) => s + f.affectedClients, 0);
@@ -211,9 +301,9 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
           {/* ── Orchestrator executive summary ── */}
           <div>
             <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: '#1e3a5f' }}>ANÁLISIS DEL ORQUESTADOR</div>
-            <div className="rounded-xl p-5" style={{ background: 'rgba(10,18,35,0.6)', border: '1px solid #1e2d45' }}>
-              {orchText ? (
-                <p className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: '#94a3b8' }}>{orchText}</p>
+            <div className="rounded-xl px-6 py-5" style={{ background: 'rgba(10,18,35,0.6)', border: '1px solid #1e2d45' }}>
+              {orchRaw ? (
+                <div>{renderMarkdown(orchRaw)}</div>
               ) : (
                 <p className="text-sm italic" style={{ color: '#334155' }}>Resumen del orquestador no disponible.</p>
               )}

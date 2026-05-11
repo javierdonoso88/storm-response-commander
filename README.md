@@ -165,7 +165,7 @@ src/
 │   │   ├── LogPanel.tsx         # Logs CoT en tiempo real por agente
 │   │   ├── ParametersPanel.tsx  # Controles + KPIs
 │   │   ├── GanttPanel.tsx       # Timeline de ejecución de agentes
-│   │   ├── StatsPanel.tsx       # Comms Feed + Acciones SAP (integración por agente)
+│   │   ├── StatsPanel.tsx       # Acciones SAP (arriba) + Comunicaciones (abajo)
 │   │   └── ResultsOverlay.tsx   # Resumen ejecutivo final: KPIs, SAP, análisis orquestador, acciones pendientes
 │   └── data/mapData.ts          # Posiciones geográficas
 └── server/
