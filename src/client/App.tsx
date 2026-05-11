@@ -48,7 +48,7 @@ export default function App() {
         style={{ background: '#0a0f1a', borderColor: '#1e2d45' }}>
         <span className="text-white font-bold text-sm tracking-wide flex items-center gap-2">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 18, width: 'auto' }} />
-          Storm-Response Commander
+          Storm Response Commander
         </span>
 
         {/* Status chip */}

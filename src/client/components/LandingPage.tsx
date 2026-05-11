@@ -83,7 +83,7 @@ export function LandingPage({ onEnter }: Props) {
       >
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 17 }} />
         <span className="text-sm font-semibold" style={{ color: '#334155', margin: '0 2px' }}>|</span>
-        <span className="text-sm font-semibold tracking-wide" style={{ color: '#64748b' }}>Storm-Response Commander</span>
+        <span className="text-sm font-semibold tracking-wide" style={{ color: '#64748b' }}>Storm Response Commander</span>
         <button
           onClick={onEnter}
           className="ml-auto text-xs font-bold px-4 py-1.5 rounded-lg"
@@ -112,7 +112,7 @@ export function LandingPage({ onEnter }: Props) {
         {/* title */}
         <h1 className={`font-black leading-none mb-5 ${fade(100)}`}
           style={{ fontSize: 'clamp(2.8rem, 7.5vw, 6rem)', letterSpacing: '-0.03em' }}>
-          Storm&#8209;Response<br />
+          Storm Response<br />
           <span style={{ color: '#22d3ee' }}>Commander</span>
         </h1>
 
