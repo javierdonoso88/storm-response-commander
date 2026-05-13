@@ -46,7 +46,19 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
         {/* Limited parts toggle */}
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between">
-            <label className="text-xs text-slate-400 font-medium">Piezas limitadas</label>
+            <div className="relative group flex items-center gap-1">
+              <label className="text-xs text-slate-400 font-medium cursor-default">Piezas limitadas</label>
+              <span className="text-[10px] text-slate-600 cursor-default">ⓘ</span>
+              <div className="absolute left-0 bottom-full mb-2 w-52 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                <div className="rounded-lg p-3 text-[11px] leading-relaxed shadow-xl" style={{ background: '#0a1525', border: '1px solid #1e3a5f', color: '#94a3b8' }}>
+                  <div className="font-bold mb-1" style={{ color: '#22d3ee' }}>Inventario de transformadores</div>
+                  <div><span style={{ color: '#22c55e' }}>OFF</span> — 2 unidades disponibles (inventario completo)</div>
+                  <div className="mt-1"><span style={{ color: '#f97316' }}>ON</span> — solo 1 unidad disponible. El agente Resource detecta escasez, prioriza el fallo más crítico y emite solicitud de reposición urgente a SAP IBP.</div>
+                  <div className="mt-2 pt-2" style={{ borderTop: '1px solid #1e2d45', color: '#475569' }}>Útil para demostrar gestión de conflictos de material.</div>
+                </div>
+                <div className="w-2 h-2 rotate-45 ml-3" style={{ background: '#0a1525', border: '1px solid #1e3a5f', borderTop: 'none', borderLeft: 'none', marginTop: -5 }} />
+              </div>
+            </div>
             <button
               onClick={() => onChange({ limitedParts: params.limitedParts === 1 ? 0 : 1 })}
               className="relative w-9 h-5 rounded-full transition-colors duration-200 border"
