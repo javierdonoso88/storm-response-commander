@@ -10,6 +10,21 @@ interface Props {
 
 const storm2Options: SimParams['storm2Window'][] = ['T+4h', 'T+6h', 'T+8h', 'none'];
 
+function TooltipLabel({ label, tip }: { label: string; tip: string }) {
+  return (
+    <div className="relative group flex items-center gap-1 min-w-0">
+      <span className="text-xs text-slate-400 font-medium truncate">{label}</span>
+      <span className="text-[10px] text-slate-600 flex-shrink-0 cursor-default select-none">ⓘ</span>
+      <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-52 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <div className="rounded-lg px-3 py-2.5 text-[11px] leading-relaxed shadow-2xl" style={{ background: '#0a1525', border: '1px solid #1e3a5f', color: '#94a3b8' }}>
+          {tip}
+        </div>
+        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent" style={{ borderRightColor: '#1e3a5f' }} />
+      </div>
+    </div>
+  );
+}
+
 export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: Props) {
   return (
     <div className="flex flex-col h-full">
@@ -24,6 +39,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
         {/* SLA */}
         <SliderField
           label="SLA Objetivo"
+          tip="Tiempo máximo para restaurar el suministro. Valores bajos (< 45 min) generan más conflictos de priorización entre agentes."
           value={`${params.minuteSLA} min`}
           valueColor={params.minuteSLA < 45 ? '#ef4444' : '#3b82f6'}
           min={30} max={120} step={5}
@@ -35,6 +51,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
         {/* Switchable faults */}
         <SliderField
           label="Conmutables"
+          tip="Fallos que pueden restaurarse por telecontrol remoto de forma inmediata, sin brigada física. El resto requiere desplazamiento en campo."
           value={String(params.switchableFaults)}
           valueColor={params.switchableFaults < 15 ? '#f97316' : '#3b82f6'}
           min={5} max={22} step={1}
@@ -45,23 +62,14 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
 
         {/* Limited parts toggle */}
         <div className="flex flex-col gap-1">
-          <div className="flex items-center justify-between">
-            <div className="relative group flex items-center gap-1">
-              <label className="text-xs text-slate-400 font-medium cursor-default">Piezas limitadas</label>
-              <span className="text-[10px] text-slate-600 cursor-default">ⓘ</span>
-              <div className="absolute left-0 bottom-full mb-2 w-52 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-                <div className="rounded-lg p-3 text-[11px] leading-relaxed shadow-xl" style={{ background: '#0a1525', border: '1px solid #1e3a5f', color: '#94a3b8' }}>
-                  <div className="font-bold mb-1" style={{ color: '#22d3ee' }}>Inventario de transformadores</div>
-                  <div><span style={{ color: '#22c55e' }}>OFF</span> — 2 unidades disponibles (inventario completo)</div>
-                  <div className="mt-1"><span style={{ color: '#f97316' }}>ON</span> — solo 1 unidad disponible. El agente Resource detecta escasez, prioriza el fallo más crítico y emite solicitud de reposición urgente a SAP IBP.</div>
-                  <div className="mt-2 pt-2" style={{ borderTop: '1px solid #1e2d45', color: '#475569' }}>Útil para demostrar gestión de conflictos de material.</div>
-                </div>
-                <div className="w-2 h-2 rotate-45 ml-3" style={{ background: '#0a1525', border: '1px solid #1e3a5f', borderTop: 'none', borderLeft: 'none', marginTop: -5 }} />
-              </div>
-            </div>
+          <div className="flex items-center justify-between gap-2">
+            <TooltipLabel
+              label="Piezas limitadas"
+              tip="OFF: 2 transformadores disponibles. ON: solo 1 unidad — el agente Resource detecta escasez, prioriza el fallo más crítico y solicita reposición urgente a SAP IBP."
+            />
             <button
               onClick={() => onChange({ limitedParts: params.limitedParts === 1 ? 0 : 1 })}
-              className="relative w-9 h-5 rounded-full transition-colors duration-200 border"
+              className="relative w-9 h-5 flex-shrink-0 rounded-full transition-colors duration-200 border"
               style={{
                 background: params.limitedParts === 1 ? '#2563eb' : '#1e2d45',
                 borderColor: params.limitedParts === 1 ? '#3b82f6' : '#334155',
@@ -79,7 +87,10 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
 
         {/* Storm window */}
         <div className="flex flex-col gap-1.5">
-          <label className="text-xs text-slate-400 font-medium">Ventana tormenta 2</label>
+          <TooltipLabel
+            label="Ventana tormenta 2"
+            tip="Tiempo disponible antes de la segunda tormenta. El agente Crew-Dispatch descarta reparaciones que superen este límite para proteger a las brigadas."
+          />
           <div className="grid grid-cols-2 gap-1">
             {storm2Options.map(opt => (
               <button
@@ -101,6 +112,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
         {/* Crews */}
         <SliderField
           label="Brigadas"
+          tip="Equipos de campo disponibles en 6 bases: Girona, Figueres, Olot, Banyoles, Lloret y Blanes. Cada brigada atiende un fallo a la vez."
           value={String(params.availableCrews)}
           valueColor="#22c55e"
           min={8} max={22} step={1}
@@ -132,16 +144,16 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
   );
 }
 
-function SliderField({ label, value, valueColor, min, max, step, current, onChange, accent }: {
-  label: string; value: string; valueColor: string;
+function SliderField({ label, tip, value, valueColor, min, max, step, current, onChange, accent }: {
+  label: string; tip: string; value: string; valueColor: string;
   min: number; max: number; step: number; current: number;
   onChange: (v: number) => void; accent: string;
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <div className="flex justify-between items-center">
-        <label className="text-xs text-slate-400 font-medium">{label}</label>
-        <span className="text-xs font-bold font-mono" style={{ color: valueColor }}>{value}</span>
+      <div className="flex justify-between items-center gap-2">
+        <TooltipLabel label={label} tip={tip} />
+        <span className="text-xs font-bold font-mono flex-shrink-0" style={{ color: valueColor }}>{value}</span>
       </div>
       <input
         type="range" min={min} max={max} step={step} value={current}
