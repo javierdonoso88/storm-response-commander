@@ -48,6 +48,17 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
         <span className="text-[13px] font-semibold uppercase tracking-widest text-slate-500">Parámetros</span>
       </div>
 
+      {/* Context block */}
+      <div className="mx-3 mt-3 rounded-lg p-3 flex flex-col gap-2" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.18)' }}>
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
+          <span className="text-[10px] font-bold tracking-widest" style={{ color: '#ef4444' }}>INCIDENTE ACTIVO</span>
+        </div>
+        <p className="text-[11px] leading-relaxed" style={{ color: '#64748b' }}>
+          Tormenta severa en <strong style={{ color: '#94a3b8' }}>Comarques de Girona</strong>. 127K clientes sin suministro, 7 sitios críticos con batería limitada. Configura los parámetros y ejecuta la simulación multi-agente.
+        </p>
+      </div>
+
       <div className="flex flex-col gap-4 p-3 flex-1 overflow-y-auto">
 
         {/* SLA */}
