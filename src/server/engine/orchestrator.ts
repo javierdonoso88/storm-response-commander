@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { getAnthropicClient, MODEL } from './anthropicClient';
-import { SimParams, ScenarioState, SimEvent, ApprovalSummary } from './types';
+import { SimParams, ScenarioState, SimEvent } from './types';
 import { buildScenario } from './scenario';
 import { runTriagePriority } from './agents/triage-priority';
 import { runRerouting } from './agents/rerouting';
@@ -15,29 +15,7 @@ function simTime(elapsedMs: number): string {
   return `T+${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 }
 
-function buildApprovalSummary(state: ScenarioState, params: SimParams): ApprovalSummary {
-  const restored = state.faults.filter(f => f.status === 'restored');
-  const physical = state.faults.filter(f => f.status === 'fault' && (f.type === 'transformer' || f.type === 'cable'));
-  return {
-    restoredByTelecontrol: restored.length,
-    restoredClients: restored.reduce((s, f) => s + f.affectedClients, 0),
-    physicalFaults: physical.map(f => ({
-      id: f.id,
-      zone: f.zone,
-      type: f.type as 'transformer' | 'cable',
-      clients: f.affectedClients,
-      criticalSite: f.criticalSite,
-      batteryMinutes: f.batteryMinutes,
-    })),
-    crewsAvailable: params.availableCrews,
-  };
-}
-
-export async function runOrchestrator(
-  params: SimParams,
-  emit: (e: SimEvent) => void,
-  approvalGate?: (summary: ApprovalSummary) => Promise<boolean>,
-): Promise<void> {
+export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => void): Promise<void> {
   const startTime = Date.now();
   const state: ScenarioState = buildScenario({
     availableCrews: params.availableCrews,
@@ -53,7 +31,6 @@ export async function runOrchestrator(
     : 9999;
 
   let hadConflict = false;
-  let orchestratorDone = false;
 
   const safetyInterval = setInterval(() => {
     emit({ type: 'safety_tick', elapsed: Math.floor((Date.now() - startTime) / 1000), limit: safetyLimitMin * 60 });
@@ -61,6 +38,7 @@ export async function runOrchestrator(
 
   const phase1Tools = new Set(['invoke_triage_priority', 'invoke_rerouting']);
 
+  // Sub-agent invoke handlers (no input — state accessed via closure)
   const handlers = new Map<string, () => Promise<string>>();
 
   handlers.set('invoke_triage_priority', async () => {
@@ -90,19 +68,6 @@ export async function runOrchestrator(
   });
 
   handlers.set('invoke_crew_dispatch', async () => {
-    if (approvalGate) {
-      const summary = buildApprovalSummary(state, params);
-      emit({ type: 'pending_approval', summary });
-      const approved = await approvalGate(summary);
-      if (!approved) {
-        emit({ type: 'action', agent: 'orchestrator', system: 'SAP AI Core Orchestration', msg: 'Director de Operaciones canceló el despacho de brigadas — calculando KPIs del estado actual' });
-        await handlers.get('finalize')!();
-        orchestratorDone = true;
-        return 'Despacho rechazado por el Director de Operaciones. Misión finalizada con el estado actual.';
-      }
-      emit({ type: 'action', agent: 'orchestrator', system: 'SAP AI Core Orchestration', msg: 'Director de Operaciones aprobó el despacho de brigadas — continuando Fase 2' });
-    }
-
     emit({ type: 'agent_start', agent: 'crew-dispatch', t: simTime(Date.now() - startTime) });
     try {
       const result = await runCrewDispatch(params, state, emit);
@@ -149,23 +114,31 @@ export async function runOrchestrator(
     const criticalFaults = state.faults.filter(f => f.criticalSite);
     const criticalCovered = criticalFaults.filter(f => f.status === 'crew-en-route' || f.status === 'restored');
 
+    // SLA: % of affected clients with a resolution underway (telecontrol or crew dispatched)
     const slaScore = totalAffectedClients > 0
       ? Math.min(100, Math.round(addressedClients / totalAffectedClients * 100))
       : 100;
+    // Safety: % of critical sites covered (crew en-route or restored)
     const safetyScore = criticalFaults.length > 0
       ? Math.round((criticalCovered.length / criticalFaults.length) * 100)
       : 100;
+    // Efficiency: % of total faults addressed (restored or crew dispatched)
     const efficiencyScore = Math.min(100, Math.round(addressedFaults.length / state.faults.length * 100));
 
+    // TIEPI: Σ(affectedClients_i × estimatedTime_i) / totalClients  (in minutes)
+    // Estimated interruption time per fault status:
+    //   restored (telecontrol) → 10 min, crew-en-route transformer → 135 min,
+    //   crew-en-route cable → 90 min, fault (unattended) → 240 min
     const estimatedTime = (f: typeof state.faults[0]) => {
       if (f.status === 'restored') return 10;
       if (f.status === 'crew-en-route' || f.status === 'repairing') return f.type === 'transformer' ? 135 : 90;
-      return 240;
+      return 240; // unattended fault
     };
     const tiepiValue = totalAffectedClients > 0
       ? Math.round(state.faults.reduce((s, f) => s + f.affectedClients * estimatedTime(f), 0) / totalAffectedClients)
       : 0;
 
+    // MTTR: mean repair time for attended faults (restored + crew-en-route)
     const mttrValue = addressedFaults.length > 0
       ? Math.round(addressedFaults.reduce((s, f) => s + estimatedTime(f), 0) / addressedFaults.length)
       : 0;
@@ -241,8 +214,6 @@ Inicia el protocolo: llama invoke_triage_priority + invoke_rerouting en el MISMO
 
   try {
     for (let turn = 0; turn < 20; turn++) {
-      if (orchestratorDone) break;
-
       const anthropic = await getAnthropicClient();
       const stream = anthropic.messages.stream({
         model: MODEL,
@@ -268,6 +239,7 @@ Inicia el protocolo: llama invoke_triage_priority + invoke_rerouting en el MISMO
       );
       if (toolBlocks.length === 0) break;
 
+      // Run Phase 1 tools in parallel when Claude calls all three in the same turn
       const isParallelPhase1 = toolBlocks.length > 1 && toolBlocks.every(b => phase1Tools.has(b.name));
 
       let toolResults: Anthropic.ToolResultBlockParam[];
@@ -292,7 +264,6 @@ Inicia el protocolo: llama invoke_triage_priority + invoke_rerouting en el MISMO
       } else {
         toolResults = [];
         for (const block of toolBlocks) {
-          if (orchestratorDone) break;
           const handler = handlers.get(block.name);
           let result: string;
           if (!handler) {
@@ -307,8 +278,6 @@ Inicia el protocolo: llama invoke_triage_priority + invoke_rerouting en el MISMO
           toolResults.push({ type: 'tool_result', tool_use_id: block.id, content: result });
         }
       }
-
-      if (orchestratorDone) break;
 
       messages.push({ role: 'user', content: toolResults });
     }

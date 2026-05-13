@@ -206,21 +206,5 @@ export function useSimulation(initialFaults: Fault[]) {
     }));
   }, []);
 
-  const resetForRoom = useCallback(() => {
-    setState(prev => ({
-      ...prev,
-      running: true,
-      done: false,
-      agentLogs: [],
-      agents: initialAgents(),
-      faults: initialFaults.map(f => ({ ...f, status: 'fault' as const })),
-      kpi: { sla: null, safety: null, efficiency: null, tiepi: null, mttr: null },
-      commsMessages: [],
-      actionMessages: [],
-      conflicts: [],
-      safetyElapsed: 0,
-    }));
-  }, [initialFaults]);
-
-  return { state, startSimulation, tickAgentProgress, handleEvent, resetForRoom };
+  return { state, startSimulation, tickAgentProgress };
 }

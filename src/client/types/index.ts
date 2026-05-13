@@ -68,20 +68,6 @@ export interface AgentLog {
   startTime?: string;
 }
 
-export interface ApprovalSummary {
-  restoredByTelecontrol: number;
-  restoredClients: number;
-  physicalFaults: Array<{
-    id: string;
-    zone: string;
-    type: 'transformer' | 'cable';
-    clients: number;
-    criticalSite?: string;
-    batteryMinutes?: number;
-  }>;
-  crewsAvailable: number;
-}
-
 export type SimEvent =
   | { type: 'cot_chunk'; text: string; agent?: AgentId | 'orchestrator' }
   | { type: 'agent_start'; agent: AgentId; t: string }
@@ -92,5 +78,4 @@ export type SimEvent =
   | { type: 'kpi'; sla: number; safety: number; efficiency: number; tiepi: number; mttr: number }
   | { type: 'conflict'; winner: AgentId; loser: AgentId; reason: string }
   | { type: 'action'; agent: AgentId | 'orchestrator'; system: string; msg: string }
-  | { type: 'pending_approval'; summary: ApprovalSummary }
   | { type: 'done'; elapsed: string };

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Fault, SimParams } from './types';
 import { useSimulation } from './hooks/useSimulation';
-import { useRoom } from './hooks/useRoom';
 import { ParametersPanel } from './components/ParametersPanel';
 import { LogPanel } from './components/LogPanel';
 import { GanttPanel } from './components/GanttPanel';
@@ -9,8 +8,6 @@ import { MapPanel } from './components/MapPanel';
 import { StatsPanel } from './components/StatsPanel';
 import { LandingPage } from './components/LandingPage';
 import { ResultsOverlay } from './components/ResultsOverlay';
-import { ModeLobby } from './components/ModeLobby';
-import { ApprovalGate } from './components/ApprovalGate';
 
 const DEFAULT_PARAMS: SimParams = {
   minuteSLA: 60,
@@ -20,20 +17,14 @@ const DEFAULT_PARAMS: SimParams = {
   availableCrews: 22,
 };
 
-type AppScreen = 'landing' | 'lobby' | 'simulator';
-
 export default function App() {
   const [params, setParams] = useState<SimParams>(DEFAULT_PARAMS);
   const [initialFaults, setInitialFaults] = useState<Fault[]>([]);
-  const [screen, setScreen] = useState<AppScreen>('landing');
+  const [showLanding, setShowLanding] = useState(true);
   const [showResults, setShowResults] = useState(false);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const { state, startSimulation, tickAgentProgress, handleEvent, resetForRoom } = useSimulation(initialFaults);
-
-  const { roomState, createRoom, joinRoom, startSimulation: startRoomSimulation, resolveApproval } = useRoom(handleEvent);
-
-  const isRoomMode = roomState.role !== null;
+  const { state, startSimulation, tickAgentProgress } = useSimulation(initialFaults);
 
   useEffect(() => {
     fetch('/api/scenario').then(r => r.json()).then(d => setInitialFaults(d.faults ?? [])).catch(() => {});
@@ -52,83 +43,14 @@ export default function App() {
     }
   }, [state.done]);
 
-  // Observer: auto-enter simulator when Director starts
-  useEffect(() => {
-    if (roomState.role === 'observer' && state.running) {
-      setScreen('simulator');
-    }
-  }, [roomState.role, state.running]);
-
-  // Room closed notification
-  useEffect(() => {
-    if (roomState.closed) {
-      alert('La sala de crisis ha sido cerrada por el Director de Operaciones.');
-    }
-  }, [roomState.closed]);
-
-  const handleSimulate = () => {
-    setShowResults(false);
-    if (isRoomMode && roomState.role === 'director') {
-      resetForRoom();
-      startRoomSimulation(params);
-    } else {
-      startSimulation(params);
-    }
-  };
-
   const safetyPct = state.safetyLimit > 0 ? Math.min(100, (state.safetyElapsed / state.safetyLimit) * 100) : 0;
 
-  if (screen === 'landing') {
-    return <LandingPage onEnter={() => setScreen('lobby')} />;
-  }
-
-  if (screen === 'lobby') {
-    const isDirectorReady = roomState.role === 'director' && roomState.roomCode !== null;
-    const isObserverReady = roomState.role === 'observer' && roomState.roomCode !== null;
-
-    if (isDirectorReady || isObserverReady) {
-      return (
-        <ModeLobby
-          onSolo={() => setScreen('simulator')}
-          onCreateRoom={createRoom}
-          onJoinRoom={joinRoom}
-          roomCode={roomState.roomCode}
-          roomError={roomState.error}
-          memberCount={roomState.memberCount}
-          role={roomState.role}
-          connected={roomState.connected}
-          onEnterSimulator={() => setScreen('simulator')}
-        />
-      );
-    }
-
-    return (
-      <ModeLobby
-        onSolo={() => setScreen('simulator')}
-        onCreateRoom={createRoom}
-        onJoinRoom={joinRoom}
-        roomCode={roomState.roomCode}
-        roomError={roomState.error}
-        memberCount={roomState.memberCount}
-        role={roomState.role}
-        connected={roomState.connected}
-        onEnterSimulator={() => setScreen('simulator')}
-      />
-    );
+  if (showLanding) {
+    return <LandingPage onEnter={() => setShowLanding(false)} />;
   }
 
   return (
     <div className="flex flex-col h-screen" style={{ background: '#0d1520' }}>
-
-      {/* Approval gate overlay */}
-      {roomState.pendingApproval && (
-        <ApprovalGate
-          summary={roomState.pendingApproval}
-          role={roomState.role ?? 'observer'}
-          onApprove={roomState.role === 'director' ? () => resolveApproval(true) : undefined}
-          onReject={roomState.role === 'director' ? () => resolveApproval(false) : undefined}
-        />
-      )}
 
       {/* Header */}
       <header className="flex items-center gap-3 px-4 h-11 flex-shrink-0 border-b"
@@ -150,19 +72,6 @@ export default function App() {
             <span className="sap-tag" style={{ background: '#1e2d45', color: '#64748b' }}>Standby</span>
           )}
         </div>
-
-        {/* Room badge */}
-        {roomState.roomCode && (
-          <div className="flex items-center gap-2 px-2 py-1 rounded-lg" style={{ background: roomState.role === 'director' ? 'rgba(245,158,11,0.08)' : 'rgba(96,165,250,0.08)', border: `1px solid ${roomState.role === 'director' ? 'rgba(245,158,11,0.2)' : 'rgba(96,165,250,0.2)'}` }}>
-            <span className="text-[10px] font-bold tracking-widest" style={{ color: roomState.role === 'director' ? '#f59e0b' : '#60a5fa' }}>
-              {roomState.role === 'director' ? '👑 DIRECTOR' : '👁 OBSERVADOR'}
-            </span>
-            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded" style={{ background: 'rgba(0,0,0,0.3)', color: '#94a3b8' }}>
-              {roomState.roomCode}
-            </span>
-            <span className="text-[10px]" style={{ color: '#334155' }}>{roomState.memberCount} usuarios</span>
-          </div>
-        )}
 
         {/* Ver informe button */}
         {state.done && !state.running && (
@@ -193,7 +102,7 @@ export default function App() {
 
         {/* Back to landing */}
         <button
-          onClick={() => setScreen('landing')}
+          onClick={() => setShowLanding(true)}
           className="flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-lg"
           style={{ background: 'rgba(255,255,255,0.03)', color: '#475569', border: '1px solid #1e2d45', cursor: 'pointer' }}
         >
@@ -212,10 +121,9 @@ export default function App() {
           <ParametersPanel
             params={params}
             onChange={p => setParams(prev => ({ ...prev, ...p }))}
-            onSimulate={handleSimulate}
+            onSimulate={() => { setShowResults(false); startSimulation(params); }}
             running={state.running}
             kpi={state.kpi}
-            isObserver={roomState.role === 'observer'}
           />
         </aside>
 

@@ -8,11 +8,7 @@ Sistema multi-agente de IA para la simulación de respuesta a incidentes eléctr
 
 ## Qué hace
 
-Al abrir la aplicación se muestra una **pantalla de presentación** con el caso de uso, las métricas clave del escenario y la arquitectura multi-agente. Desde ahí se accede al **lobby de modo** donde el usuario elige entre:
-
-- **Modo Individual** — simulación privada, control total
-- **Sala de Crisis (Director)** — crea una sala con código de acceso; puede aprobar/rechazar las decisiones de la IA antes de que se ejecuten (human-in-the-loop)
-- **Sala de Crisis (Observador)** — se une con el código; visualiza la simulación en tiempo real sin control
+Al abrir la aplicación se muestra una **pantalla de presentación** con el caso de uso, las métricas clave del escenario y la arquitectura multi-agente. Desde ahí se accede al simulador interactivo, con navegación de vuelta a la landing en cualquier momento desde el botón "Inicio" del header.
 
 Al iniciar una simulación, un orquestador Claude coordina 5 agentes especializados que razonan sobre el escenario en tiempo real:
 
@@ -90,11 +86,10 @@ Ver [docs/architecture.md](docs/architecture.md) para el detalle técnico comple
 | Capa | Stack |
 |------|-------|
 | Frontend | React 18, TypeScript, Vite, Tailwind CSS, React-Leaflet |
-| Backend | Node.js, Express, SSE + Socket.IO |
+| Backend | Node.js, Express, SSE |
 | IA | Anthropic Claude Sonnet 4.6 (orchestrator) · Haiku 4.5 (sub-agentes) vía SAP AI Core |
 | SDK | `@anthropic-ai/sdk` con adaptador custom para AI Core |
 | Modelos | Sonnet 4.6 (orchestrator) · Haiku 4.5 (sub-agentes) |
-| Multi-usuario | Socket.IO — Sala de Crisis con roles Director/Observador + approval gate |
 | Deploy | SAP BTP Cloud Foundry (`nodejs_buildpack`) |
 
 ---
@@ -166,28 +161,22 @@ cf restage storm-response-commander
 ```
 src/
 ├── client/
-│   ├── App.tsx                    # Layout principal, lobby, sala de crisis, approval gate
-│   ├── hooks/
-│   │   ├── useSimulation.ts       # Gestión de SSE y estado de simulación
-│   │   └── useRoom.ts             # Socket.IO — conexión, sala, aprobación
+│   ├── App.tsx                  # Layout principal, navegación landing↔simulador, control de overlay
+│   ├── hooks/useSimulation.ts   # Gestión de SSE y estado de simulación
 │   ├── components/
-│   │   ├── LandingPage.tsx        # Pantalla inicial: caso de uso + arquitectura multi-agente
-│   │   ├── ModeLobby.tsx          # Selección de modo: individual / director / observador
-│   │   ├── ApprovalGate.tsx       # Human-in-the-loop: Director aprueba/rechaza despacho
-│   │   ├── MapPanel.tsx           # Mapa de Girona con nodos de fallo
-│   │   ├── LogPanel.tsx           # Logs CoT en tiempo real por agente
-│   │   ├── ParametersPanel.tsx    # Controles + KPIs (muestra — hasta completar simulación)
-│   │   ├── GanttPanel.tsx         # Timeline de ejecución de agentes
-│   │   ├── StatsPanel.tsx         # Acciones SAP (arriba) + Comunicaciones (abajo)
-│   │   └── ResultsOverlay.tsx     # Resumen ejecutivo final: KPIs, SAP, análisis, acciones pendientes
-│   └── data/mapData.ts            # Posiciones geográficas
+│   │   ├── LandingPage.tsx      # Pantalla inicial: caso de uso + arquitectura multi-agente
+│   │   ├── MapPanel.tsx         # Mapa de Girona con nodos de fallo
+│   │   ├── LogPanel.tsx         # Logs CoT en tiempo real por agente
+│   │   ├── ParametersPanel.tsx  # Controles + KPIs (muestra — hasta completar simulación)
+│   │   ├── GanttPanel.tsx       # Timeline de ejecución de agentes
+│   │   ├── StatsPanel.tsx       # Acciones SAP (arriba) + Comunicaciones (abajo)
+│   │   └── ResultsOverlay.tsx   # Resumen ejecutivo final: KPIs, SAP, análisis orquestador, acciones pendientes
+│   └── data/mapData.ts          # Posiciones geográficas
 └── server/
-    ├── index.ts                   # Express + Socket.IO server
-    ├── roomManager.ts             # Gestión de salas: crear, unirse, approval gate
-    ├── socketHandlers.ts          # Handlers de Socket.IO (sala de crisis)
-    ├── routes/simulation.ts       # Endpoint SSE /api/simulate (modo individual)
+    ├── index.ts                 # Express server
+    ├── routes/simulation.ts     # Endpoint SSE /api/simulate
     └── engine/
-        ├── types.ts               # Tipos: Fault, Crew, SimEvent, ApprovalSummary…
+        ├── types.ts             # Tipos: Fault, Crew, SimEvent, SimParams…
         ├── scenario.ts          # Escenario base y buildScenario()
         ├── anthropicClient.ts   # Adaptador SAP AI Core + SSE transformer
         ├── agentRunner.ts       # Bucle genérico de tool-use con streaming
