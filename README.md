@@ -10,12 +10,12 @@ Sistema multi-agente de IA para la simulación de respuesta a incidentes eléctr
 
 Al abrir la aplicación se muestra una **pantalla de presentación** con el caso de uso, las métricas clave del escenario y la arquitectura multi-agente. Desde ahí se accede al simulador interactivo, con navegación de vuelta a la landing en cualquier momento desde el botón "Inicio" del header.
 
-Al iniciar una simulación, un orquestador Claude coordina 6 agentes especializados que razonan sobre el escenario en tiempo real:
+Al iniciar una simulación, un orquestador Claude coordina 5 agentes especializados que razonan sobre el escenario en tiempo real:
 
 | Fase | Agentes | Modo |
 |------|---------|------|
-| 1 — Evaluación | Triage · Rerouting · Priority | Paralelo |
-| 2 — Ejecución | Crew-Dispatch → Resource → Comms | Secuencial |
+| 1 — Evaluación | Triage & Priority · Remote Restoration | Paralelo |
+| 2 — Ejecución | Crew-Dispatch → Resource → Alerts & Comms | Secuencial |
 
 Cada agente recibe el estado del escenario, usa herramientas concretas para tomar decisiones (conmutar fallos, despachar brigadas, asignar material, enviar comunicaciones) y emite eventos SSE que actualizan el mapa, los logs y los KPIs en tiempo real.
 
@@ -25,6 +25,8 @@ Al finalizar, aparece automáticamente un **Resumen Ejecutivo** con:
 - KPIs de integración SAP: sistemas tocados, órdenes FSM, conmutaciones AIN, materiales IBP, mensajes CX, activos S/4HANA
 - Resumen narrativo del orquestador (texto CoT limpio de markdown)
 - Acciones pendientes con recomendaciones de mitigación priorizadas
+
+Los KPIs del panel lateral muestran `—` hasta que finaliza la simulación (sin valor inicial engañoso).
 
 El informe puede cerrarse y reabrirse mediante el botón **"Ver Informe"** del header (visible tras completar la simulación). Al lanzar una nueva simulación el botón desaparece hasta que finalice. Desde el footer del informe se puede **descargar como PDF** con un clic — los estilos de impresión ocultan el resto de la UI y preservan los colores del dashboard.
 
@@ -36,7 +38,7 @@ El informe puede cerrarse y reabrirse mediante el botón **"Ver Informe"** del h
 ┌─────────────────────────────────────────────────────────────────┐
 │  React Frontend                                                  │
 │  LandingPage · MapPanel · LogPanel · GanttPanel                  │
-│  ParametersPanel · StatsPanel (Comms Feed + Acciones SAP)        │
+│  ParametersPanel · StatsPanel (Acciones SAP + Comunicaciones)    │
 └────────────────────┬────────────────────────────────────────────┘
                      │  SSE /api/simulate
 ┌────────────────────▼────────────────────────────────────────────┐
@@ -44,24 +46,23 @@ El informe puede cerrarse y reabrirse mediante el botón **"Ver Informe"** del h
 │                                                                  │
 │  ┌─────────────────────────────────────────────────────────┐    │
 │  │  Orchestrator (Claude)                                   │    │
-│  │  invoke_triage ─┐                                       │    │
-│  │  invoke_rerouting ─┤ Promise.all (Fase 1)               │    │
-│  │  invoke_priority ─┘                                     │    │
+│  │  invoke_triage_priority ─┐                              │    │
+│  │  invoke_rerouting ────────┤ Promise.all (Fase 1)        │    │
 │  │  invoke_crew_dispatch → invoke_resource → invoke_comms  │    │
 │  │  finalize                                               │    │
 │  └──────────────────────────┬──────────────────────────────┘    │
 │                              │ runAgent()                        │
-│  ┌───────────┐  ┌──────────┐ │ ┌──────────┐  ┌──────────────┐  │
-│  │  Triage   │  │Rerouting │ │ │ Priority │  │Crew-Dispatch │  │
-│  └───────────┘  └──────────┘ │ └──────────┘  └──────────────┘  │
-│  ┌───────────┐  ┌──────────┐ │                                  │
-│  │ Resource  │  │  Comms   │ │                                  │
-│  └───────────┘  └──────────┘ │                                  │
-│                              │                                  │
-│  ┌───────────────────────────▼──────────────────────────────┐   │
-│  │  SAP AI Core — Anthropic Claude Sonnet 4.6               │   │
-│  │  OAuth2 · /invoke · /invoke-with-response-stream         │   │
-│  └──────────────────────────────────────────────────────────┘   │
+│  ┌──────────────────┐  ┌───────────────────┐                    │
+│  │ Triage & Priority│  │Remote Restoration │                    │
+│  └──────────────────┘  └───────────────────┘                    │
+│  ┌───────────────┐  ┌──────────┐  ┌────────────────┐            │
+│  │ Crew-Dispatch │  │ Resource │  │ Alerts & Comms │            │
+│  └───────────────┘  └──────────┘  └────────────────┘            │
+│                                                                  │
+│  ┌───────────────────────────────────────────────────────────┐  │
+│  │  SAP AI Core — Anthropic Claude Sonnet 4.6                │  │
+│  │  OAuth2 · /invoke · /invoke-with-response-stream          │  │
+│  └───────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -160,10 +161,10 @@ src/
 │   ├── App.tsx                  # Layout principal, navegación landing↔simulador, control de overlay
 │   ├── hooks/useSimulation.ts   # Gestión de SSE y estado de simulación
 │   ├── components/
-│   │   ├── LandingPage.tsx      # Pantalla inicial: caso de uso + arquitectura
+│   │   ├── LandingPage.tsx      # Pantalla inicial: caso de uso + arquitectura multi-agente
 │   │   ├── MapPanel.tsx         # Mapa de Girona con nodos de fallo
 │   │   ├── LogPanel.tsx         # Logs CoT en tiempo real por agente
-│   │   ├── ParametersPanel.tsx  # Controles + KPIs
+│   │   ├── ParametersPanel.tsx  # Controles + KPIs (muestra — hasta completar simulación)
 │   │   ├── GanttPanel.tsx       # Timeline de ejecución de agentes
 │   │   ├── StatsPanel.tsx       # Acciones SAP (arriba) + Comunicaciones (abajo)
 │   │   └── ResultsOverlay.tsx   # Resumen ejecutivo final: KPIs, SAP, análisis orquestador, acciones pendientes
@@ -178,12 +179,11 @@ src/
         ├── agentRunner.ts       # Bucle genérico de tool-use con streaming
         ├── orchestrator.ts      # Agente orquestador + ejecución paralela Fase 1
         └── agents/
-            ├── triage.ts        # Clasificación de fallos
-            ├── rerouting.ts     # Conmutación remota
-            ├── priority.ts      # Rankeado + alertas regulatorias
-            ├── crew-dispatch.ts # Asignación de brigadas
-            ├── resource.ts      # Inventario + conflictos de material
-            └── comms.ts         # SMS · Prensa · Regulatorio
+            ├── triage-priority.ts  # Clasificación de fallos + rankeado por urgencia
+            ├── rerouting.ts        # Restauración remota por telecontrol
+            ├── crew-dispatch.ts    # Asignación de brigadas
+            ├── resource.ts         # Inventario + conflictos de material
+            └── comms.ts            # Alerts & Comms: SMS · Prensa · Regulatorio
 ```
 
 ---

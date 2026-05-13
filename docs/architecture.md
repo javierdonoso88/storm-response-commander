@@ -10,11 +10,10 @@ Usuario configura parámetros → POST /api/simulate
             ├── setInterval safety_tick  # Ticker de seguridad cada 2s
             │
             ├── [Turno 1] Orchestrator Claude
-            │   └── tool_use: invoke_triage + invoke_rerouting + invoke_priority
-            │       └── Promise.all → 3 agentes en paralelo
-            │           ├── runTriage()        → classify_fault × 47, complete_triage
-            │           ├── runRerouting()     → attempt_remote_switch × N, complete_rerouting
-            │           └── runPriority()      → set_priority × M, send_regulatory_alert?, complete_prioritization
+            │   └── tool_use: invoke_triage_priority + invoke_rerouting
+            │       └── Promise.all → 2 agentes en paralelo
+            │           ├── runTriagePriority()  → classify_fault × 47, set_priority × N, complete_assessment
+            │           └── runRerouting()       → attempt_remote_switch × M, complete_rerouting
             │
             ├── [Turno 2] Orchestrator Claude
             │   └── tool_use: invoke_crew_dispatch
