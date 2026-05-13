@@ -15,11 +15,11 @@ const CHALLENGE_CARDS = [
   { accent: '#f59e0b', label: 'Sitios críticos', sub: 'Hospitales, diálisis y CPDs — batería limitada, prioridad máxima' },
   { accent: '#ef4444', label: 'Fallos de transformador', sub: '7 activos — brigada especializada · 90–180 min reparación' },
   { accent: '#f97316', label: 'Fallos de cable MT/BT', sub: '18 activos — reparación manual · 60–120 min' },
-  { accent: '#22d3ee', label: 'Red conmutable', sub: '22 activos — restauración por telecontrol remoto · inmediato' },
+  { accent: '#a78bfa', label: 'Red conmutable', sub: '22 activos — restauración por telecontrol remoto · inmediato' },
 ];
 
 const PHASE1_AGENTS = [
-  { label: 'TRIAGE & PRIORITY', system: 'SAP S/4HANA Asset Management + Event Mesh', desc: 'Clasifica 47 fallos por severidad y rankea los físicos por urgencia para el despacho', color: '#22d3ee' },
+  { label: 'TRIAGE & PRIORITY', system: 'SAP S/4HANA Asset Management + Event Mesh', desc: 'Clasifica 47 fallos por severidad y rankea los físicos por urgencia para el despacho', color: '#a78bfa' },
   { label: 'REMOTE RESTORATION', system: 'SAP Asset Intelligence Network', desc: 'Ejecuta conmutaciones remotas de telecontrol hasta el límite autorizado', color: '#4ade80' },
 ];
 
@@ -49,10 +49,10 @@ function AgentCard({ label, system, desc, color }: { label: string; system: stri
         <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: color }} />
         <span className="text-xs font-black tracking-widest" style={{ color }}>{label}</span>
       </div>
-      <p className="text-xs leading-relaxed" style={{ color: '#64748b' }}>{desc}</p>
+      <p className="text-xs leading-relaxed" style={{ color: '#64648a' }}>{desc}</p>
       <div
         className="mt-auto text-[10px] font-mono px-2 py-1 rounded self-start"
-        style={{ background: `rgba(${hexToRgb(color)},0.08)`, color: '#475569', border: `1px solid rgba(${hexToRgb(color)},0.15)` }}
+        style={{ background: `rgba(${hexToRgb(color)},0.08)`, color: '#525270', border: `1px solid rgba(${hexToRgb(color)},0.15)` }}
       >
         {system}
       </div>
@@ -73,7 +73,7 @@ export function LandingPage({ onEnter }: Props) {
     ` delay-[${delay}ms]`;
 
   return (
-    <div className="h-screen overflow-y-auto" style={{ background: '#080e1a', color: 'white' }}>
+    <div className="h-screen overflow-y-auto" style={{ background: '#0a0a10', color: 'white' }}>
 
       {/* ── NAV ── */}
       <nav
@@ -81,12 +81,12 @@ export function LandingPage({ onEnter }: Props) {
         style={{ background: 'rgba(8,14,26,0.85)', backdropFilter: 'blur(14px)', borderBottom: '1px solid rgba(30,45,69,0.7)' }}
       >
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 17 }} />
-        <span className="text-sm font-semibold" style={{ color: '#334155', margin: '0 2px' }}>|</span>
-        <span className="text-sm font-semibold tracking-wide" style={{ color: '#64748b' }}>Storm Response Commander</span>
+        <span className="text-sm font-semibold" style={{ color: '#35354d', margin: '0 2px' }}>|</span>
+        <span className="text-sm font-semibold tracking-wide" style={{ color: '#64648a' }}>Storm Response Commander</span>
         <button
           onClick={onEnter}
           className="ml-auto text-xs font-bold px-4 py-1.5 rounded-lg"
-          style={{ background: 'rgba(34,211,238,0.08)', color: '#22d3ee', border: '1px solid rgba(34,211,238,0.25)', cursor: 'pointer' }}
+          style={{ background: 'rgba(167,139,250,0.08)', color: '#a78bfa', border: '1px solid rgba(167,139,250,0.25)', cursor: 'pointer' }}
         >
           Abrir Simulador →
         </button>
@@ -95,15 +95,15 @@ export function LandingPage({ onEnter }: Props) {
       {/* ── HERO ── */}
       <section
         className="relative flex flex-col items-center justify-center text-center px-8"
-        style={{ minHeight: 'calc(100vh - 56px)', background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(34,211,238,0.05) 0%, transparent 70%)' }}
+        style={{ minHeight: 'calc(100vh - 56px)', background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(167,139,250,0.05) 0%, transparent 70%)' }}
       >
         {/* dot grid */}
         <div className="absolute inset-0 pointer-events-none"
-          style={{ backgroundImage: 'radial-gradient(circle, rgba(34,211,238,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+          style={{ backgroundImage: 'radial-gradient(circle, rgba(167,139,250,0.06) 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
         {/* badge */}
         <div className={`mb-7 inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest ${fade(0)}`}
-          style={{ background: 'rgba(34,211,238,0.06)', border: '1px solid rgba(34,211,238,0.2)', color: '#22d3ee' }}>
+          style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.2)', color: '#a78bfa' }}>
           <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
           SAP AI CORE &times; ANTHROPIC CLAUDE SONNET 4.6
         </div>
@@ -112,7 +112,7 @@ export function LandingPage({ onEnter }: Props) {
         <h1 className={`font-black leading-none mb-5 ${fade(100)}`}
           style={{ fontSize: 'clamp(2.8rem, 7.5vw, 6rem)', letterSpacing: '-0.03em' }}>
           Storm Response<br />
-          <span style={{ color: '#22d3ee' }}>Commander</span>
+          <span style={{ color: '#a78bfa' }}>Commander</span>
         </h1>
 
         {/* subtitle */}
@@ -121,7 +121,7 @@ export function LandingPage({ onEnter }: Props) {
           eléctricos en tiempo real. Orquestación autónoma, decisiones razonadas e integraciones SAP en vivo.
         </p>
 
-        <p className={`text-xs font-mono mb-12 tracking-[0.15em] ${fade(300)}`} style={{ color: '#334155' }}>
+        <p className={`text-xs font-mono mb-12 tracking-[0.15em] ${fade(300)}`} style={{ color: '#35354d' }}>
           IBERDROLA &middot; COMARQUES DE GIRONA &middot; ESCENARIO DE TORMENTA
         </p>
 
@@ -129,9 +129,9 @@ export function LandingPage({ onEnter }: Props) {
         <button
           onClick={onEnter}
           className={`px-10 py-4 rounded-xl font-bold text-base tracking-wide ${fade(400)}`}
-          style={{ background: 'linear-gradient(135deg,#0891b2,#0e7490)', color: 'white', boxShadow: '0 0 32px rgba(34,211,238,0.22), 0 4px 20px rgba(0,0,0,0.5)', border: 'none', cursor: 'pointer', transition: 'box-shadow 0.2s, transform 0.2s' }}
-          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 56px rgba(34,211,238,0.4), 0 4px 20px rgba(0,0,0,0.5)'; e.currentTarget.style.transform = 'scale(1.03)'; }}
-          onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 0 32px rgba(34,211,238,0.22), 0 4px 20px rgba(0,0,0,0.5)'; e.currentTarget.style.transform = 'scale(1)'; }}
+          style={{ background: 'linear-gradient(135deg,#7c3aed,#6d28d9)', color: 'white', boxShadow: '0 0 32px rgba(167,139,250,0.22), 0 4px 20px rgba(0,0,0,0.5)', border: 'none', cursor: 'pointer', transition: 'box-shadow 0.2s, transform 0.2s' }}
+          onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 0 56px rgba(167,139,250,0.4), 0 4px 20px rgba(0,0,0,0.5)'; e.currentTarget.style.transform = 'scale(1.03)'; }}
+          onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 0 32px rgba(167,139,250,0.22), 0 4px 20px rgba(0,0,0,0.5)'; e.currentTarget.style.transform = 'scale(1)'; }}
         >
           Acceder al Simulador →
         </button>
@@ -142,13 +142,13 @@ export function LandingPage({ onEnter }: Props) {
             <div key={s.label} className="text-center">
               <div className="font-black mb-1" style={{ fontSize: '2.6rem', color: s.color, lineHeight: 1 }}>{s.value}</div>
               <div className="text-sm font-semibold text-white mb-0.5">{s.label}</div>
-              <div className="text-xs" style={{ color: '#334155' }}>{s.sub}</div>
+              <div className="text-xs" style={{ color: '#35354d' }}>{s.sub}</div>
             </div>
           ))}
         </div>
 
         {/* scroll hint */}
-        <div className="absolute bottom-7 flex flex-col items-center gap-1 animate-bounce" style={{ color: '#1e3a5f' }}>
+        <div className="absolute bottom-7 flex flex-col items-center gap-1 animate-bounce" style={{ color: '#1a1a30' }}>
           <span className="text-[11px] font-mono tracking-widest">SCROLL</span>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -157,15 +157,15 @@ export function LandingPage({ onEnter }: Props) {
       </section>
 
       {/* ── EL RETO ── */}
-      <section className="px-8 py-24" style={{ borderTop: '1px solid #0d1e35', background: 'linear-gradient(180deg,#080e1a,#0a1525)' }}>
+      <section className="px-8 py-24" style={{ borderTop: '1px solid #11111d', background: 'linear-gradient(180deg,#0a0a10,#0e0e1c)' }}>
         <div className="max-w-5xl mx-auto">
-          <div className="text-xs font-bold tracking-widest mb-3" style={{ color: '#22d3ee' }}>EL RETO OPERATIVO</div>
+          <div className="text-xs font-bold tracking-widest mb-3" style={{ color: '#a78bfa' }}>EL RETO OPERATIVO</div>
           <h2 className="font-black mb-3 leading-tight" style={{ fontSize: 'clamp(2rem,4vw,3rem)' }}>
             47 fallos simultáneos.<br />
             <span style={{ color: '#f97316' }}>Decisiones en minutos.</span>
           </h2>
           <div className="grid grid-cols-2 gap-12 mt-10 items-start">
-            <p className="text-base leading-relaxed" style={{ color: '#64748b' }}>
+            <p className="text-base leading-relaxed" style={{ color: '#64648a' }}>
               Una tormenta severa golpea las Comarques de Girona dejando a <strong style={{ color: '#94a3b8' }}>127.000 clientes sin suministro</strong>.
               Hospitales y centros de diálisis funcionan con baterías. El equipo de operaciones
               dispone de una ventana limitada antes de la segunda tormenta para restaurar el máximo de
@@ -173,9 +173,9 @@ export function LandingPage({ onEnter }: Props) {
             </p>
             <div className="grid grid-cols-2 gap-3">
               {CHALLENGE_CARDS.map(c => (
-                <div key={c.label} className="rounded-lg p-4" style={{ background: 'rgba(15,24,42,0.8)', border: '1px solid #0d1e35', borderLeft: `3px solid ${c.accent}` }}>
+                <div key={c.label} className="rounded-lg p-4" style={{ background: 'rgba(15,24,42,0.8)', border: '1px solid #11111d', borderLeft: `3px solid ${c.accent}` }}>
                   <div className="text-sm font-bold text-white mb-1">{c.label}</div>
-                  <div className="text-xs leading-relaxed" style={{ color: '#475569' }}>{c.sub}</div>
+                  <div className="text-xs leading-relaxed" style={{ color: '#525270' }}>{c.sub}</div>
                 </div>
               ))}
             </div>
@@ -184,11 +184,11 @@ export function LandingPage({ onEnter }: Props) {
       </section>
 
       {/* ── ARQUITECTURA ── */}
-      <section className="px-8 py-24" style={{ borderTop: '1px solid #0d1e35', background: '#080e1a' }}>
+      <section className="px-8 py-24" style={{ borderTop: '1px solid #11111d', background: '#0a0a10' }}>
         <div className="max-w-5xl mx-auto">
-          <div className="text-xs font-bold tracking-widest mb-3 text-center" style={{ color: '#22d3ee' }}>ARQUITECTURA MULTI-AGENTE</div>
+          <div className="text-xs font-bold tracking-widest mb-3 text-center" style={{ color: '#a78bfa' }}>ARQUITECTURA MULTI-AGENTE</div>
           <h2 className="font-black mb-2 text-center" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)' }}>Orquestación autónoma con SAP</h2>
-          <p className="text-center text-sm mb-14" style={{ color: '#334155' }}>
+          <p className="text-center text-sm mb-14" style={{ color: '#35354d' }}>
             Un orquestador Claude coordina 5 agentes especializados que razonan y actúan con herramientas reales
           </p>
 
@@ -197,36 +197,36 @@ export function LandingPage({ onEnter }: Props) {
             <div className="px-10 py-4 rounded-2xl text-center" style={{ background: 'linear-gradient(135deg,rgba(245,158,11,0.1),rgba(245,158,11,0.04))', border: '1px solid rgba(245,158,11,0.35)', minWidth: 280 }}>
               <div className="text-[10px] font-bold tracking-widest mb-1" style={{ color: '#f59e0b' }}>SUPERVISOR</div>
               <div className="text-xl font-black">STATUS UPDATE</div>
-              <div className="text-[11px] font-mono mt-1" style={{ color: '#475569' }}>SAP AI Core Orchestration</div>
+              <div className="text-[11px] font-mono mt-1" style={{ color: '#525270' }}>SAP AI Core Orchestration</div>
             </div>
           </div>
           <div className="flex justify-center mb-4">
-            <div style={{ width: 1, height: 28, background: 'linear-gradient(#f59e0b44,#1e2d45)' }} />
+            <div style={{ width: 1, height: 28, background: 'linear-gradient(#f59e0b44,#1e1e32)' }} />
           </div>
 
           {/* Phase 1 */}
           <div className="flex items-center gap-4 mb-4 justify-center">
-            <div style={{ flex: 1, height: 1, background: '#0d1e35' }} />
-            <span className="text-[11px] font-bold tracking-widest px-3 py-1 rounded-full" style={{ background: 'rgba(34,211,238,0.08)', color: '#22d3ee', border: '1px solid rgba(34,211,238,0.2)', whiteSpace: 'nowrap' }}>
+            <div style={{ flex: 1, height: 1, background: '#11111d' }} />
+            <span className="text-[11px] font-bold tracking-widest px-3 py-1 rounded-full" style={{ background: 'rgba(167,139,250,0.08)', color: '#a78bfa', border: '1px solid rgba(167,139,250,0.2)', whiteSpace: 'nowrap' }}>
               FASE 1 — PARALELO
             </span>
-            <div style={{ flex: 1, height: 1, background: '#0d1e35' }} />
+            <div style={{ flex: 1, height: 1, background: '#11111d' }} />
           </div>
           <div className="grid grid-cols-2 gap-4 mb-6">
             {PHASE1_AGENTS.map(a => <AgentCard key={a.label} {...a} />)}
           </div>
 
           <div className="flex justify-center mb-4">
-            <div style={{ width: 1, height: 28, background: 'linear-gradient(#1e2d45,#1e2d4500)' }} />
+            <div style={{ width: 1, height: 28, background: 'linear-gradient(#1e1e32,#1e1e3200)' }} />
           </div>
 
           {/* Phase 2 */}
           <div className="flex items-center gap-4 mb-4 justify-center">
-            <div style={{ flex: 1, height: 1, background: '#0d1e35' }} />
+            <div style={{ flex: 1, height: 1, background: '#11111d' }} />
             <span className="text-[11px] font-bold tracking-widest px-3 py-1 rounded-full" style={{ background: 'rgba(249,115,22,0.08)', color: '#f97316', border: '1px solid rgba(249,115,22,0.2)', whiteSpace: 'nowrap' }}>
               FASE 2 — SECUENCIAL
             </span>
-            <div style={{ flex: 1, height: 1, background: '#0d1e35' }} />
+            <div style={{ flex: 1, height: 1, background: '#11111d' }} />
           </div>
           <div className="grid grid-cols-3 gap-4">
             {PHASE2_AGENTS.map(a => <AgentCard key={a.label} {...a} />)}
@@ -237,25 +237,25 @@ export function LandingPage({ onEnter }: Props) {
       {/* ── FINAL CTA ── */}
       <section
         className="px-8 py-32 flex flex-col items-center text-center"
-        style={{ borderTop: '1px solid #0d1e35', background: 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(34,211,238,0.04) 0%, transparent 60%)' }}
+        style={{ borderTop: '1px solid #11111d', background: 'radial-gradient(ellipse 70% 50% at 50% 0%, rgba(167,139,250,0.04) 0%, transparent 60%)' }}
       >
-        <div className="text-xs font-bold tracking-widest mb-5" style={{ color: '#22d3ee' }}>LISTO PARA SIMULAR</div>
+        <div className="text-xs font-bold tracking-widest mb-5" style={{ color: '#a78bfa' }}>LISTO PARA SIMULAR</div>
         <h2 className="font-black mb-3" style={{ fontSize: 'clamp(2rem,4vw,3.5rem)' }}>Inicia el incidente</h2>
-        <p className="mb-10 text-base max-w-lg" style={{ color: '#475569' }}>
+        <p className="mb-10 text-base max-w-lg" style={{ color: '#525270' }}>
           Configura los parámetros operativos y observa cómo los agentes razonan, deciden y actúan en tiempo real.
         </p>
         <button
           onClick={onEnter}
           className="px-14 py-5 rounded-2xl font-black text-lg tracking-wide"
-          style={{ background: 'linear-gradient(135deg,#0891b2,#0e7490)', color: 'white', boxShadow: '0 0 48px rgba(34,211,238,0.25), 0 8px 32px rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; e.currentTarget.style.boxShadow = '0 0 72px rgba(34,211,238,0.38), 0 8px 32px rgba(0,0,0,0.6)'; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 48px rgba(34,211,238,0.25), 0 8px 32px rgba(0,0,0,0.6)'; }}
+          style={{ background: 'linear-gradient(135deg,#7c3aed,#6d28d9)', color: 'white', boxShadow: '0 0 48px rgba(167,139,250,0.25), 0 8px 32px rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.04)'; e.currentTarget.style.boxShadow = '0 0 72px rgba(167,139,250,0.38), 0 8px 32px rgba(0,0,0,0.6)'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 0 48px rgba(167,139,250,0.25), 0 8px 32px rgba(0,0,0,0.6)'; }}
         >
           Acceder al Simulador →
         </button>
         <div className="mt-14 flex items-center gap-3">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 14, opacity: 0.25 }} />
-          <span className="text-[11px] font-mono" style={{ color: '#1e3a5f' }}>BTP Cloud Foundry · AI Core · Claude Sonnet 4.6</span>
+          <span className="text-[11px] font-mono" style={{ color: '#1a1a30' }}>BTP Cloud Foundry · AI Core · Claude Sonnet 4.6</span>
         </div>
       </section>
 

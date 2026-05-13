@@ -6,7 +6,7 @@
   * { box-sizing: border-box; }
 
   body {
-    background-color: #0d1520;
+    background-color: #0c0c15;
     color: #e2e8f0;
     font-family: 'IBM Plex Sans', Arial, Helvetica, sans-serif;
     font-size: 15px;
@@ -23,38 +23,38 @@
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #0d1520; }
-  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  ::-webkit-scrollbar-track { background: #0c0c15; }
+  ::-webkit-scrollbar-thumb { background: #35354d; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #525270; }
 }
 
 @layer components {
   .panel-card {
     @apply rounded border;
-    background: #111827;
-    border-color: #1e2d45;
+    background: #111118;
+    border-color: #1e1e32;
     box-shadow: 0 2px 8px 0 rgba(0,0,0,0.4);
   }
 
   .panel-header {
     @apply px-3 py-2 border-b flex items-center gap-2;
-    background: #0d1520;
-    border-color: #1e2d45;
+    background: #0c0c15;
+    border-color: #1e1e32;
     font-size: 0.8rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #64748b;
+    color: #64648a;
     border-radius: 3px 3px 0 0;
   }
 
   .btn-primary {
     @apply flex items-center justify-center gap-2 py-2 px-4 rounded text-sm font-semibold text-white transition-colors duration-150;
-    background: #2563eb;
+    background: #7c3aed;
   }
-  .btn-primary:hover:not(:disabled) { background: #1d4ed8; }
-  .btn-primary:active:not(:disabled) { background: #1e40af; }
-  .btn-primary:disabled { background: #1e3a5f; cursor: not-allowed; }
+  .btn-primary:hover:not(:disabled) { background: #6d28d9; }
+  .btn-primary:active:not(:disabled) { background: #5b21b6; }
+  .btn-primary:disabled { background: #1a1a30; cursor: not-allowed; }
 
   .sap-tag {
     @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold;
@@ -66,8 +66,8 @@
 
   .kpi-card {
     @apply rounded border p-3 flex flex-col gap-1;
-    background: #0d1520;
-    border-color: #1e2d45;
+    background: #0c0c15;
+    border-color: #1e1e32;
   }
 }
 
@@ -89,8 +89,8 @@
 /* ── Leaflet / Map overrides ─────────────────────────────────── */
 
 .map-tooltip {
-  background: #1a2540 !important;
-  border: 1px solid #2d3f5e !important;
+  background: #13131f !important;
+  border: 1px solid #2a2a45 !important;
   border-radius: 4px !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important;
   padding: 8px 10px !important;
@@ -100,7 +100,7 @@
 }
 
 .leaflet-tooltip-top.map-tooltip::before {
-  border-top-color: #2d3f5e !important;
+  border-top-color: #2a2a45 !important;
 }
 
 @keyframes pulse-ring {
@@ -111,13 +111,13 @@
 .node-pulse-ring { animation: pulse-ring 1.6s ease-out infinite; }
 
 .leaflet-control-zoom a {
-  background: #1a2540 !important;
+  background: #13131f !important;
   color: #e2e8f0 !important;
-  border-color: #2d3f5e !important;
+  border-color: #2a2a45 !important;
   font-size: 16px !important;
 }
 .leaflet-control-zoom a:hover {
-  background: #243050 !important;
+  background: #222236 !important;
   color: #f59e0b !important;
 }
 .leaflet-control-attribution { display: none !important; }

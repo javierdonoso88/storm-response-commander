@@ -40,7 +40,7 @@ function edgeStyle(f1: Fault | undefined, f2: Fault | undefined) {
 
   if (bothOk(s1) && bothOk(s2)) return { color: '#22c55e', weight: 2, opacity: 0.55 };
   if (isActive(s1) || isActive(s2)) return { color: '#f97316', weight: 2, opacity: 0.7 };
-  return { color: '#1e3a5f', weight: 1.5, opacity: 0.8 };
+  return { color: '#1a1a30', weight: 1.5, opacity: 0.8 };
 }
 
 export function MapPanel({ faults }: Props) {
@@ -69,7 +69,7 @@ export function MapPanel({ faults }: Props) {
         <MapContainer
           center={MAP_CENTER}
           zoom={MAP_ZOOM}
-          style={{ height: '100%', width: '100%', background: '#0d1520' }}
+          style={{ height: '100%', width: '100%', background: '#0c0c15' }}
           zoomControl={true}
           scrollWheelZoom={true}
           attributionControl={false}
@@ -149,7 +149,7 @@ export function MapPanel({ faults }: Props) {
                   pathOptions={{
                     fillColor: color,
                     fillOpacity: 0.92,
-                    color: '#0d1520',
+                    color: '#0c0c15',
                     weight: 1.5,
                   }}
                 >
