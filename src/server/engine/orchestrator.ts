@@ -207,7 +207,10 @@ ESCENARIO:
   - Cables            : ${state.faults.filter(f => f.type === 'cable').length}
   Sitios críticos     : ${state.faults.filter(f => f.criticalSite).length}
   Clientes afectados  : ${state.totalClients.toLocaleString()}
-
+${params.instructions?.trim() ? `
+INSTRUCCIONES DEL OPERADOR (prioridad máxima — ajusta tu razonamiento y el de los agentes en consecuencia):
+${params.instructions.trim()}
+` : ''}
 Inicia el protocolo: llama invoke_triage_priority + invoke_rerouting en el MISMO turno.`;
 
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: userMessage }];

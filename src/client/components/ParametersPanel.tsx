@@ -156,6 +156,29 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
           ) : '▶ Simular'}
         </button>
 
+        {/* Operator instructions */}
+        <div className="flex flex-col gap-1.5">
+          <span className="text-[10px] font-bold tracking-widest" style={{ color: '#475569' }}>INSTRUCCIONES AL ORQUESTADOR</span>
+          <textarea
+            value={params.instructions ?? ''}
+            onChange={e => onChange({ instructions: e.target.value })}
+            placeholder="Ej: Prioriza el hospital sobre cualquier otra incidencia. No despachar brigadas a zonas inundadas."
+            rows={4}
+            className="w-full rounded-lg text-[11px] leading-relaxed resize-none outline-none p-2.5"
+            style={{
+              background: '#0d1520',
+              border: '1px solid #1e2d45',
+              color: '#94a3b8',
+              caretColor: '#3b82f6',
+            }}
+            onFocus={e => { e.currentTarget.style.borderColor = '#3b82f6'; }}
+            onBlur={e => { e.currentTarget.style.borderColor = '#1e2d45'; }}
+          />
+          <span className="text-[10px]" style={{ color: '#334155' }}>
+            Se inyecta como contexto prioritario en el prompt del orquestador.
+          </span>
+        </div>
+
         {/* KPIs */}
         <div className="border-t pt-3 flex flex-col gap-2.5" style={{ borderColor: '#1e2d45' }}>
           <span className="text-[13px] font-semibold uppercase tracking-widest text-slate-600">KPIs</span>

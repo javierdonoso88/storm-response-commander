@@ -8,6 +8,7 @@ export interface SimParams {
   limitedParts: 0 | 1;
   storm2Window: 'T+4h' | 'T+6h' | 'T+8h' | 'none';
   availableCrews: number;
+  instructions?: string;
 }
 
 export interface Fault {
