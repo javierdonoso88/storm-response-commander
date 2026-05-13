@@ -110,7 +110,7 @@ ${hadConflict ? '⚠️ CONFLICTO DE RECURSOS: transformadores insuficientes —
 
 SLA objetivo: ${params.minuteSLA}min | Ventana tormenta 2: ${params.storm2Window}
 
-Redacta y envía las 3 comunicaciones con send_sms, send_press_release, send_regulatory, luego complete_comms.`,
+Redacta y envía las 3 comunicaciones con send_sms, send_press_release, send_regulatory, luego complete_comms.${params.instructions?.trim() ? `\n\nINSTRUCCIONES DEL OPERADOR (refleja en el tono y contenido de las comunicaciones):\n${params.instructions.trim()}` : ''}`,
     tools,
     emit,
     agentId: 'comms',

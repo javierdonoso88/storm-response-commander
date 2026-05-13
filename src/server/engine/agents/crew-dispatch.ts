@@ -110,7 +110,7 @@ ${faultList || 'Ningún fallo físico pendiente'}
 SLA: ${params.minuteSLA}min | Ventana tormenta 2: ${params.storm2Window}
 Tiempo reparación estimado: transformador 90-180min, cable 60-120min
 
-Asigna brigadas con dispatch_crew, omite inasignables con skip_fault, luego complete_dispatch.`,
+Asigna brigadas con dispatch_crew, omite inasignables con skip_fault, luego complete_dispatch.${params.instructions?.trim() ? `\n\nINSTRUCCIONES DEL OPERADOR (prioridad máxima — ajusta asignaciones en consecuencia):\n${params.instructions.trim()}` : ''}`,
     tools,
     emit,
     agentId: 'crew-dispatch',

@@ -77,7 +77,7 @@ ${faultList}
 Operaciones de telecontrol autorizadas: ${params.switchableFaults}
 SLA: ${params.minuteSLA} min | Ventana tormenta 2: ${params.storm2Window}
 
-Ejecuta las conmutaciones usando attempt_remote_switch, luego llama a complete_rerouting.`,
+Ejecuta las conmutaciones usando attempt_remote_switch, luego llama a complete_rerouting.${params.instructions?.trim() ? `\n\nINSTRUCCIONES DEL OPERADOR (aplica en tu decisión):\n${params.instructions.trim()}` : ''}`,
     tools,
     emit,
     agentId: 'rerouting',

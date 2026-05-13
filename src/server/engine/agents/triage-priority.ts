@@ -101,7 +101,7 @@ ${faultList}
 INSTRUCCIONES:
 1. Llama a classify_fault para CADA uno de los ${state.faults.length} fallos.
 2. Llama a set_priority para cada uno de los ${physicalFaults.length} fallos físicos (transformadores y cables).
-3. Llama a complete_assessment con el resumen.`,
+3. Llama a complete_assessment con el resumen.${params.instructions?.trim() ? `\n\nINSTRUCCIONES DEL OPERADOR (aplica en tu análisis):\n${params.instructions.trim()}` : ''}`,
     tools,
     emit,
     agentId: 'triage-priority',

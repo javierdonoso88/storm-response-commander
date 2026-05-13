@@ -119,7 +119,7 @@ DEMANDA:
   Cables necesarios         : ${cableFaults.length}
 ${params.limitedParts === 1 ? `⚠️ INVENTARIO LIMITADO: solo ${state.inventory.transformers} transformador(es) disponible(s) para ${trfFaults.length} fallo(s)` : '✓ Inventario completo'}
 
-Asigna recursos con allocate_resource, registra conflictos con flag_conflict si hay déficit, luego complete_resources.`,
+Asigna recursos con allocate_resource, registra conflictos con flag_conflict si hay déficit, luego complete_resources.${params.instructions?.trim() ? `\n\nINSTRUCCIONES DEL OPERADOR (aplica en la priorización de material):\n${params.instructions.trim()}` : ''}`,
     tools,
     emit,
     agentId: 'resource',
