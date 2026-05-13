@@ -52,7 +52,18 @@ Cada `emit()` se serializa como un evento SSE y se envía al cliente inmediatame
 
 ---
 
-## Adaptador SAP AI Core
+## Modelos
+
+| Componente | Modelo | Razón |
+|-----------|--------|-------|
+| Orchestrator (Status Update) | `claude-4.6-sonnet` | Razonamiento narrativo visible en el resumen ejecutivo |
+| Sub-agentes (Triage & Priority, Remote Restoration, Crew-Dispatch, Resource, Alerts & Comms) | `claude-4.5-haiku` | Decisiones estructuradas de tool-use; menor latencia |
+
+El deployment de Haiku se configura con `AICORE_HAIKU_DEPLOYMENT_ID`. Si no se define, ambos roles usan el deployment de Sonnet como fallback.
+
+---
+
+
 
 El SDK de Anthropic hace llamadas a `/v1/messages`. SAP AI Core expone una API Bedrock-compatible con rutas distintas y formato de cuerpo diferente. El adaptador en `anthropicClient.ts` actúa como middleware transparente:
 

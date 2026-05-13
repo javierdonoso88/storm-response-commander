@@ -87,8 +87,9 @@ Ver [docs/architecture.md](docs/architecture.md) para el detalle técnico comple
 |------|-------|
 | Frontend | React 18, TypeScript, Vite, Tailwind CSS, React-Leaflet |
 | Backend | Node.js, Express, SSE |
-| IA | Anthropic Claude Sonnet 4.6 vía SAP AI Core |
+| IA | Anthropic Claude Sonnet 4.6 (orchestrator) · Haiku 4.5 (sub-agentes) vía SAP AI Core |
 | SDK | `@anthropic-ai/sdk` con adaptador custom para AI Core |
+| Modelos | Sonnet 4.6 (orchestrator) · Haiku 4.5 (sub-agentes) |
 | Deploy | SAP BTP Cloud Foundry (`nodejs_buildpack`) |
 
 ---

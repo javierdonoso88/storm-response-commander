@@ -4,11 +4,17 @@ const CLIENT_ID      = process.env.AICORE_CLIENT_ID      ?? 'sb-e0b5104e-420b-48
 const CLIENT_SECRET  = process.env.AICORE_CLIENT_SECRET  ?? 'b24080ac-d8b0-43c0-91af-a71d42b75628$L0fmFQimPJwvnNvnZuO4OIEkk928PKra-uSbykf_bU0=';
 const TOKEN_URL      = process.env.AICORE_TOKEN_URL      ?? 'https://p9gsvmnxsg1mvz9k.authentication.eu10.hana.ondemand.com/oauth/token';
 const AI_API_URL     = process.env.AICORE_API_URL        ?? 'https://api.ai.prod.eu-central-1.aws.ml.hana.ondemand.com';
-const DEPLOYMENT_ID  = process.env.AICORE_DEPLOYMENT_ID  ?? 'd0389113af96cc44';
 const RESOURCE_GROUP = process.env.AICORE_RESOURCE_GROUP ?? 'default';
 
-// AI Core uses the Bedrock-style invocation API — model name is fixed by the deployment
-export const MODEL = 'anthropic--claude-4.6-sonnet';
+// Sonnet deployment (orchestrator + fallback)
+const SONNET_DEPLOYMENT_ID = process.env.AICORE_DEPLOYMENT_ID       ?? 'd0389113af96cc44';
+// Haiku deployment (sub-agents) — falls back to Sonnet if not configured
+const HAIKU_DEPLOYMENT_ID  = process.env.AICORE_HAIKU_DEPLOYMENT_ID ?? SONNET_DEPLOYMENT_ID;
+
+export const MODEL_SONNET = 'anthropic--claude-4.6-sonnet';
+export const MODEL_HAIKU  = 'anthropic--claude-4.5-haiku';
+// Legacy export kept for orchestrator
+export const MODEL = MODEL_SONNET;
 
 interface TokenCache {
   token: string;
@@ -86,9 +92,10 @@ function injectEventLines(body: ReadableStream<Uint8Array>): ReadableStream<Uint
   });
 }
 
-export async function getAnthropicClient(): Promise<Anthropic> {
+export async function getAnthropicClient(haiku = false): Promise<Anthropic> {
   const token = await getAccessToken();
-  const baseUrl = `${AI_API_URL}/v2/inference/deployments/${DEPLOYMENT_ID}`;
+  const deploymentId = haiku ? HAIKU_DEPLOYMENT_ID : SONNET_DEPLOYMENT_ID;
+  const baseUrl = `${AI_API_URL}/v2/inference/deployments/${deploymentId}`;
 
   // Custom fetch: adapts Anthropic SDK calls to AI Core's Bedrock-style invoke endpoints.
   // /invoke          → full JSON response (non-streaming)

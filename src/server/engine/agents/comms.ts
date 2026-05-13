@@ -115,6 +115,7 @@ Redacta y envía las 3 comunicaciones con send_sms, send_press_release, send_reg
     emit,
     agentId: 'comms',
     maxTokens: 8192,
+    haiku: true,
   });
 
   return {

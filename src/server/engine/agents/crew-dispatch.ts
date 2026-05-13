@@ -115,6 +115,7 @@ Asigna brigadas con dispatch_crew, omite inasignables con skip_fault, luego comp
     emit,
     agentId: 'crew-dispatch',
     maxTokens: 8192,
+    haiku: true,
   });
 
   return {

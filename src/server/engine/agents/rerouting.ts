@@ -82,6 +82,7 @@ Ejecuta las conmutaciones usando attempt_remote_switch, luego llama a complete_r
     emit,
     agentId: 'rerouting',
     maxTokens: 8192,
+    haiku: true,
   });
 
   return {

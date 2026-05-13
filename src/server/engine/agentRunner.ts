@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
-import { getAnthropicClient, MODEL } from './anthropicClient';
+import { getAnthropicClient, MODEL_SONNET, MODEL_HAIKU } from './anthropicClient';
 import { AgentId, SimEvent } from './types';
 
 export interface ToolDef {
@@ -17,8 +17,10 @@ export async function runAgent(opts: {
   agentId: AgentId | 'orchestrator';
   maxTokens?: number;
   maxTurns?: number;
+  haiku?: boolean;
 }): Promise<void> {
-  const { systemPrompt, userMessage, tools, emit, agentId, maxTokens = 4096, maxTurns = 15 } = opts;
+  const { systemPrompt, userMessage, tools, emit, agentId, maxTokens = 4096, maxTurns = 15, haiku = false } = opts;
+  const modelName = haiku ? MODEL_HAIKU : MODEL_SONNET;
 
   const sdkTools: Anthropic.Tool[] = tools.map(t => ({
     name: t.name,
@@ -33,9 +35,9 @@ export async function runAgent(opts: {
   ];
 
   for (let turn = 0; turn < maxTurns; turn++) {
-    const anthropic = await getAnthropicClient();
+    const anthropic = await getAnthropicClient(haiku);
     const stream = anthropic.messages.stream({
-      model: MODEL,
+      model: modelName,
       system: systemPrompt,
       messages,
       tools: sdkTools,

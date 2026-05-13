@@ -106,6 +106,7 @@ INSTRUCCIONES:
     emit,
     agentId: 'triage-priority',
     maxTokens: 8192,
+    haiku: true,
   });
 
   return {
