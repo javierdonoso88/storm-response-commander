@@ -20,6 +20,7 @@ router.post('/simulate', async (req, res) => {
     limitedParts: Number(req.body.limitedParts ?? 0) as 0 | 1,
     storm2Window: req.body.storm2Window ?? 'T+6h',
     availableCrews: Number(req.body.availableCrews ?? 22),
+    instructions: req.body.instructions || undefined,
   };
 
   res.setHeader('Content-Type', 'text/event-stream');
