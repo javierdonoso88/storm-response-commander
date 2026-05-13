@@ -10,11 +10,11 @@ function Tooltip({ text, children, position = 'top' }: { text: string; children:
       {show && (
         <div
           className={`absolute left-1/2 -translate-x-1/2 z-50 w-52 rounded px-2.5 py-2 text-xs text-slate-200 leading-snug pointer-events-none ${isTop ? 'bottom-full mb-2' : 'top-full mt-2'}`}
-          style={{ background: '#13131f', border: '1px solid #2a2a45', boxShadow: '0 4px 16px rgba(0,0,0,0.6)' }}>
+          style={{ background: '#1a2540', border: '1px solid #2d3f5e', boxShadow: '0 4px 16px rgba(0,0,0,0.6)' }}>
           {text}
           {isTop
-            ? <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #2a2a45' }} />
-            : <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: '5px solid #2a2a45' }} />
+            ? <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #2d3f5e' }} />
+            : <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: '5px solid #2d3f5e' }} />
           }
         </div>
       )}
@@ -31,7 +31,7 @@ const AGENT_COLORS: Record<AgentId, { bg: string; ring: string; initials: string
   'triage-priority': { bg: '#7c3aed', ring: '#a855f7', initials: 'TP' },
   rerouting:         { bg: '#db2777', ring: '#ec4899', initials: 'RR' },
   'crew-dispatch':   { bg: '#7e22ce', ring: '#a855f7', initials: 'CD' },
-  resource:          { bg: '#6d28d9', ring: '#3b82f6', initials: 'RE' },
+  resource:          { bg: '#1d4ed8', ring: '#3b82f6', initials: 'RE' },
   comms:             { bg: '#0f766e', ring: '#14b8a6', initials: 'AC' },
 };
 
@@ -101,7 +101,7 @@ export function GanttPanel({ agents, conflicts }: Props) {
 
         {/* Conflicts */}
         {conflicts.length > 0 && (
-          <div className="w-full mt-2 border-t border-[#1e1e32] pt-2">
+          <div className="w-full mt-2 border-t border-[#1e2d45] pt-2">
             <div className="text-[13px] text-red-400 uppercase tracking-wider mb-1">⚡ Conflictos</div>
             {conflicts.slice(0, 2).map((c, i) => (
               <Tooltip key={i} text={c.reason} position="top">
@@ -119,7 +119,7 @@ export function GanttPanel({ agents, conflicts }: Props) {
 
 function SupervisorCard() {
   return (
-    <div className="flex flex-col items-center gap-1 bg-[#13131f] border border-[#2a2a45] rounded-lg p-3 w-28">
+    <div className="flex flex-col items-center gap-1 bg-[#1a2540] border border-[#2d3f5e] rounded-lg p-3 w-28">
       <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
         style={{ background: 'linear-gradient(135deg, #c2410c, #ea580c)' }}>
         SV
@@ -141,8 +141,8 @@ function AgentCard({ id, agent }: { id: AgentId; agent?: AgentState }) {
       title={AGENT_TOOLTIP[id]}
       className="flex flex-col items-center gap-1 rounded-lg p-2.5 transition-all duration-300"
       style={{
-        background: '#13131f',
-        border: `1px solid ${isRunning ? meta.ring : isDone ? '#1e3a1e' : '#1e1e32'}`,
+        background: '#1a2540',
+        border: `1px solid ${isRunning ? meta.ring : isDone ? '#1e3a1e' : '#1e2d45'}`,
         boxShadow: isRunning ? `0 0 12px ${meta.ring}40` : 'none',
         minWidth: 72,
       }}

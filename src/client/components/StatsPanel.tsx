@@ -77,7 +77,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
           </div>
         )}
         {actionMessages.map((a, i) => (
-          <div key={i} className="bg-[#111c2e] border border-[#1e1e32] rounded px-2 py-1.5 flex flex-col gap-0.5">
+          <div key={i} className="bg-[#111c2e] border border-[#1e2d45] rounded px-2 py-1.5 flex flex-col gap-0.5">
             <div className="flex items-center gap-1.5">
               <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${AGENT_DOT[a.agent] ?? 'bg-slate-500'}`} />
               <span className={`text-[11px] font-bold font-mono ${AGENT_COLOR[a.agent] ?? 'text-slate-400'}`}>
@@ -94,7 +94,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
       </div>
 
       {/* ── Divider ── */}
-      <div className="border-t" style={{ borderColor: '#1e1e32' }} />
+      <div className="border-t" style={{ borderColor: '#1e2d45' }} />
 
       {/* ── Comunicaciones ── */}
       <div className="panel-header">
@@ -113,7 +113,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
           </div>
         )}
         {messages.map((msg, i) => (
-          <div key={i} className="bg-[#13131f] border border-[#1e1e32] rounded p-2 flex flex-col gap-1">
+          <div key={i} className="bg-[#1a2540] border border-[#1e2d45] rounded p-2 flex flex-col gap-1">
             <div className="flex items-center gap-1.5">
               <span className="text-sm">{CHANNEL_ICON[msg.channel]}</span>
               <span className={`text-[12px] font-bold font-mono ${CHANNEL_COLOR[msg.channel]}`}>

@@ -29,10 +29,10 @@ function TooltipLabel({ label, tip }: { label: string; tip: string }) {
           className="fixed w-52 z-[9999] pointer-events-none"
           style={{ left: pos.x, top: pos.y, transform: 'translateY(-50%)' }}
         >
-          <div className="rounded-lg px-3 py-2.5 text-[11px] leading-relaxed shadow-2xl" style={{ background: '#0e0e1c', border: '1px solid #1a1a30', color: '#94a3b8' }}>
+          <div className="rounded-lg px-3 py-2.5 text-[11px] leading-relaxed shadow-2xl" style={{ background: '#0a1525', border: '1px solid #1e3a5f', color: '#94a3b8' }}>
             {tip}
           </div>
-          <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent" style={{ borderRightColor: '#1a1a30' }} />
+          <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent" style={{ borderRightColor: '#1e3a5f' }} />
         </div>
       )}
     </div>
@@ -44,7 +44,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
     <div className="flex flex-col h-full">
 
       {/* Section header */}
-      <div className="px-3 py-2 border-b" style={{ background: '#0c0c15', borderColor: '#1e1e32' }}>
+      <div className="px-3 py-2 border-b" style={{ background: '#0d1520', borderColor: '#1e2d45' }}>
         <span className="text-[13px] font-semibold uppercase tracking-widest text-slate-500">Parámetros</span>
       </div>
 
@@ -85,8 +85,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
               onClick={() => onChange({ limitedParts: params.limitedParts === 1 ? 0 : 1 })}
               className="relative w-9 h-5 flex-shrink-0 rounded-full transition-colors duration-200 border"
               style={{
-                background: params.limitedParts === 1 ? '#7c3aed' : '#1e1e32',
-                borderColor: params.limitedParts === 1 ? '#3b82f6' : '#35354d',
+                background: params.limitedParts === 1 ? '#2563eb' : '#1e2d45',
+                borderColor: params.limitedParts === 1 ? '#3b82f6' : '#334155',
               }}
             >
               <span className={`absolute top-0.5 w-4 h-4 rounded-full transition-transform duration-200 bg-white shadow-sm ${params.limitedParts === 1 ? 'translate-x-4' : 'translate-x-0.5'}`} />
@@ -125,8 +125,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
                 className="text-[12px] py-1 px-2 rounded border transition-all font-mono"
                 style={
                   params.storm2Window === opt
-                    ? { background: '#6d28d9', color: '#fff', borderColor: '#7c3aed' }
-                    : { background: '#1e1e32', color: '#64648a', borderColor: '#35354d' }
+                    ? { background: '#1d4ed8', color: '#fff', borderColor: '#2563eb' }
+                    : { background: '#1e2d45', color: '#64748b', borderColor: '#334155' }
                 }
               >
                 {opt === 'none' ? 'Sin tormenta' : opt}
@@ -146,13 +146,13 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
         </button>
 
         {/* KPIs */}
-        <div className="border-t pt-3 flex flex-col gap-2.5" style={{ borderColor: '#1e1e32' }}>
+        <div className="border-t pt-3 flex flex-col gap-2.5" style={{ borderColor: '#1e2d45' }}>
           <span className="text-[13px] font-semibold uppercase tracking-widest text-slate-600">KPIs</span>
-          <KPIRow label="SLA" sub="clientes cubiertos" value={kpi.sla} color={kpi.sla === null ? '#35354d' : kpi.sla >= 80 ? '#22c55e' : kpi.sla >= 55 ? '#f97316' : '#ef4444'} />
-          <KPIRow label="Seguridad" sub="sitios críticos" value={kpi.safety} color={kpi.safety === null ? '#35354d' : kpi.safety === 100 ? '#22c55e' : kpi.safety >= 70 ? '#f97316' : '#ef4444'} />
-          <KPIRow label="Eficiencia" sub="fallos gestionados" value={kpi.efficiency} color={kpi.efficiency === null ? '#35354d' : kpi.efficiency >= 80 ? '#22c55e' : kpi.efficiency >= 50 ? '#3b82f6' : '#64648a'} />
-          <KPIMinuteRow label="TIEPI" sub="interrupción media" value={kpi.tiepi} color={kpi.tiepi === null ? '#35354d' : kpi.tiepi <= 60 ? '#22c55e' : kpi.tiepi <= 120 ? '#f97316' : '#ef4444'} />
-          <KPIMinuteRow label="MTTR" sub="tiempo medio reposición" value={kpi.mttr} color={kpi.mttr === null ? '#35354d' : kpi.mttr <= 60 ? '#22c55e' : kpi.mttr <= 120 ? '#f97316' : '#ef4444'} />
+          <KPIRow label="SLA" sub="clientes cubiertos" value={kpi.sla} color={kpi.sla === null ? '#334155' : kpi.sla >= 80 ? '#22c55e' : kpi.sla >= 55 ? '#f97316' : '#ef4444'} />
+          <KPIRow label="Seguridad" sub="sitios críticos" value={kpi.safety} color={kpi.safety === null ? '#334155' : kpi.safety === 100 ? '#22c55e' : kpi.safety >= 70 ? '#f97316' : '#ef4444'} />
+          <KPIRow label="Eficiencia" sub="fallos gestionados" value={kpi.efficiency} color={kpi.efficiency === null ? '#334155' : kpi.efficiency >= 80 ? '#22c55e' : kpi.efficiency >= 50 ? '#3b82f6' : '#64748b'} />
+          <KPIMinuteRow label="TIEPI" sub="interrupción media" value={kpi.tiepi} color={kpi.tiepi === null ? '#334155' : kpi.tiepi <= 60 ? '#22c55e' : kpi.tiepi <= 120 ? '#f97316' : '#ef4444'} />
+          <KPIMinuteRow label="MTTR" sub="tiempo medio reposición" value={kpi.mttr} color={kpi.mttr === null ? '#334155' : kpi.mttr <= 60 ? '#22c55e' : kpi.mttr <= 120 ? '#f97316' : '#ef4444'} />
         </div>
 
       </div>
@@ -175,9 +175,9 @@ function SliderField({ label, tip, value, valueColor, min, max, step, current, o
         type="range" min={min} max={max} step={step} value={current}
         onChange={e => onChange(Number(e.target.value))}
         className="w-full h-1 rounded-full appearance-none cursor-pointer"
-        style={{ accentColor: accent, background: '#1e1e32' }}
+        style={{ accentColor: accent, background: '#1e2d45' }}
       />
-      <div className="flex justify-between text-[12px]" style={{ color: '#35354d' }}>
+      <div className="flex justify-between text-[12px]" style={{ color: '#334155' }}>
         <span>{min}</span><span>{max}</span>
       </div>
     </div>
@@ -191,7 +191,7 @@ function KPIMinuteRow({ label, sub, value, color }: { label: string; sub: string
         <span className="text-[12px] font-semibold text-slate-400">{label}</span>
         <span className="text-[13px] text-slate-600">{sub}</span>
       </div>
-      <span className="text-[13px] font-bold font-mono whitespace-nowrap" style={{ color: value === null ? '#35354d' : color }}>
+      <span className="text-[13px] font-bold font-mono whitespace-nowrap" style={{ color: value === null ? '#334155' : color }}>
         {value === null ? '—' : `${value} min`}
       </span>
     </div>
@@ -206,11 +206,11 @@ function KPIRow({ label, sub, value, color }: { label: string; sub: string; valu
           <span className="text-[12px] font-semibold text-slate-400">{label}</span>
           <span className="text-[13px] text-slate-600">{sub}</span>
         </div>
-        <span className="text-[13px] font-bold font-mono" style={{ color: value === null ? '#35354d' : color }}>
+        <span className="text-[13px] font-bold font-mono" style={{ color: value === null ? '#334155' : color }}>
           {value === null ? '—' : `${value}%`}
         </span>
       </div>
-      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#1e1e32' }}>
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#1e2d45' }}>
         {value !== null && (
           <div className="h-full rounded-full transition-all duration-700" style={{ width: `${value}%`, background: color }} />
         )}

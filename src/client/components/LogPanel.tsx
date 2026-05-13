@@ -155,7 +155,7 @@ function LogBlock({ log, placeholder = false }: {
           fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
           fontSize: '11px',
           lineHeight: 1.55,
-          color: placeholder ? '#35354d' : '#a5f3fc',
+          color: placeholder ? '#334155' : '#a5f3fc',
           margin: 0,
           flex: '1 1 0',
           minHeight: 0,

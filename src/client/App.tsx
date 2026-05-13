@@ -50,11 +50,11 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: '#0c0c15' }}>
+    <div className="flex flex-col h-screen" style={{ background: '#0d1520' }}>
 
       {/* Header */}
       <header className="flex items-center gap-3 px-4 h-11 flex-shrink-0 border-b"
-        style={{ background: '#09090f', borderColor: '#1e1e32' }}>
+        style={{ background: '#0a0f1a', borderColor: '#1e2d45' }}>
         <span className="text-white font-bold text-sm tracking-wide flex items-center gap-2">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 18, width: 'auto' }} />
           Storm Response Commander
@@ -69,7 +69,7 @@ export default function App() {
           ) : state.done ? (
             <span className="sap-tag" style={{ background: '#052e16', color: '#22c55e' }}>✓ Completado</span>
           ) : (
-            <span className="sap-tag" style={{ background: '#1e1e32', color: '#64648a' }}>Standby</span>
+            <span className="sap-tag" style={{ background: '#1e2d45', color: '#64748b' }}>Standby</span>
           )}
         </div>
 
@@ -78,7 +78,7 @@ export default function App() {
           <button
             onClick={() => setShowResults(v => !v)}
             className="flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-lg"
-            style={{ background: showResults ? 'rgba(167,139,250,0.15)' : 'rgba(167,139,250,0.06)', color: '#a78bfa', border: '1px solid rgba(167,139,250,0.25)', cursor: 'pointer' }}
+            style={{ background: showResults ? 'rgba(34,211,238,0.15)' : 'rgba(34,211,238,0.06)', color: '#22d3ee', border: '1px solid rgba(34,211,238,0.25)', cursor: 'pointer' }}
           >
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -90,7 +90,7 @@ export default function App() {
         {/* Safety window bar */}
         <div className="ml-auto flex items-center gap-2" style={{ minWidth: 240 }}>
           <span className="text-xs text-slate-500 font-mono whitespace-nowrap">VENTANA {params.storm2Window}</span>
-          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: '#1e1e32' }}>
+          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: '#1e2d45' }}>
             <div className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${safetyPct}%`,
@@ -104,7 +104,7 @@ export default function App() {
         <button
           onClick={() => setShowLanding(true)}
           className="flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-lg"
-          style={{ background: 'rgba(255,255,255,0.03)', color: '#525270', border: '1px solid #1e1e32', cursor: 'pointer' }}
+          style={{ background: 'rgba(255,255,255,0.03)', color: '#475569', border: '1px solid #1e2d45', cursor: 'pointer' }}
         >
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -117,7 +117,7 @@ export default function App() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* Sidebar */}
-        <aside className="w-52 flex-shrink-0 border-r overflow-y-auto" style={{ background: '#111118', borderColor: '#1e1e32' }}>
+        <aside className="w-52 flex-shrink-0 border-r overflow-y-auto" style={{ background: '#111827', borderColor: '#1e2d45' }}>
           <ParametersPanel
             params={params}
             onChange={p => setParams(prev => ({ ...prev, ...p }))}
@@ -128,11 +128,11 @@ export default function App() {
         </aside>
 
         {/* Content */}
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: '#0c0c15' }}>
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: '#0d1520' }}>
 
           {/* TOP: Map + Flow */}
           <div className="flex overflow-hidden gap-2 p-2" style={{ flex: '0 0 42%' }}>
-            <div className="overflow-hidden rounded border flex-1" style={{ borderColor: '#1e1e32', boxShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+            <div className="overflow-hidden rounded border flex-1" style={{ borderColor: '#1e2d45', boxShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
               <MapPanel faults={state.faults.length > 0 ? state.faults : initialFaults} />
             </div>
             <div className="overflow-hidden flex-shrink-0" style={{ flex: '0 0 36%' }}>
