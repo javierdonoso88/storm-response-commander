@@ -24,6 +24,14 @@ function kpiGrade(v: number) {
   return v >= 80 ? 'ÓPTIMO' : v >= 60 ? 'ACEPTABLE' : 'CRÍTICO';
 }
 
+function safetyColor(v: number) {
+  return v === 100 ? '#22c55e' : v >= 70 ? '#f97316' : '#ef4444';
+}
+
+function safetyGrade(v: number) {
+  return v === 100 ? 'ÓPTIMO' : v >= 70 ? 'ACEPTABLE' : 'CRÍTICO';
+}
+
 function stripEmoji(text: string): string {
   return text.replace(/[\u{1F000}-\u{1FFFF}]|[\u{2600}-\u{27BF}]|[\u{1F300}-\u{1FAFF}]/gu, '').trim();
 }
@@ -164,8 +172,8 @@ function MinuteKpiCard({ label, sublabel, value, thresholds }: { label: string; 
   );
 }
 
-function KpiBlock({ value, label }: { value: number; label: string }) {
-  const color = kpiColor(value);
+function KpiBlock({ value, label, colorFn = kpiColor, gradeFn = kpiGrade }: { value: number; label: string; colorFn?: (v: number) => string; gradeFn?: (v: number) => string }) {
+  const color = colorFn(value);
   const r = 52;
   const circ = 2 * Math.PI * r;
   const dash = (value / 100) * circ;
@@ -184,7 +192,7 @@ function KpiBlock({ value, label }: { value: number; label: string }) {
         </svg>
         <div className="absolute flex flex-col items-center">
           <span className="text-3xl font-black leading-none" style={{ color }}>{value}%</span>
-          <span className="text-[10px] font-black tracking-widest mt-1" style={{ color }}>{kpiGrade(value)}</span>
+          <span className="text-[10px] font-black tracking-widest mt-1" style={{ color }}>{gradeFn(value)}</span>
         </div>
       </div>
       <span className="text-[10px] font-bold tracking-widest" style={{ color: '#475569' }}>{label}</span>
@@ -288,8 +296,8 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
       <div class="kpi-label">SLA</div>
     </div>
     <div class="kpi-box">
-      <div class="kpi-value" style="color:${kpiColor(kpi.safety ?? 0)}">${kpi.safety}%</div>
-      <div class="kpi-grade" style="color:${kpiColor(kpi.safety ?? 0)}">${kpiGrade(kpi.safety ?? 0)}</div>
+      <div class="kpi-value" style="color:${safetyColor(kpi.safety ?? 0)}">${kpi.safety}%</div>
+      <div class="kpi-grade" style="color:${safetyColor(kpi.safety ?? 0)}">${safetyGrade(kpi.safety ?? 0)}</div>
       <div class="kpi-label">SEGURIDAD</div>
     </div>
     <div class="kpi-box">
@@ -452,7 +460,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
             <div className="flex items-center gap-8">
               <KpiBlock value={kpi.sla ?? 0} label="SLA" />
               <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
-              <KpiBlock value={kpi.safety ?? 0} label="SEGURIDAD" />
+              <KpiBlock value={kpi.safety ?? 0} label="SEGURIDAD" colorFn={safetyColor} gradeFn={safetyGrade} />
               <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
               <KpiBlock value={kpi.efficiency ?? 0} label="EFICIENCIA OPERATIVA" />
               <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
