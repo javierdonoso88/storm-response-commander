@@ -73,9 +73,6 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     try {
       const result = await runPriority(params, state, emit);
       emit({ type: 'agent_done', agent: 'priority', summary: result.summary });
-      for (const msg of result.commsMessages) {
-        emit({ type: 'comms', channel: msg.channel, msg: msg.msg });
-      }
       return `Priority completado: ${result.summary}`;
     } catch (err) {
       const msg = `Error en priority: ${String(err)}`;

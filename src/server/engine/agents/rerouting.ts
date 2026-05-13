@@ -8,7 +8,6 @@ export async function runRerouting(
 ): Promise<AgentResult> {
   let summary = 'Rerouting completado.';
   const restoredFaultIds: string[] = [];
-  const commsMessages: { channel: 'sms' | 'press' | 'regulatory'; msg: string }[] = [];
   let switchCount = 0;
 
   const switchable = state.faults.filter(f => f.type === 'switchable' && f.status === 'fault');
@@ -50,21 +49,17 @@ export async function runRerouting(
     },
     {
       name: 'complete_rerouting',
-      description: 'Finaliza el rerouting con resumen y envía SMS de notificación.',
+      description: 'Finaliza el rerouting con resumen de operaciones.',
       input_schema: {
         type: 'object' as const,
         properties: {
           summary: { type: 'string', description: 'Resumen de operaciones de conmutación' },
-          smsText: { type: 'string', description: 'Texto SMS para clientes afectados (máx 160 chars)' },
         },
-        required: ['summary', 'smsText'],
+        required: ['summary'],
       },
       handler: async (input) => {
         summary = input.summary as string;
-        const msg = input.smsText as string;
-        commsMessages.push({ channel: 'sms', msg });
-        emit({ type: 'comms', channel: 'sms', msg });
-        return 'Rerouting finalizado y SMS enviado.';
+        return 'Rerouting finalizado.';
       },
     },
   ];
@@ -74,7 +69,7 @@ export async function runRerouting(
 Tu misión: ejecutar conmutaciones remotas (telecontrol) para restaurar suministro sin enviar brigadas.
 Solo puedes hacer ${params.switchableFaults} operaciones de telecontrol (límite autorizado).
 Llama a attempt_remote_switch para cada fallo que quieras restaurar (hasta el límite).
-Al finalizar, llama a complete_rerouting con el resumen y un SMS conciso para los clientes.
+Al finalizar, llama a complete_rerouting con el resumen de operaciones.
 Responde en español. Sé directo y operacional.`,
     userMessage: `FALLOS CONMUTABLES DISPONIBLES (${switchable.length} total):
 ${faultList}
@@ -94,6 +89,6 @@ Ejecuta las conmutaciones usando attempt_remote_switch, luego llama a complete_r
     summary,
     restoredFaults: restoredFaultIds,
     dispatches: [],
-    commsMessages,
+    commsMessages: [],
   };
 }

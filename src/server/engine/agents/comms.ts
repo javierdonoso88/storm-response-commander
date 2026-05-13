@@ -14,6 +14,9 @@ export async function runComms(
   const crewEnRouteFaults = state.faults.filter(f => f.status === 'crew-en-route');
   const restoredClients = restoredFaults.reduce((s, f) => s + f.affectedClients, 0);
   const criticalFaults = state.faults.filter(f => f.criticalSite);
+  const criticalAtRisk = criticalFaults.filter(f =>
+    f.batteryMinutes !== undefined && f.batteryMinutes < params.minuteSLA
+  );
 
   const tools: ToolDef[] = [
     {
@@ -92,7 +95,7 @@ export async function runComms(
 Tu misión: redactar y enviar 3 comunicaciones obligatorias en este orden:
 1. send_sms: conciso (≤160 chars), menciona Iberdrola, número de clientes y tiempo estimado de restauración
 2. send_press_release: nota formal para medios locales (El Punt Avui, Diari de Girona, RAC1, Catalunya Ràdio). Puedes escribirla en catalán.
-3. send_regulatory: notificación técnica formal para CTEPC/CNMC con datos del incidente${hadConflict ? '\nIMPORTANTE: Hay conflicto de recursos (material limitado). Menciónalo en la notificación regulatoria.' : ''}
+3. send_regulatory: notificación técnica formal para CTEPC/CNMC con datos del incidente${hadConflict ? '\nIMPORTANTE: Hay conflicto de recursos (material limitado). Menciónalo en la notificación regulatoria.' : ''}${criticalAtRisk.length > 0 ? `\nALERTA: ${criticalAtRisk.length} sitio(s) crítico(s) con batería bajo el umbral SLA. Menciónalo en la notificación regulatoria.` : ''}
 Llama a send_sms, send_press_release y send_regulatory (en ese orden), luego complete_comms.
 Responde en español/catalán según el canal. Sé profesional y preciso.`,
     userMessage: `SITUACIÓN ACTUAL DEL INCIDENTE — Comarques de Girona
@@ -101,7 +104,8 @@ Fallos totales      : ${state.faults.length}
 Restaurados telecon.: ${restoredFaults.length} (${restoredClients.toLocaleString()} clientes reconectados)
 Brigadas en camino  : ${crewEnRouteFaults.length} fallos en atención activa
 Clientes afectados  : ${state.totalClients.toLocaleString()} total
-Sitios críticos     : ${criticalFaults.length} (${criticalFaults.map(f => f.criticalSite).join(', ') || 'ninguno'})
+Sitios críticos     : ${criticalFaults.length} (${criticalFaults.map(f => `${f.criticalSite} batería:${f.batteryMinutes ?? 'N/A'}min`).join(', ') || 'ninguno'})
+${criticalAtRisk.length > 0 ? `⚠️ SITIOS CON BATERÍA CRÍTICA (<${params.minuteSLA}min): ${criticalAtRisk.map(f => f.criticalSite).join(', ')}` : '✓ Todos los sitios críticos dentro del margen de batería'}
 ${hadConflict ? '⚠️ CONFLICTO DE RECURSOS: transformadores insuficientes — protocolo de priorización activado' : '✓ Sin conflictos de recursos'}
 
 SLA objetivo: ${params.minuteSLA}min | Ventana tormenta 2: ${params.storm2Window}
