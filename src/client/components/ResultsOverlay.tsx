@@ -189,31 +189,170 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
   useEffect(() => { const t = setTimeout(() => setVis(true), 50); return () => clearTimeout(t); }, []);
 
   function downloadReport() {
-    const style = document.createElement('style');
-    style.id = '__print_override__';
-    style.textContent = `
-      @media print {
-        body > *:not(#results-print-root) { display: none !important; }
-        #results-print-root {
-          position: static !important;
-          background: #080e1a !important;
-          overflow: visible !important;
-          backdrop-filter: none !important;
-        }
-        #results-print-root > div {
-          max-height: none !important;
-          overflow: visible !important;
-          box-shadow: none !important;
-          transform: none !important;
-          border-radius: 0 !important;
-        }
-        .no-print { display: none !important; }
-        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      }
-    `;
-    document.head.appendChild(style);
-    window.print();
-    setTimeout(() => { const el = document.getElementById('__print_override__'); if (el) el.remove(); }, 1500);
+    const orchLog = agentLogs.find(l => l.agent === 'orchestrator');
+    const orchPlain = (orchLog?.text ?? '')
+      .replace(/^#{1,6}\s*/gm, '')
+      .replace(/\*\*(.*?)\*\*/gs, '$1')
+      .replace(/\*(.*?)\*/gs, '$1')
+      .replace(/^[=\-]{3,}\s*$/gm, '')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/[\u{1F000}-\u{1FFFF}]|[\u{2600}-\u{27BF}]|[\u{1F300}-\u{1FAFF}]/gu, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+
+    const pendingRows = [...faults].filter(f => f.status === 'fault')
+      .sort((a, b) => {
+        if (a.criticalSite && !b.criticalSite) return -1;
+        if (!a.criticalSite && b.criticalSite) return 1;
+        return b.affectedClients - a.affectedClients;
+      });
+
+    const totalClients = faults.reduce((s, f) => s + f.affectedClients, 0);
+    const restored = faults.filter(f => f.status === 'restored');
+    const enRoute = faults.filter(f => f.status === 'crew-en-route');
+    const attended = restored.length + enRoute.length;
+    const attendedClients = [...restored, ...enRoute].reduce((s, f) => s + f.affectedClients, 0);
+    const criticals = faults.filter(f => f.criticalSite);
+    const criticalsCovered = criticals.filter(f => f.status !== 'fault');
+
+    const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>Resumen Ejecutivo — Storm Response Commander</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1e293b; padding: 32px 40px; font-size: 13px; }
+  h1 { font-size: 22px; font-weight: 900; color: #0f172a; margin-bottom: 2px; }
+  .subtitle { color: #64748b; font-size: 11px; margin-bottom: 28px; }
+  .section-label { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; color: #94a3b8; text-transform: uppercase; margin-bottom: 10px; margin-top: 24px; }
+  .kpi-row { display: flex; gap: 16px; margin-bottom: 4px; }
+  .kpi-box { flex: 1; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; text-align: center; }
+  .kpi-value { font-size: 32px; font-weight: 900; }
+  .kpi-grade { font-size: 9px; font-weight: 800; letter-spacing: 0.1em; margin-top: 2px; }
+  .kpi-label { font-size: 10px; color: #94a3b8; margin-top: 6px; font-weight: 600; letter-spacing: 0.05em; }
+  .duration-box { border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; text-align: center; min-width: 120px; }
+  .duration-value { font-size: 28px; font-weight: 900; color: #0891b2; font-family: monospace; }
+  .duration-label { font-size: 10px; color: #94a3b8; margin-top: 4px; font-weight: 600; letter-spacing: 0.05em; }
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat-box { border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px; }
+  .stat-value { font-size: 24px; font-weight: 900; }
+  .stat-unit { font-size: 12px; font-weight: 700; color: #94a3b8; margin-left: 3px; }
+  .stat-label { font-size: 11px; font-weight: 700; color: #1e293b; margin-top: 3px; }
+  .stat-sub { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+  .sap-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .sap-box { border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }
+  .sap-system { font-size: 9px; font-family: monospace; color: #94a3b8; margin-bottom: 4px; }
+  .sap-value { font-size: 24px; font-weight: 900; }
+  .sap-label { font-size: 10px; font-weight: 600; color: #334155; margin-top: 2px; }
+  .narrative { border: 1px solid #e2e8f0; border-radius: 10px; padding: 18px; line-height: 1.7; color: #334155; white-space: pre-wrap; }
+  .pending-row { border: 1px solid #fde68a; border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; display: flex; gap: 14px; align-items: flex-start; }
+  .pending-badge { font-size: 9px; font-weight: 800; padding: 3px 7px; border-radius: 4px; white-space: nowrap; margin-top: 1px; }
+  .pending-id { font-size: 12px; font-weight: 900; color: #0f172a; }
+  .pending-meta { font-size: 10px; color: #94a3b8; margin-top: 1px; }
+  .pending-action { font-size: 11px; color: #475569; margin-top: 5px; line-height: 1.5; }
+  .footer { margin-top: 36px; padding-top: 14px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; color: #94a3b8; font-size: 10px; }
+  .badge-green { background: #dcfce7; color: #16a34a; }
+  .badge-orange { background: #ffedd5; color: #ea580c; }
+  .badge-red { background: #fee2e2; color: #dc2626; }
+  @media print { body { padding: 20px 28px; } }
+</style>
+</head>
+<body>
+  <h1>Resumen Ejecutivo</h1>
+  <div class="subtitle">Storm Response Commander · Iberdrola Girona · Ciclo completado · ${elapsedLabel}</div>
+
+  <div class="section-label">KPIs DE MISIÓN</div>
+  <div class="kpi-row">
+    <div class="kpi-box">
+      <div class="kpi-value" style="color:${kpiColor(kpi.sla)}">${kpi.sla}%</div>
+      <div class="kpi-grade" style="color:${kpiColor(kpi.sla)}">${kpiGrade(kpi.sla)}</div>
+      <div class="kpi-label">SLA</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-value" style="color:${kpiColor(kpi.safety)}">${kpi.safety}%</div>
+      <div class="kpi-grade" style="color:${kpiColor(kpi.safety)}">${kpiGrade(kpi.safety)}</div>
+      <div class="kpi-label">SEGURIDAD</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-value" style="color:${kpiColor(kpi.efficiency)}">${kpi.efficiency}%</div>
+      <div class="kpi-grade" style="color:${kpiColor(kpi.efficiency)}">${kpiGrade(kpi.efficiency)}</div>
+      <div class="kpi-label">EFICIENCIA OPERATIVA</div>
+    </div>
+    <div class="duration-box">
+      <div class="duration-value">${elapsedLabel}</div>
+      <div class="duration-label">DURACIÓN CICLO</div>
+    </div>
+  </div>
+
+  <div class="section-label">INDICADORES OPERATIVOS</div>
+  <div class="stat-grid">
+    <div class="stat-box">
+      <div><span class="stat-value" style="color:#16a34a">${attendedClients.toLocaleString('es-ES')}</span><span class="stat-unit">/ ${totalClients.toLocaleString('es-ES')}</span></div>
+      <div class="stat-label">Clientes atendidos</div>
+      <div class="stat-sub">${Math.round(attendedClients / totalClients * 100)}% del total</div>
+    </div>
+    <div class="stat-box">
+      <div><span class="stat-value" style="color:#2563eb">${attended}</span><span class="stat-unit">/ ${faults.length}</span></div>
+      <div class="stat-label">Fallos atendidos</div>
+      <div class="stat-sub">${restored.length} telecontrol · ${enRoute.length} brigadas</div>
+    </div>
+    <div class="stat-box">
+      <div><span class="stat-value" style="color:${criticalsCovered.length === criticals.length ? '#16a34a' : '#dc2626'}">${criticalsCovered.length}</span><span class="stat-unit">/ ${criticals.length}</span></div>
+      <div class="stat-label">Sitios críticos cubiertos</div>
+      <div class="stat-sub">${criticalsCovered.length === criticals.length ? 'Cobertura total' : `${criticals.length - criticalsCovered.length} sin cobertura`}</div>
+    </div>
+    <div class="stat-box">
+      <div><span class="stat-value" style="color:${pendingRows.length === 0 ? '#16a34a' : '#ea580c'}">${pendingRows.length}</span></div>
+      <div class="stat-label">Acciones pendientes</div>
+      <div class="stat-sub">${pendingRows.length === 0 ? 'Sin fallos sin atender' : `${pendingRows.filter(f => f.criticalSite).length} críticos · ${pendingRows.filter(f => !f.criticalSite).length} residenciales`}</div>
+    </div>
+  </div>
+
+  <div class="section-label">INTEGRACIÓN SAP</div>
+  <div class="sap-grid">
+    <div class="sap-box"><div class="sap-system">SAP AI Core Orchestration</div><div class="sap-value" style="color:#d97706">${new Set(actionMessages.map(a => a.system)).size}</div><div class="sap-label">Sistemas SAP integrados</div></div>
+    <div class="sap-box"><div class="sap-system">SAP Field Service Management</div><div class="sap-value" style="color:#2563eb">${actionMessages.filter(a => a.system === 'SAP Field Service Management' && a.msg.includes('Orden de trabajo')).length}</div><div class="sap-label">Órdenes de trabajo creadas</div></div>
+    <div class="sap-box"><div class="sap-system">SAP Asset Intelligence Network</div><div class="sap-value" style="color:#16a34a">${restored.length}</div><div class="sap-label">Conmutaciones registradas en AIN</div></div>
+    <div class="sap-box"><div class="sap-system">SAP Integrated Business Planning</div><div class="sap-value" style="color:#9333ea">${actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && a.msg.includes('Material reservado')).length}</div><div class="sap-label">Materiales reservados</div></div>
+    <div class="sap-box"><div class="sap-system">SAP Customer Experience</div><div class="sap-value" style="color:#db2777">${commsMessages.length}</div><div class="sap-label">Mensajes enviados vía SAP CX</div></div>
+    <div class="sap-box"><div class="sap-system">SAP S/4HANA Asset Management</div><div class="sap-value" style="color:#0891b2">${faults.length}</div><div class="sap-label">Activos analizados en S/4HANA</div></div>
+  </div>
+
+  ${orchPlain ? `
+  <div class="section-label">ANÁLISIS DEL ORQUESTADOR</div>
+  <div class="narrative">${orchPlain.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+  ` : ''}
+
+  ${pendingRows.length > 0 ? `
+  <div class="section-label">ACCIONES PENDIENTES (${pendingRows.length})</div>
+  ${pendingRows.map(fault => {
+    const { action, urgency } = getMitigation(fault);
+    const bg = urgency === 'high' ? '#fee2e2' : urgency === 'medium' ? '#ffedd5' : '#fef9c3';
+    const col = urgency === 'high' ? '#dc2626' : urgency === 'medium' ? '#ea580c' : '#ca8a04';
+    const lbl = URGENCY_LABEL[urgency];
+    return `<div class="pending-row" style="border-color:${col}33">
+      <div class="pending-badge" style="background:${bg};color:${col}">${lbl}</div>
+      <div style="flex:1">
+        <div class="pending-id">${fault.id} <span style="font-weight:400;color:#64748b;font-size:11px">${fault.zone} · ${fault.type === 'transformer' ? 'Transformador' : fault.type === 'cable' ? 'Cable' : 'Conmutable'} · ${fault.affectedClients.toLocaleString('es-ES')} clientes${fault.criticalSite ? ` · ${fault.criticalSite}` : ''}</span></div>
+        <div class="pending-action"><strong>Mitigación:</strong> ${action}</div>
+      </div>
+    </div>`;
+  }).join('')}
+  ` : ''}
+
+  <div class="footer">
+    <span>Storm Response Commander · Iberdrola Girona</span>
+    <span>Generado el ${new Date().toLocaleString('es-ES')}</span>
+  </div>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank', 'width=900,height=700');
+    if (!win) return;
+    win.document.write(html);
+    win.document.close();
+    setTimeout(() => { win.focus(); win.print(); }, 400);
   }
 
   // Orchestrator narrative
@@ -249,7 +388,6 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
 
   return (
     <div
-      id="results-print-root"
       className="fixed inset-0 flex items-center justify-center p-4"
       style={{ background: 'rgba(4,8,16,0.88)', backdropFilter: 'blur(14px)', zIndex: 2000, opacity: vis ? 1 : 0, transition: 'opacity 0.3s' }}
     >
@@ -274,7 +412,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
           </span>
           <button
             onClick={onClose}
-            className="no-print ml-3 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
+            className="ml-3 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
             style={{ background: 'rgba(255,255,255,0.04)', color: '#475569', border: '1px solid #1e2d45', cursor: 'pointer' }}
           >✕</button>
         </div>
@@ -391,7 +529,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 13, opacity: 0.25 }} />
             <span className="text-[11px] font-mono" style={{ color: '#1e3a5f' }}>Storm Response Commander · Iberdrola Girona</span>
           </div>
-          <div className="no-print flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <button
               onClick={downloadReport}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold"

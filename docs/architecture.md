@@ -203,7 +203,7 @@ Aparece automáticamente 800 ms después de recibir el evento `done`. Puede cerr
 
 **Gauges SVG:** Arco de círculo calculado con `strokeDasharray = (value/100) × 2πr`. El arco vacío usa `#1e2d45` y el lleno el color del umbral (verde ≥80, naranja ≥60, rojo <60). `zIndex: 2000` para solapar el mapa Leaflet (z-index máximo ~1000).
 
-**Descarga PDF:** El botón "Descargar PDF" del footer inyecta dinámicamente un bloque `<style>` con `@media print` que oculta todo el DOM excepto `#results-print-root`, llama a `window.print()`, y elimina el estilo tras 1,5 s. La clase `no-print` oculta los botones de acción del PDF. `print-color-adjust: exact` preserva los colores del dashboard oscuro.
+**Descarga PDF:** El botón "Descargar PDF" genera un documento HTML completo con fondo blanco en memoria (KPIs, stats operativos, integración SAP, análisis del orquestador, acciones pendientes con mitigación), lo abre en una ventana nueva con `window.open()` y llama a `window.print()` tras 400 ms para dar tiempo al render. Sin dependencias externas — todo el HTML y CSS se genera como string en el cliente.
 
 ---
 
