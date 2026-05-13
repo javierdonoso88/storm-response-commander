@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { SimParams } from '../types';
 
 interface Props {
@@ -11,16 +12,29 @@ interface Props {
 const storm2Options: SimParams['storm2Window'][] = ['T+4h', 'T+6h', 'T+8h', 'none'];
 
 function TooltipLabel({ label, tip }: { label: string; tip: string }) {
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
   return (
-    <div className="relative group flex items-center gap-1 min-w-0">
+    <div
+      className="flex items-center gap-1 min-w-0 cursor-default"
+      onMouseEnter={e => {
+        const r = e.currentTarget.getBoundingClientRect();
+        setPos({ x: r.right + 10, y: r.top + r.height / 2 });
+      }}
+      onMouseLeave={() => setPos(null)}
+    >
       <span className="text-xs text-slate-400 font-medium truncate">{label}</span>
-      <span className="text-[10px] text-slate-600 flex-shrink-0 cursor-default select-none">ⓘ</span>
-      <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-52 z-50 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-150">
-        <div className="rounded-lg px-3 py-2.5 text-[11px] leading-relaxed shadow-2xl" style={{ background: '#0a1525', border: '1px solid #1e3a5f', color: '#94a3b8' }}>
-          {tip}
+      <span className="text-[10px] text-slate-600 flex-shrink-0 select-none">ⓘ</span>
+      {pos && (
+        <div
+          className="fixed w-52 z-[9999] pointer-events-none"
+          style={{ left: pos.x, top: pos.y, transform: 'translateY(-50%)' }}
+        >
+          <div className="rounded-lg px-3 py-2.5 text-[11px] leading-relaxed shadow-2xl" style={{ background: '#0a1525', border: '1px solid #1e3a5f', color: '#94a3b8' }}>
+            {tip}
+          </div>
+          <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent" style={{ borderRightColor: '#1e3a5f' }} />
         </div>
-        <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent" style={{ borderRightColor: '#1e3a5f' }} />
-      </div>
+      )}
     </div>
   );
 }
