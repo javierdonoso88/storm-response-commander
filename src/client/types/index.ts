@@ -34,9 +34,9 @@ export interface AgentState {
 }
 
 export interface KPIState {
-  sla: number;
-  safety: number;
-  efficiency: number;
+  sla: number | null;
+  safety: number | null;
+  efficiency: number | null;
 }
 
 export interface CommsMessage {

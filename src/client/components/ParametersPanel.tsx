@@ -6,7 +6,7 @@ interface Props {
   onChange: (p: Partial<SimParams>) => void;
   onSimulate: () => void;
   running: boolean;
-  kpi: { sla: number; safety: number; efficiency: number };
+  kpi: { sla: number | null; safety: number | null; efficiency: number | null };
 }
 
 const storm2Options: SimParams['storm2Window'][] = ['T+4h', 'T+6h', 'T+8h', 'none'];
@@ -148,9 +148,9 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
         {/* KPIs */}
         <div className="border-t pt-3 flex flex-col gap-2.5" style={{ borderColor: '#1e2d45' }}>
           <span className="text-[13px] font-semibold uppercase tracking-widest text-slate-600">KPIs</span>
-          <KPIRow label="SLA" sub="clientes cubiertos" value={kpi.sla} color={kpi.sla >= 80 ? '#22c55e' : kpi.sla >= 55 ? '#f97316' : '#ef4444'} />
-          <KPIRow label="Seguridad" sub="sitios críticos" value={kpi.safety} color={kpi.safety === 100 ? '#22c55e' : kpi.safety >= 70 ? '#f97316' : '#ef4444'} />
-          <KPIRow label="Eficiencia" sub="fallos gestionados" value={kpi.efficiency} color={kpi.efficiency >= 80 ? '#22c55e' : kpi.efficiency >= 50 ? '#3b82f6' : '#64748b'} />
+          <KPIRow label="SLA" sub="clientes cubiertos" value={kpi.sla} color={kpi.sla === null ? '#334155' : kpi.sla >= 80 ? '#22c55e' : kpi.sla >= 55 ? '#f97316' : '#ef4444'} />
+          <KPIRow label="Seguridad" sub="sitios críticos" value={kpi.safety} color={kpi.safety === null ? '#334155' : kpi.safety === 100 ? '#22c55e' : kpi.safety >= 70 ? '#f97316' : '#ef4444'} />
+          <KPIRow label="Eficiencia" sub="fallos gestionados" value={kpi.efficiency} color={kpi.efficiency === null ? '#334155' : kpi.efficiency >= 80 ? '#22c55e' : kpi.efficiency >= 50 ? '#3b82f6' : '#64748b'} />
         </div>
 
       </div>
@@ -182,7 +182,7 @@ function SliderField({ label, tip, value, valueColor, min, max, step, current, o
   );
 }
 
-function KPIRow({ label, sub, value, color }: { label: string; sub: string; value: number; color: string }) {
+function KPIRow({ label, sub, value, color }: { label: string; sub: string; value: number | null; color: string }) {
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-baseline justify-between">
@@ -190,10 +190,14 @@ function KPIRow({ label, sub, value, color }: { label: string; sub: string; valu
           <span className="text-[12px] font-semibold text-slate-400">{label}</span>
           <span className="text-[13px] text-slate-600">{sub}</span>
         </div>
-        <span className="text-[13px] font-bold font-mono" style={{ color }}>{value}%</span>
+        <span className="text-[13px] font-bold font-mono" style={{ color: value === null ? '#334155' : color }}>
+          {value === null ? '—' : `${value}%`}
+        </span>
       </div>
       <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#1e2d45' }}>
-        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${value}%`, background: color }} />
+        {value !== null && (
+          <div className="h-full rounded-full transition-all duration-700" style={{ width: `${value}%`, background: color }} />
+        )}
       </div>
     </div>
   );
