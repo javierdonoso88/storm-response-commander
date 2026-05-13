@@ -196,7 +196,7 @@ export function LandingPage({ onEnter }: Props) {
           <div className="flex justify-center mb-5">
             <div className="px-10 py-4 rounded-2xl text-center" style={{ background: 'linear-gradient(135deg,rgba(245,158,11,0.1),rgba(245,158,11,0.04))', border: '1px solid rgba(245,158,11,0.35)', minWidth: 280 }}>
               <div className="text-[10px] font-bold tracking-widest mb-1" style={{ color: '#f59e0b' }}>SUPERVISOR</div>
-              <div className="text-xl font-black">ORCHESTRATOR</div>
+              <div className="text-xl font-black">STATUS UPDATE</div>
               <div className="text-[11px] font-mono mt-1" style={{ color: '#475569' }}>SAP AI Core Orchestration</div>
             </div>
           </div>

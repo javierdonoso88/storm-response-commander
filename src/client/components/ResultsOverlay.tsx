@@ -320,7 +320,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
   </div>
 
   ${orchPlain ? `
-  <div class="section-label">ANÁLISIS DEL ORQUESTADOR</div>
+  <div class="section-label">ANÁLISIS STATUS UPDATE</div>
   <div class="narrative">${orchPlain.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
   ` : ''}
 
@@ -465,9 +465,9 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
             </div>
           </div>
 
-          {/* ── Orchestrator executive summary ── */}
+          {/* ── Status Update executive summary ── */}
           <div>
-            <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: '#1e3a5f' }}>ANÁLISIS DEL ORQUESTADOR</div>
+            <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: '#1e3a5f' }}>ANÁLISIS STATUS UPDATE</div>
             <div className="rounded-xl px-6 py-5" style={{ background: 'rgba(10,18,35,0.6)', border: '1px solid #1e2d45' }}>
               {orchRaw ? (
                 <div>{renderMarkdown(orchRaw)}</div>
