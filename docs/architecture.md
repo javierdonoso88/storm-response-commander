@@ -31,9 +31,57 @@ Usuario configura parámetros → POST /api/simulate
                 └── tool_use: finalize → emit kpi + done
 ```
 
-Cada `emit()` se serializa como un evento SSE y se envía al cliente inmediatamente.
+Cada `emit()` se serializa como un evento SSE (modo individual) o broadcast vía Socket.IO a todos los miembros de la sala (modo sala de crisis).
 
 ---
+
+## Sala de Crisis — Human-in-the-loop
+
+El **modo Sala de Crisis** permite que múltiples usuarios se conecten a la misma simulación en tiempo real. El flujo es:
+
+```
+Director crea sala  →  roomManager.createRoom()  →  código 4 caracteres
+Observadores        →  joinRoom(código)           →  entran en la misma sala
+
+Director inicia simulación
+  └─► socketHandlers.ts: start_simulation
+        └─► runOrchestrator(params, emit, approvalGate)
+                emit() → io.to(roomId).emit('sim_event', event)
+                        → todos los miembros reciben los eventos en tiempo real
+```
+
+**Approval gate (between Phase 1 and Phase 2):**
+
+```
+[Fase 1 completa: triage + remote restoration]
+        │
+        ▼
+invoke_crew_dispatch handler
+  ├── buildApprovalSummary(state)
+  │     # telecontrol restaurados, fallos físicos pendientes, crews disponibles
+  ├── emit({ type: 'pending_approval', summary })
+  │     # todos los clientes pausan la UI
+  ├── await waitForApproval(roomId, 300s timeout)
+  │     # roomManager mantiene un EventEmitter por sala
+  │
+  ├── Director aprueba → resolveApproval(roomId, true)
+  │     └── orchestrator continúa con crew-dispatch → resource → comms
+  │
+  └── Director rechaza → resolveApproval(roomId, false)
+        └── orchestrator emite acción de cancelación, corre finalize, para
+```
+
+**Componentes:**
+
+| Archivo | Responsabilidad |
+|---------|----------------|
+| `server/roomManager.ts` | Crea/destruye salas, gestiona `EventEmitter` por sala para el approval gate |
+| `server/socketHandlers.ts` | Handlers Socket.IO: create_room, join_room, start_simulation, resolve_approval |
+| `client/hooks/useRoom.ts` | Conexión Socket.IO cliente, estado de sala, métodos createRoom/joinRoom/resolveApproval |
+| `client/components/ModeLobby.tsx` | Pantalla de selección de modo: Individual / Director / Observador |
+| `client/components/ApprovalGate.tsx` | Overlay de aprobación: Director ve botones Aprobar/Cancelar; Observadores ven "Esperando..." |
+
+
 
 ## SSE — Tipos de eventos
 
@@ -48,6 +96,7 @@ Cada `emit()` se serializa como un evento SSE y se envía al cliente inmediatame
 | `conflict` | `{ winner, loser, reason }` | Muestra alerta de conflicto |
 | `safety_tick` | `{ elapsed, limit }` | Actualiza barra de progreso de seguridad |
 | `kpi` | `{ sla, safety, efficiency, tiepi, mttr }` | Actualiza métricas finales |
+| `pending_approval` | `{ summary: ApprovalSummary }` | Pausa el orquestador; muestra ApprovalGate al Director |
 | `done` | `{ elapsed }` | Cierra la simulación |
 
 ---

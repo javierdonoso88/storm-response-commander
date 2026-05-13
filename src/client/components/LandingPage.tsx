@@ -135,6 +135,9 @@ export function LandingPage({ onEnter }: Props) {
         >
           Acceder al Simulador →
         </button>
+        <p className={`mt-4 text-xs ${fade(500)}`} style={{ color: '#334155' }}>
+          Modo individual · Sala de Crisis multi-usuario · Human-in-the-loop
+        </p>
 
         {/* stats */}
         <div className={`mt-20 grid grid-cols-4 gap-10 ${fade(500)}`}>
@@ -243,6 +246,7 @@ export function LandingPage({ onEnter }: Props) {
         <h2 className="font-black mb-3" style={{ fontSize: 'clamp(2rem,4vw,3.5rem)' }}>Inicia el incidente</h2>
         <p className="mb-10 text-base max-w-lg" style={{ color: '#475569' }}>
           Configura los parámetros operativos y observa cómo los agentes razonan, deciden y actúan en tiempo real.
+          Activa la <strong style={{ color: '#f59e0b' }}>Sala de Crisis</strong> para operar en equipo con human-in-the-loop.
         </p>
         <button
           onClick={onEnter}

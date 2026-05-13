@@ -7,6 +7,7 @@ interface Props {
   onSimulate: () => void;
   running: boolean;
   kpi: { sla: number | null; safety: number | null; efficiency: number | null; tiepi: number | null; mttr: number | null };
+  isObserver?: boolean;
 }
 
 const storm2Options: SimParams['storm2Window'][] = ['T+4h', 'T+6h', 'T+8h', 'none'];
@@ -39,7 +40,7 @@ function TooltipLabel({ label, tip }: { label: string; tip: string }) {
   );
 }
 
-export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: Props) {
+export function ParametersPanel({ params, onChange, onSimulate, running, kpi, isObserver }: Props) {
   return (
     <div className="flex flex-col h-full">
 
@@ -136,13 +137,14 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
         </div>
 
         {/* Simulate */}
-        <button onClick={onSimulate} disabled={running} className="btn-primary w-full mt-1">
+        <button onClick={onSimulate} disabled={running || isObserver} className="btn-primary w-full mt-1"
+          title={isObserver ? 'Solo el Director puede iniciar la simulación' : undefined}>
           {running ? (
             <>
               <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
               Simulando…
             </>
-          ) : '▶ Simular'}
+          ) : isObserver ? '🔒 Solo Director' : '▶ Simular'}
         </button>
 
         {/* KPIs */}
