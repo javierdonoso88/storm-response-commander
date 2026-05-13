@@ -26,7 +26,7 @@ Al finalizar, aparece automáticamente un **Resumen Ejecutivo** con:
 - Resumen narrativo del orquestador (texto CoT limpio de markdown)
 - Acciones pendientes con recomendaciones de mitigación priorizadas
 
-El informe puede cerrarse y reabrirse mediante el botón **"Ver Informe"** del header (visible tras completar la simulación). Al lanzar una nueva simulación el botón desaparece hasta que finalice.
+El informe puede cerrarse y reabrirse mediante el botón **"Ver Informe"** del header (visible tras completar la simulación). Al lanzar una nueva simulación el botón desaparece hasta que finalice. Desde el footer del informe se puede **descargar como PDF** con un clic — los estilos de impresión ocultan el resto de la UI y preservan los colores del dashboard.
 
 ---
 

@@ -188,6 +188,34 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
   const [vis, setVis] = useState(false);
   useEffect(() => { const t = setTimeout(() => setVis(true), 50); return () => clearTimeout(t); }, []);
 
+  function downloadReport() {
+    const style = document.createElement('style');
+    style.id = '__print_override__';
+    style.textContent = `
+      @media print {
+        body > *:not(#results-print-root) { display: none !important; }
+        #results-print-root {
+          position: static !important;
+          background: #080e1a !important;
+          overflow: visible !important;
+          backdrop-filter: none !important;
+        }
+        #results-print-root > div {
+          max-height: none !important;
+          overflow: visible !important;
+          box-shadow: none !important;
+          transform: none !important;
+          border-radius: 0 !important;
+        }
+        .no-print { display: none !important; }
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+      }
+    `;
+    document.head.appendChild(style);
+    window.print();
+    setTimeout(() => { const el = document.getElementById('__print_override__'); if (el) el.remove(); }, 1500);
+  }
+
   // Orchestrator narrative
   const orchLog = agentLogs.find(l => l.agent === 'orchestrator');
   const orchRaw = orchLog?.text ?? '';
@@ -221,6 +249,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
 
   return (
     <div
+      id="results-print-root"
       className="fixed inset-0 flex items-center justify-center p-4"
       style={{ background: 'rgba(4,8,16,0.88)', backdropFilter: 'blur(14px)', zIndex: 2000, opacity: vis ? 1 : 0, transition: 'opacity 0.3s' }}
     >
@@ -245,7 +274,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
           </span>
           <button
             onClick={onClose}
-            className="ml-3 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
+            className="no-print ml-3 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
             style={{ background: 'rgba(255,255,255,0.04)', color: '#475569', border: '1px solid #1e2d45', cursor: 'pointer' }}
           >✕</button>
         </div>
@@ -362,13 +391,25 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 13, opacity: 0.25 }} />
             <span className="text-[11px] font-mono" style={{ color: '#1e3a5f' }}>Storm Response Commander · Iberdrola Girona</span>
           </div>
-          <button
-            onClick={onClose}
-            className="px-5 py-2 rounded-lg text-xs font-bold"
-            style={{ background: 'rgba(34,211,238,0.07)', color: '#22d3ee', border: '1px solid rgba(34,211,238,0.2)', cursor: 'pointer' }}
-          >
-            Cerrar y volver al simulador
-          </button>
+          <div className="no-print flex items-center gap-2">
+            <button
+              onClick={downloadReport}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold"
+              style={{ background: 'rgba(34,211,238,0.05)', color: '#475569', border: '1px solid #1e2d45', cursor: 'pointer' }}
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Descargar PDF
+            </button>
+            <button
+              onClick={onClose}
+              className="px-5 py-2 rounded-lg text-xs font-bold"
+              style={{ background: 'rgba(34,211,238,0.07)', color: '#22d3ee', border: '1px solid rgba(34,211,238,0.2)', cursor: 'pointer' }}
+            >
+              Cerrar y volver al simulador
+            </button>
+          </div>
         </div>
 
       </div>
