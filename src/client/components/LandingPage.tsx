@@ -19,15 +19,14 @@ const CHALLENGE_CARDS = [
 ];
 
 const PHASE1_AGENTS = [
-  { label: 'TRIAGE', system: 'SAP S/4HANA Asset Management', desc: 'Clasifica 47 fallos por severidad, tipo y riesgo crítico', color: '#22d3ee' },
-  { label: 'REROUTING', system: 'SAP Asset Intelligence Network', desc: 'Ejecuta conmutaciones remotas de telecontrol', color: '#4ade80' },
-  { label: 'PRIORITY', system: 'SAP Event Mesh + Business Rules', desc: 'Rankea urgencia y emite alertas regulatorias', color: '#fb923c' },
+  { label: 'TRIAGE & PRIORITY', system: 'SAP S/4HANA Asset Management + Event Mesh', desc: 'Clasifica 47 fallos por severidad y rankea los físicos por urgencia para el despacho', color: '#22d3ee' },
+  { label: 'REMOTE RESTORATION', system: 'SAP Asset Intelligence Network', desc: 'Ejecuta conmutaciones remotas de telecontrol hasta el límite autorizado', color: '#4ade80' },
 ];
 
 const PHASE2_AGENTS = [
   { label: 'CREW-DISPATCH', system: 'SAP Field Service Management', desc: 'Asigna brigadas respetando skills y ventana de tormenta', color: '#60a5fa' },
   { label: 'RESOURCE', system: 'SAP Integrated Business Planning', desc: 'Gestiona inventario y registra conflictos de material', color: '#c084fc' },
-  { label: 'COMMS', system: 'SAP Customer Experience', desc: 'Redacta SMS, notas de prensa y notificaciones regulatorias', color: '#f472b6' },
+  { label: 'ALERTS & COMMS', system: 'SAP Customer Experience', desc: 'Redacta SMS, notas de prensa y notificaciones regulatorias', color: '#f472b6' },
 ];
 
 function hexToRgb(hex: string) {
@@ -190,7 +189,7 @@ export function LandingPage({ onEnter }: Props) {
           <div className="text-xs font-bold tracking-widest mb-3 text-center" style={{ color: '#22d3ee' }}>ARQUITECTURA MULTI-AGENTE</div>
           <h2 className="font-black mb-2 text-center" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)' }}>Orquestación autónoma con SAP</h2>
           <p className="text-center text-sm mb-14" style={{ color: '#334155' }}>
-            Un orquestador Claude coordina 6 agentes especializados que razonan y actúan con herramientas reales
+            Un orquestador Claude coordina 5 agentes especializados que razonan y actúan con herramientas reales
           </p>
 
           {/* Orchestrator */}
@@ -213,7 +212,7 @@ export function LandingPage({ onEnter }: Props) {
             </span>
             <div style={{ flex: 1, height: 1, background: '#0d1e35' }} />
           </div>
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-2 gap-4 mb-6">
             {PHASE1_AGENTS.map(a => <AgentCard key={a.label} {...a} />)}
           </div>
 
