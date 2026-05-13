@@ -37,7 +37,7 @@ const AGENT_COLORS: Record<AgentId, { bg: string; ring: string; initials: string
 
 const AGENT_SHORT: Record<AgentId, string> = {
   'triage-priority': 'Triage & Priority',
-  rerouting:         'Rerouting',
+  rerouting:         'Remote Restoration',
   'crew-dispatch':   'Crew Dispatch',
   resource:          'Resource',
   comms:             'Alerts & Comms',

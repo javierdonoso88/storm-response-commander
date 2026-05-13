@@ -7,7 +7,7 @@ import {
 const AGENT_LABELS: Record<AgentId | 'orchestrator', string> = {
   orchestrator: 'ORCHESTRATOR',
   'triage-priority': 'TRIAGE & PRIORITY',
-  rerouting: 'REROUTING',
+  rerouting: 'REMOTE RESTORATION',
   'crew-dispatch': 'CREW-DISPATCH',
   resource: 'RESOURCE',
   comms: 'ALERTS & COMMS',

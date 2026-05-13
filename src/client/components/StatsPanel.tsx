@@ -26,7 +26,7 @@ const CHANNEL_LABEL: Record<string, string> = {
 const AGENT_LABEL: Record<string, string> = {
   orchestrator: 'SUPERVISOR',
   'triage-priority': 'TRIAGE & PRIORITY',
-  rerouting: 'REROUTING',
+  rerouting: 'REMOTE RESTORATION',
   'crew-dispatch': 'CREW-DISPATCH',
   resource: 'RESOURCE',
   comms: 'ALERTS & COMMS',
