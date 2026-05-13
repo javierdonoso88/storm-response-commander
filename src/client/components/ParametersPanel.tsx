@@ -6,7 +6,7 @@ interface Props {
   onChange: (p: Partial<SimParams>) => void;
   onSimulate: () => void;
   running: boolean;
-  kpi: { sla: number | null; safety: number | null; efficiency: number | null };
+  kpi: { sla: number | null; safety: number | null; efficiency: number | null; tiepi: number | null; mttr: number | null };
 }
 
 const storm2Options: SimParams['storm2Window'][] = ['T+4h', 'T+6h', 'T+8h', 'none'];
@@ -151,6 +151,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
           <KPIRow label="SLA" sub="clientes cubiertos" value={kpi.sla} color={kpi.sla === null ? '#334155' : kpi.sla >= 80 ? '#22c55e' : kpi.sla >= 55 ? '#f97316' : '#ef4444'} />
           <KPIRow label="Seguridad" sub="sitios críticos" value={kpi.safety} color={kpi.safety === null ? '#334155' : kpi.safety === 100 ? '#22c55e' : kpi.safety >= 70 ? '#f97316' : '#ef4444'} />
           <KPIRow label="Eficiencia" sub="fallos gestionados" value={kpi.efficiency} color={kpi.efficiency === null ? '#334155' : kpi.efficiency >= 80 ? '#22c55e' : kpi.efficiency >= 50 ? '#3b82f6' : '#64748b'} />
+          <KPIMinuteRow label="TIEPI" sub="interrupción media" value={kpi.tiepi} color={kpi.tiepi === null ? '#334155' : kpi.tiepi <= 60 ? '#22c55e' : kpi.tiepi <= 120 ? '#f97316' : '#ef4444'} />
+          <KPIMinuteRow label="MTTR" sub="tiempo medio reposición" value={kpi.mttr} color={kpi.mttr === null ? '#334155' : kpi.mttr <= 60 ? '#22c55e' : kpi.mttr <= 120 ? '#f97316' : '#ef4444'} />
         </div>
 
       </div>
@@ -178,6 +180,20 @@ function SliderField({ label, tip, value, valueColor, min, max, step, current, o
       <div className="flex justify-between text-[12px]" style={{ color: '#334155' }}>
         <span>{min}</span><span>{max}</span>
       </div>
+    </div>
+  );
+}
+
+function KPIMinuteRow({ label, sub, value, color }: { label: string; sub: string; value: number | null; color: string }) {
+  return (
+    <div className="flex items-baseline justify-between">
+      <div className="flex flex-col">
+        <span className="text-[12px] font-semibold text-slate-400">{label}</span>
+        <span className="text-[13px] text-slate-600">{sub}</span>
+      </div>
+      <span className="text-[13px] font-bold font-mono" style={{ color: value === null ? '#334155' : color }}>
+        {value === null ? '—' : `${value} min`}
+      </span>
     </div>
   );
 }

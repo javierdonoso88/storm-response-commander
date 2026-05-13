@@ -43,7 +43,7 @@ export function useSimulation(initialFaults: Fault[]) {
     agentLogs: [],
     agents: initialAgents(),
     faults: initialFaults,
-    kpi: { sla: null, safety: null, efficiency: null },
+    kpi: { sla: null, safety: null, efficiency: null, tiepi: null, mttr: null },
     commsMessages: [],
     actionMessages: [],
     conflicts: [],
@@ -60,7 +60,7 @@ export function useSimulation(initialFaults: Fault[]) {
       agentLogs: [],
       agents: initialAgents(),
       faults: initialFaults.map(f => ({ ...f, status: 'fault' as const })),
-      kpi: { sla: null, safety: null, efficiency: null },
+      kpi: { sla: null, safety: null, efficiency: null, tiepi: null, mttr: null },
       commsMessages: [],
       actionMessages: [],
       conflicts: [],
@@ -163,7 +163,7 @@ export function useSimulation(initialFaults: Fault[]) {
           return { ...prev, safetyElapsed: event.elapsed, safetyLimit: event.limit };
 
         case 'kpi':
-          return { ...prev, kpi: { sla: event.sla, safety: event.safety, efficiency: event.efficiency } };
+          return { ...prev, kpi: { sla: event.sla, safety: event.safety, efficiency: event.efficiency, tiepi: event.tiepi, mttr: event.mttr } };
 
         case 'conflict':
           return {

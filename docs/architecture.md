@@ -47,7 +47,7 @@ Cada `emit()` se serializa como un evento SSE y se envía al cliente inmediatame
 | `action` | `{ agent, system, msg }` | Añade entrada al feed de Acciones SAP |
 | `conflict` | `{ winner, loser, reason }` | Muestra alerta de conflicto |
 | `safety_tick` | `{ elapsed, limit }` | Actualiza barra de progreso de seguridad |
-| `kpi` | `{ sla, safety, efficiency }` | Actualiza métricas finales |
+| `kpi` | `{ sla, safety, efficiency, tiepi, mttr }` | Actualiza métricas finales |
 | `done` | `{ elapsed }` | Cierra la simulación |
 
 ---

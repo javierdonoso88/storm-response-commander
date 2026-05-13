@@ -125,10 +125,28 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     // Efficiency: % of total faults addressed (restored or crew dispatched)
     const efficiencyScore = Math.min(100, Math.round(addressedFaults.length / state.faults.length * 100));
 
-    emit({ type: 'kpi', sla: slaScore, safety: safetyScore, efficiency: efficiencyScore });
-    emit({ type: 'action', agent: 'orchestrator', system: 'SAP AI Core Orchestration', msg: `Ciclo cerrado en AI Core — KPIs: SLA ${slaScore}%, Seguridad ${safetyScore}%, Eficiencia ${efficiencyScore}%` });
+    // TIEPI: Σ(affectedClients_i × estimatedTime_i) / totalClients  (in minutes)
+    // Estimated interruption time per fault status:
+    //   restored (telecontrol) → 10 min, crew-en-route transformer → 135 min,
+    //   crew-en-route cable → 90 min, fault (unattended) → 240 min
+    const estimatedTime = (f: typeof state.faults[0]) => {
+      if (f.status === 'restored') return 10;
+      if (f.status === 'crew-en-route' || f.status === 'repairing') return f.type === 'transformer' ? 135 : 90;
+      return 240; // unattended fault
+    };
+    const tiepiValue = totalAffectedClients > 0
+      ? Math.round(state.faults.reduce((s, f) => s + f.affectedClients * estimatedTime(f), 0) / totalAffectedClients)
+      : 0;
+
+    // MTTR: mean repair time for attended faults (restored + crew-en-route)
+    const mttrValue = addressedFaults.length > 0
+      ? Math.round(addressedFaults.reduce((s, f) => s + estimatedTime(f), 0) / addressedFaults.length)
+      : 0;
+
+    emit({ type: 'kpi', sla: slaScore, safety: safetyScore, efficiency: efficiencyScore, tiepi: tiepiValue, mttr: mttrValue });
+    emit({ type: 'action', agent: 'orchestrator', system: 'SAP AI Core Orchestration', msg: `Ciclo cerrado en AI Core — KPIs: SLA ${slaScore}%, Seguridad ${safetyScore}%, Eficiencia ${efficiencyScore}%, TIEPI ${tiepiValue} min, MTTR ${mttrValue} min` });
     emit({ type: 'done', elapsed: simTime(Date.now() - startTime) });
-    return `Misión finalizada. KPIs: SLA=${slaScore}%, Seguridad=${safetyScore}%, Eficiencia=${efficiencyScore}%`;
+    return `Misión finalizada. KPIs: SLA=${slaScore}%, Seguridad=${safetyScore}%, Eficiencia=${efficiencyScore}%, TIEPI=${tiepiValue}min, MTTR=${mttrValue}min`;
   });
 
   const sdkTools: Anthropic.Tool[] = [

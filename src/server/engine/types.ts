@@ -51,7 +51,7 @@ export type SimEvent =
   | { type: 'asset_update'; id: string; status: FaultStatus }
   | { type: 'comms'; channel: 'sms' | 'press' | 'regulatory'; msg: string }
   | { type: 'safety_tick'; elapsed: number; limit: number }
-  | { type: 'kpi'; sla: number; safety: number; efficiency: number }
+  | { type: 'kpi'; sla: number; safety: number; efficiency: number; tiepi: number; mttr: number }
   | { type: 'conflict'; winner: AgentId; loser: AgentId; reason: string }
   | { type: 'action'; agent: AgentId | 'orchestrator'; system: string; msg: string }
   | { type: 'done'; elapsed: string };

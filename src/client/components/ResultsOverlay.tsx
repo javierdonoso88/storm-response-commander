@@ -146,6 +146,24 @@ function getMitigation(fault: Fault): { action: string; urgency: 'high' | 'mediu
 const URGENCY_COLOR = { high: '#ef4444', medium: '#f97316', low: '#f59e0b' };
 const URGENCY_LABEL = { high: 'CRÍTICO', medium: 'MODERADO', low: 'BAJO' };
 
+function MinuteKpiCard({ label, sublabel, value, thresholds }: { label: string; sublabel: string; value: number | null; thresholds: [number, number] }) {
+  const color = value === null ? '#334155' : value <= thresholds[0] ? '#22c55e' : value <= thresholds[1] ? '#f97316' : '#ef4444';
+  const grade = value === null ? '' : value <= thresholds[0] ? 'ÓPTIMO' : value <= thresholds[1] ? 'ACEPTABLE' : 'CRÍTICO';
+  return (
+    <div className="flex items-center gap-4 flex-1">
+      <div>
+        <div className="text-[10px] font-black tracking-widest mb-0.5" style={{ color: '#475569' }}>{label}</div>
+        <div className="flex items-baseline gap-1">
+          <span className="text-3xl font-black font-mono" style={{ color }}>{value === null ? '—' : value}</span>
+          {value !== null && <span className="text-base font-bold" style={{ color }}>min</span>}
+        </div>
+        {grade && <div className="text-[10px] font-black tracking-widest mt-0.5" style={{ color }}>{grade}</div>}
+      </div>
+      <div className="text-[11px] leading-relaxed max-w-[180px]" style={{ color: '#334155' }}>{sublabel}</div>
+    </div>
+  );
+}
+
 function KpiBlock({ value, label }: { value: number; label: string }) {
   const color = kpiColor(value);
   const r = 52;
@@ -265,19 +283,29 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
   <div class="section-label">KPIs DE MISIÓN</div>
   <div class="kpi-row">
     <div class="kpi-box">
-      <div class="kpi-value" style="color:${kpiColor(kpi.sla)}">${kpi.sla}%</div>
-      <div class="kpi-grade" style="color:${kpiColor(kpi.sla)}">${kpiGrade(kpi.sla)}</div>
+      <div class="kpi-value" style="color:${kpiColor(kpi.sla ?? 0)}">${kpi.sla}%</div>
+      <div class="kpi-grade" style="color:${kpiColor(kpi.sla ?? 0)}">${kpiGrade(kpi.sla ?? 0)}</div>
       <div class="kpi-label">SLA</div>
     </div>
     <div class="kpi-box">
-      <div class="kpi-value" style="color:${kpiColor(kpi.safety)}">${kpi.safety}%</div>
-      <div class="kpi-grade" style="color:${kpiColor(kpi.safety)}">${kpiGrade(kpi.safety)}</div>
+      <div class="kpi-value" style="color:${kpiColor(kpi.safety ?? 0)}">${kpi.safety}%</div>
+      <div class="kpi-grade" style="color:${kpiColor(kpi.safety ?? 0)}">${kpiGrade(kpi.safety ?? 0)}</div>
       <div class="kpi-label">SEGURIDAD</div>
     </div>
     <div class="kpi-box">
-      <div class="kpi-value" style="color:${kpiColor(kpi.efficiency)}">${kpi.efficiency}%</div>
-      <div class="kpi-grade" style="color:${kpiColor(kpi.efficiency)}">${kpiGrade(kpi.efficiency)}</div>
+      <div class="kpi-value" style="color:${kpiColor(kpi.efficiency ?? 0)}">${kpi.efficiency}%</div>
+      <div class="kpi-grade" style="color:${kpiColor(kpi.efficiency ?? 0)}">${kpiGrade(kpi.efficiency ?? 0)}</div>
       <div class="kpi-label">EFICIENCIA OPERATIVA</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-value" style="color:${kpi.tiepi != null && kpi.tiepi <= 60 ? '#16a34a' : kpi.tiepi != null && kpi.tiepi <= 120 ? '#ea580c' : '#dc2626'}">${kpi.tiepi ?? '—'}<span style="font-size:14px;font-weight:600"> min</span></div>
+      <div class="kpi-grade" style="color:${kpi.tiepi != null && kpi.tiepi <= 60 ? '#16a34a' : kpi.tiepi != null && kpi.tiepi <= 120 ? '#ea580c' : '#dc2626'}">${kpi.tiepi != null ? (kpi.tiepi <= 60 ? 'ÓPTIMO' : kpi.tiepi <= 120 ? 'ACEPTABLE' : 'CRÍTICO') : ''}</div>
+      <div class="kpi-label">TIEPI</div>
+    </div>
+    <div class="kpi-box">
+      <div class="kpi-value" style="color:${kpi.mttr != null && kpi.mttr <= 60 ? '#16a34a' : kpi.mttr != null && kpi.mttr <= 120 ? '#ea580c' : '#dc2626'}">${kpi.mttr ?? '—'}<span style="font-size:14px;font-weight:600"> min</span></div>
+      <div class="kpi-grade" style="color:${kpi.mttr != null && kpi.mttr <= 60 ? '#16a34a' : kpi.mttr != null && kpi.mttr <= 120 ? '#ea580c' : '#dc2626'}">${kpi.mttr != null ? (kpi.mttr <= 60 ? 'ÓPTIMO' : kpi.mttr <= 120 ? 'ACEPTABLE' : 'CRÍTICO') : ''}</div>
+      <div class="kpi-label">MTTR</div>
     </div>
     <div class="duration-box">
       <div class="duration-value">${elapsedLabel}</div>
@@ -420,16 +448,24 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
         <div className="p-6 flex flex-col gap-5">
 
           {/* ── KPIs ── */}
-          <div className="rounded-2xl px-8 py-6 flex items-center gap-8" style={{ background: 'rgba(10,18,35,0.6)', border: '1px solid #1e2d45' }}>
-            <KpiBlock value={kpi.sla} label="SLA" />
-            <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
-            <KpiBlock value={kpi.safety} label="SEGURIDAD" />
-            <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
-            <KpiBlock value={kpi.efficiency} label="EFICIENCIA OPERATIVA" />
-            <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
-            <div className="flex flex-col items-center gap-1 flex-shrink-0">
-              <div className="text-4xl font-black font-mono" style={{ color: '#22d3ee' }}>{elapsedLabel}</div>
-              <div className="text-[10px] font-bold tracking-widest mt-1" style={{ color: '#475569' }}>DURACIÓN CICLO</div>
+          <div className="rounded-2xl px-8 py-6 flex flex-col gap-5" style={{ background: 'rgba(10,18,35,0.6)', border: '1px solid #1e2d45' }}>
+            <div className="flex items-center gap-8">
+              <KpiBlock value={kpi.sla ?? 0} label="SLA" />
+              <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
+              <KpiBlock value={kpi.safety ?? 0} label="SEGURIDAD" />
+              <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
+              <KpiBlock value={kpi.efficiency ?? 0} label="EFICIENCIA OPERATIVA" />
+              <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
+              <div className="flex flex-col items-center gap-1 flex-shrink-0">
+                <div className="text-4xl font-black font-mono" style={{ color: '#22d3ee' }}>{elapsedLabel}</div>
+                <div className="text-[10px] font-bold tracking-widest mt-1" style={{ color: '#475569' }}>DURACIÓN CICLO</div>
+              </div>
+            </div>
+            <div style={{ height: 1, background: '#1e2d45' }} />
+            <div className="flex items-center gap-10">
+              <MinuteKpiCard label="TIEPI" sublabel="Tiempo de Interrupción Equiv. Potencia Instalada" value={kpi.tiepi} thresholds={[60, 120]} />
+              <div style={{ width: 1, height: 48, background: '#1e2d45', flexShrink: 0 }} />
+              <MinuteKpiCard label="MTTR" sublabel="Mean Time To Repair — Tiempo medio de reposición" value={kpi.mttr} thresholds={[60, 120]} />
             </div>
           </div>
 

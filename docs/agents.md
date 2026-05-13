@@ -39,7 +39,7 @@ Cierre             : finalize
 | `invoke_crew_dispatch` | Ejecuta el agente Crew-Dispatch |
 | `invoke_resource` | Ejecuta el agente Resource |
 | `invoke_comms` | Ejecuta el agente Alerts & Comms |
-| `finalize` | Calcula KPIs y emite `kpi` + `done` |
+| `finalize` | Calcula KPIs (SLA, Seguridad, Eficiencia, TIEPI, MTTR) y emite `kpi` + `done` |
 
 **Eventos `action` emitidos**:
 - Al iniciar: `SAP AI Core Orchestration` — incidente registrado con recuento de fallos y clientes
@@ -194,6 +194,18 @@ Cierre             : finalize
 El orden de los parámetros en el panel lateral: SLA → Conmutables → Piezas limitadas → Brigadas → Ventana tormenta 2.
 
 Todos los controles incluyen un tooltip informativo accesible al pasar el cursor. Los KPIs muestran `—` hasta que finaliza la simulación.
+
+**KPIs calculados por `finalize`**:
+
+| KPI | Fórmula | Escala |
+|-----|---------|--------|
+| SLA | % clientes con resolución en curso (telecontrol o brigada) | % (mayor es mejor) |
+| Seguridad | % sitios críticos cubiertos | % (mayor es mejor) |
+| Eficiencia | % fallos físicos atendidos | % (mayor es mejor) |
+| TIEPI | Σ(clientes_i × tiempo_estimado_i) / total_clientes | minutos (menor es mejor) |
+| MTTR | Σ(tiempo_estimado fallos atendidos) / total_fallos_atendidos | minutos (menor es mejor) |
+
+Tiempos estimados por estado: restaurado (telecontrol) = 10 min · crew-en-route transformer = 135 min · crew-en-route cable = 90 min · fallo sin atender = 240 min.
 
 ---
 

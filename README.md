@@ -21,6 +21,7 @@ Cada agente recibe el estado del escenario, usa herramientas concretas para toma
 
 Al finalizar, aparece automáticamente un **Resumen Ejecutivo** con:
 - KPIs visuales con gauges circulares SVG (SLA, Seguridad, Eficiencia operativa)
+- Indicadores de tiempo (TIEPI — minutos medios de interrupción ponderados por clientes, MTTR — tiempo medio de reposición de fallos atendidos)
 - Indicadores operativos: clientes restaurados, fallos atendidos, sitios críticos cubiertos, acciones pendientes
 - KPIs de integración SAP: sistemas tocados, órdenes FSM, conmutaciones AIN, materiales IBP, mensajes CX, activos S/4HANA
 - Resumen narrativo del orquestador (texto CoT limpio de markdown)
