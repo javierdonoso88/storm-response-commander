@@ -18,9 +18,14 @@ export async function runAgent(opts: {
   maxTokens?: number;
   maxTurns?: number;
   haiku?: boolean;
+  instructions?: string;
 }): Promise<void> {
-  const { systemPrompt, userMessage, tools, emit, agentId, maxTokens = 4096, maxTurns = 15, haiku = false } = opts;
+  const { systemPrompt, userMessage, tools, emit, agentId, maxTokens = 4096, maxTurns = 15, haiku = false, instructions } = opts;
   const modelName = haiku ? MODEL_HAIKU : MODEL_SONNET;
+
+  const effectiveSystem = instructions?.trim()
+    ? `INSTRUCCIONES OBLIGATORIAS DEL OPERADOR (máxima prioridad — aplícalas en todas tus decisiones):\n${instructions.trim()}\n\n---\n\n${systemPrompt}`
+    : systemPrompt;
 
   const sdkTools: Anthropic.Tool[] = tools.map(t => ({
     name: t.name,
@@ -38,7 +43,7 @@ export async function runAgent(opts: {
     const anthropic = await getAnthropicClient(haiku);
     const stream = anthropic.messages.stream({
       model: modelName,
-      system: systemPrompt,
+      system: effectiveSystem,
       messages,
       tools: sdkTools,
       max_tokens: maxTokens,

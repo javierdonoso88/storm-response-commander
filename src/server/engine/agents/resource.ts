@@ -125,6 +125,7 @@ Asigna recursos con allocate_resource, registra conflictos con flag_conflict si 
     agentId: 'resource',
     maxTokens: 4096,
     haiku: true,
+    instructions: params.instructions,
   });
 
   return {

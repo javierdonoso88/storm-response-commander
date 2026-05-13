@@ -107,6 +107,7 @@ INSTRUCCIONES:
     agentId: 'triage-priority',
     maxTokens: 8192,
     haiku: true,
+    instructions: params.instructions,
   });
 
   return {
