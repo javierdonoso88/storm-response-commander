@@ -99,6 +99,18 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
           )}
         </div>
 
+        {/* Crews */}
+        <SliderField
+          label="Brigadas"
+          tip="Equipos de campo disponibles en 6 bases: Girona, Figueres, Olot, Banyoles, Lloret y Blanes. Cada brigada atiende un fallo a la vez."
+          value={String(params.availableCrews)}
+          valueColor="#22c55e"
+          min={8} max={22} step={1}
+          current={params.availableCrews}
+          onChange={v => onChange({ availableCrews: v })}
+          accent="#22c55e"
+        />
+
         {/* Storm window */}
         <div className="flex flex-col gap-1.5">
           <TooltipLabel
@@ -122,18 +134,6 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
             ))}
           </div>
         </div>
-
-        {/* Crews */}
-        <SliderField
-          label="Brigadas"
-          tip="Equipos de campo disponibles en 6 bases: Girona, Figueres, Olot, Banyoles, Lloret y Blanes. Cada brigada atiende un fallo a la vez."
-          value={String(params.availableCrews)}
-          valueColor="#22c55e"
-          min={8} max={22} step={1}
-          current={params.availableCrews}
-          onChange={v => onChange({ availableCrews: v })}
-          accent="#22c55e"
-        />
 
         {/* Simulate */}
         <button onClick={onSimulate} disabled={running} className="btn-primary w-full mt-1">
