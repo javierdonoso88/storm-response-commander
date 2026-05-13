@@ -146,16 +146,6 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
           </div>
         </div>
 
-        {/* Simulate */}
-        <button onClick={onSimulate} disabled={running} className="btn-primary w-full mt-1">
-          {running ? (
-            <>
-              <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Simulando…
-            </>
-          ) : '▶ Simular'}
-        </button>
-
         {/* Operator instructions */}
         <div className="flex flex-col gap-1.5">
           <span className="text-[10px] font-bold tracking-widest" style={{ color: '#475569' }}>INSTRUCCIONES AL ORQUESTADOR</span>
@@ -178,6 +168,16 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
             Se inyecta como contexto prioritario en el prompt del orquestador.
           </span>
         </div>
+
+        {/* Simulate */}
+        <button onClick={onSimulate} disabled={running} className="btn-primary w-full mt-1">
+          {running ? (
+            <>
+              <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Simulando…
+            </>
+          ) : '▶ Simular'}
+        </button>
 
         {/* KPIs */}
         <div className="border-t pt-3 flex flex-col gap-2.5" style={{ borderColor: '#1e2d45' }}>
