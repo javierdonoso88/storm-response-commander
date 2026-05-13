@@ -65,7 +65,7 @@ export async function runRerouting(
   ];
 
   await runAgent({
-    systemPrompt: `Eres el agente REROUTING del sistema de Respuesta a Tormentas de Iberdrola (Girona).
+    systemPrompt: `Eres el agente REMOTE RESTORATION del sistema de Respuesta a Tormentas de Iberdrola (Girona).
 Tu misión: ejecutar conmutaciones remotas (telecontrol) para restaurar suministro sin enviar brigadas.
 Solo puedes hacer ${params.switchableFaults} operaciones de telecontrol (límite autorizado).
 Llama a attempt_remote_switch para cada fallo que quieras restaurar (hasta el límite).

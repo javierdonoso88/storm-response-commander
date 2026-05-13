@@ -91,7 +91,7 @@ export async function runComms(
   ];
 
   await runAgent({
-    systemPrompt: `Eres el agente COMMS del sistema de Respuesta a Tormentas de Iberdrola (Girona).
+    systemPrompt: `Eres el agente ALERTS & COMMS del sistema de Respuesta a Tormentas de Iberdrola (Girona).
 Tu misión: redactar y enviar 3 comunicaciones obligatorias en este orden:
 1. send_sms: conciso (≤160 chars), menciona Iberdrola, número de clientes y tiempo estimado de restauración
 2. send_press_release: nota formal para medios locales (El Punt Avui, Diari de Girona, RAC1, Catalunya Ràdio). Puedes escribirla en catalán.

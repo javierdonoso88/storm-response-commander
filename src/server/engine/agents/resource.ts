@@ -57,7 +57,7 @@ export async function runResource(
     },
     {
       name: 'flag_conflict',
-      description: 'Registra conflicto de recursos: material insuficiente. PRIORITY siempre prevalece — sitios críticos tienen prioridad.',
+      description: 'Registra conflicto de recursos: material insuficiente. TRIAGE & PRIORITY siempre prevalece — sitios críticos tienen prioridad.',
       input_schema: {
         type: 'object' as const,
         properties: {
@@ -102,7 +102,7 @@ Reglas:
 - Brigada reparando transformador → necesita 1 transformador del inventario
 - Brigada reparando cable → necesita 1 bobina de cable del inventario
 - Si inventario insuficiente → llama flag_conflict para los fallos que no pueden ser atendidos
-- REGLA DE ORO: PRIORITY prevalece — sitios críticos tienen prioridad sobre material disponible
+- REGLA DE ORO: TRIAGE & PRIORITY prevalece — sitios críticos tienen prioridad sobre material disponible
 - Puedes asignar generadores móviles (mobile_generator) como medida temporal
 Llama a allocate_resource para cada asignación posible, flag_conflict si hay déficit, luego complete_resources.
 Responde en español. Sé preciso.`,

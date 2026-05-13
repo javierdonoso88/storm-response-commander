@@ -157,7 +157,7 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     },
     {
       name: 'invoke_rerouting',
-      description: 'Ejecuta REROUTING: restaura fallos conmutables por telecontrol remoto.',
+      description: 'Ejecuta REMOTE RESTORATION: restaura fallos conmutables por telecontrol remoto.',
       input_schema: { type: 'object', properties: {}, required: [] },
     },
     {
@@ -182,7 +182,7 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     },
   ];
 
-  const systemPrompt = `Eres el ORCHESTRATOR del sistema de Respuesta a Tormentas de Iberdrola (Girona).
+  const systemPrompt = `Eres el STATUS UPDATE del sistema de Respuesta a Tormentas de Iberdrola (Girona).
 
 PROTOCOLO OBLIGATORIO:
 FASE 1 (PARALELA): Llama invoke_triage_priority + invoke_rerouting en el MISMO turno (los dos a la vez). Corren en paralelo.
