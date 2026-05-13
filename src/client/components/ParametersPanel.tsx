@@ -191,7 +191,7 @@ function KPIMinuteRow({ label, sub, value, color }: { label: string; sub: string
         <span className="text-[12px] font-semibold text-slate-400">{label}</span>
         <span className="text-[13px] text-slate-600">{sub}</span>
       </div>
-      <span className="text-[13px] font-bold font-mono" style={{ color: value === null ? '#334155' : color }}>
+      <span className="text-[13px] font-bold font-mono whitespace-nowrap" style={{ color: value === null ? '#334155' : color }}>
         {value === null ? '—' : `${value} min`}
       </span>
     </div>
