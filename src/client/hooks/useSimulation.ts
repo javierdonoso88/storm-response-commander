@@ -6,15 +6,14 @@ import {
 
 const AGENT_LABELS: Record<AgentId | 'orchestrator', string> = {
   orchestrator: 'ORCHESTRATOR',
-  triage: 'TRIAGE',
+  'triage-priority': 'TRIAGE & PRIORITY',
   rerouting: 'REROUTING',
-  priority: 'PRIORITY',
   'crew-dispatch': 'CREW-DISPATCH',
   resource: 'RESOURCE',
-  comms: 'COMMS',
+  comms: 'ALERTS & COMMS',
 };
 
-const AGENT_ORDER: AgentId[] = ['triage', 'rerouting', 'priority', 'crew-dispatch', 'resource', 'comms'];
+const AGENT_ORDER: AgentId[] = ['triage-priority', 'rerouting', 'crew-dispatch', 'resource', 'comms'];
 
 function initialAgents(): AgentState[] {
   return AGENT_ORDER.map(id => ({

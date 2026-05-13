@@ -70,7 +70,7 @@ export async function runResource(
         hadConflict = true;
         emit({
           type: 'conflict',
-          winner: 'priority',
+          winner: 'triage-priority',
           loser: 'resource',
           reason: input.reason as string,
         });

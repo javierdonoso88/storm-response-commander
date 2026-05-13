@@ -28,34 +28,31 @@ interface Props {
 }
 
 const AGENT_COLORS: Record<AgentId, { bg: string; ring: string; initials: string }> = {
-  triage:          { bg: '#7c3aed', ring: '#a855f7', initials: 'TR' },
-  rerouting:       { bg: '#db2777', ring: '#ec4899', initials: 'RR' },
-  priority:        { bg: '#4f46e5', ring: '#6366f1', initials: 'PR' },
-  'crew-dispatch': { bg: '#7e22ce', ring: '#a855f7', initials: 'CD' },
-  resource:        { bg: '#1d4ed8', ring: '#3b82f6', initials: 'RE' },
-  comms:           { bg: '#0f766e', ring: '#14b8a6', initials: 'CO' },
+  'triage-priority': { bg: '#7c3aed', ring: '#a855f7', initials: 'TP' },
+  rerouting:         { bg: '#db2777', ring: '#ec4899', initials: 'RR' },
+  'crew-dispatch':   { bg: '#7e22ce', ring: '#a855f7', initials: 'CD' },
+  resource:          { bg: '#1d4ed8', ring: '#3b82f6', initials: 'RE' },
+  comms:             { bg: '#0f766e', ring: '#14b8a6', initials: 'AC' },
 };
 
 const AGENT_SHORT: Record<AgentId, string> = {
-  triage: 'Triage',
-  rerouting: 'Rerouting',
-  priority: 'Priority',
-  'crew-dispatch': 'Crew Dispatch',
-  resource: 'Resource',
-  comms: 'Comms',
+  'triage-priority': 'Triage & Priority',
+  rerouting:         'Rerouting',
+  'crew-dispatch':   'Crew Dispatch',
+  resource:          'Resource',
+  comms:             'Alerts & Comms',
 };
 
 const AGENT_TOOLTIP: Record<AgentId | 'orchestrator', string> = {
-  orchestrator:    'Coordina todos los agentes. Ejecuta la Fase 1 en paralelo y la Fase 2 en secuencial, y calcula los KPIs finales.',
-  triage:          'Clasifica los 47 fallos por severidad y riesgo. Identifica sitios críticos con batería en riesgo de agotarse antes del SLA.',
-  rerouting:       'Restaura suministro por telecontrol remoto sin enviar brigadas. Ejecuta hasta el límite de operaciones autorizadas del día.',
-  priority:        'Rankea los fallos físicos por urgencia. Prioriza sitios críticos por batería restante y envía alertas regulatorias si procede.',
-  'crew-dispatch': 'Asigna brigadas disponibles a fallos físicos. Respeta skills (A=transformadores, B=cables) y la ventana de segunda tormenta.',
-  resource:        'Verifica que el inventario cubre los materiales necesarios para las brigadas despachadas. Registra conflictos si hay déficit.',
-  comms:           'Redacta y envía 3 comunicaciones obligatorias: SMS a clientes, nota de prensa para medios locales y notificación al regulador.',
+  orchestrator:      'Coordina todos los agentes. Ejecuta la Fase 1 en paralelo y la Fase 2 en secuencial, y calcula los KPIs finales.',
+  'triage-priority': 'Clasifica los 47 fallos por severidad e identifica sitios críticos con batería en riesgo. A continuación rankea los fallos físicos por urgencia para guiar el despacho de brigadas.',
+  rerouting:         'Restaura suministro por telecontrol remoto sin enviar brigadas. Ejecuta hasta el límite de operaciones autorizadas del día.',
+  'crew-dispatch':   'Asigna brigadas disponibles a fallos físicos. Respeta skills (A=transformadores, B=cables) y la ventana de segunda tormenta.',
+  resource:          'Verifica que el inventario cubre los materiales necesarios para las brigadas despachadas. Registra conflictos si hay déficit.',
+  comms:             'Redacta y envía 3 comunicaciones obligatorias: SMS a clientes, nota de prensa para medios locales y notificación al regulador.',
 };
 
-const PHASE1: AgentId[] = ['triage', 'rerouting', 'priority'];
+const PHASE1: AgentId[] = ['triage-priority', 'rerouting'];
 const PHASE2: AgentId[] = ['crew-dispatch', 'resource', 'comms'];
 
 export function GanttPanel({ agents, conflicts }: Props) {

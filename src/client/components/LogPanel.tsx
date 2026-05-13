@@ -7,16 +7,15 @@ interface Props {
 }
 
 const AGENT_COLORS: Record<AgentId | 'orchestrator', string> = {
-  orchestrator:    '#f59e0b',
-  triage:          '#a855f7',
-  rerouting:       '#3b82f6',
-  priority:        '#ef4444',
-  'crew-dispatch': '#f97316',
-  resource:        '#eab308',
-  comms:           '#22c55e',
+  orchestrator:      '#f59e0b',
+  'triage-priority': '#a855f7',
+  rerouting:         '#3b82f6',
+  'crew-dispatch':   '#f97316',
+  resource:          '#eab308',
+  comms:             '#22c55e',
 };
 
-const PHASE1: (AgentId | 'orchestrator')[] = ['triage', 'rerouting', 'priority'];
+const PHASE1: (AgentId | 'orchestrator')[] = ['triage-priority', 'rerouting'];
 const PHASE2: (AgentId | 'orchestrator')[] = ['crew-dispatch', 'resource', 'comms'];
 
 export function LogPanel({ logs, running }: Props) {
@@ -67,7 +66,7 @@ export function LogPanel({ logs, running }: Props) {
             <div className="text-[13px] text-blue-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
               ── PREPARATION PHASE (PARALLEL) ─────────────
             </div>
-            <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
+            <div className="grid grid-cols-2 gap-2 flex-1 min-h-0">
               {PHASE1.map((id, i) => (
                 <LogBlock
                   key={id}

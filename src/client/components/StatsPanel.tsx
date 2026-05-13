@@ -25,31 +25,28 @@ const CHANNEL_LABEL: Record<string, string> = {
 
 const AGENT_LABEL: Record<string, string> = {
   orchestrator: 'SUPERVISOR',
-  triage: 'TRIAGE',
+  'triage-priority': 'TRIAGE & PRIORITY',
   rerouting: 'REROUTING',
-  priority: 'PRIORITY',
   'crew-dispatch': 'CREW-DISPATCH',
   resource: 'RESOURCE',
-  comms: 'COMMS',
+  comms: 'ALERTS & COMMS',
 };
 
 const AGENT_COLOR: Record<string, string> = {
   orchestrator: 'text-amber-400',
-  triage: 'text-cyan-400',
+  'triage-priority': 'text-purple-400',
   rerouting: 'text-green-400',
-  priority: 'text-orange-400',
   'crew-dispatch': 'text-blue-400',
-  resource: 'text-purple-400',
+  resource: 'text-yellow-400',
   comms: 'text-pink-400',
 };
 
 const AGENT_DOT: Record<string, string> = {
   orchestrator: 'bg-amber-400',
-  triage: 'bg-cyan-400',
+  'triage-priority': 'bg-purple-400',
   rerouting: 'bg-green-400',
-  priority: 'bg-orange-400',
   'crew-dispatch': 'bg-blue-400',
-  resource: 'bg-purple-400',
+  resource: 'bg-yellow-400',
   comms: 'bg-pink-400',
 };
 

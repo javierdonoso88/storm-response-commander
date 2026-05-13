@@ -2,9 +2,8 @@ import Anthropic from '@anthropic-ai/sdk';
 import { getAnthropicClient, MODEL } from './anthropicClient';
 import { SimParams, ScenarioState, SimEvent } from './types';
 import { buildScenario } from './scenario';
-import { runTriage } from './agents/triage';
+import { runTriagePriority } from './agents/triage-priority';
 import { runRerouting } from './agents/rerouting';
-import { runPriority } from './agents/priority';
 import { runCrewDispatch } from './agents/crew-dispatch';
 import { runResource } from './agents/resource';
 import { runComms } from './agents/comms';
@@ -37,20 +36,20 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     emit({ type: 'safety_tick', elapsed: Math.floor((Date.now() - startTime) / 1000), limit: safetyLimitMin * 60 });
   }, 2000);
 
-  const phase1Tools = new Set(['invoke_triage', 'invoke_rerouting', 'invoke_priority']);
+  const phase1Tools = new Set(['invoke_triage_priority', 'invoke_rerouting']);
 
   // Sub-agent invoke handlers (no input — state accessed via closure)
   const handlers = new Map<string, () => Promise<string>>();
 
-  handlers.set('invoke_triage', async () => {
-    emit({ type: 'agent_start', agent: 'triage', t: simTime(Date.now() - startTime) });
+  handlers.set('invoke_triage_priority', async () => {
+    emit({ type: 'agent_start', agent: 'triage-priority', t: simTime(Date.now() - startTime) });
     try {
-      const result = await runTriage(params, state, emit);
-      emit({ type: 'agent_done', agent: 'triage', summary: result.summary });
-      return `Triage completado: ${result.summary}`;
+      const result = await runTriagePriority(params, state, emit);
+      emit({ type: 'agent_done', agent: 'triage-priority', summary: result.summary });
+      return `Triage & Priority completado: ${result.summary}`;
     } catch (err) {
-      const msg = `Error en triage: ${String(err)}`;
-      emit({ type: 'agent_done', agent: 'triage', summary: msg });
+      const msg = `Error en triage-priority: ${String(err)}`;
+      emit({ type: 'agent_done', agent: 'triage-priority', summary: msg });
       return msg;
     }
   });
@@ -64,19 +63,6 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     } catch (err) {
       const msg = `Error en rerouting: ${String(err)}`;
       emit({ type: 'agent_done', agent: 'rerouting', summary: msg });
-      return msg;
-    }
-  });
-
-  handlers.set('invoke_priority', async () => {
-    emit({ type: 'agent_start', agent: 'priority', t: simTime(Date.now() - startTime) });
-    try {
-      const result = await runPriority(params, state, emit);
-      emit({ type: 'agent_done', agent: 'priority', summary: result.summary });
-      return `Priority completado: ${result.summary}`;
-    } catch (err) {
-      const msg = `Error en priority: ${String(err)}`;
-      emit({ type: 'agent_done', agent: 'priority', summary: msg });
       return msg;
     }
   });
@@ -147,18 +133,13 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
 
   const sdkTools: Anthropic.Tool[] = [
     {
-      name: 'invoke_triage',
-      description: 'Ejecuta TRIAGE: clasifica todos los fallos por severidad y urgencia.',
+      name: 'invoke_triage_priority',
+      description: 'Ejecuta TRIAGE & PRIORITY: clasifica todos los fallos por severidad y rankea los físicos por urgencia.',
       input_schema: { type: 'object', properties: {}, required: [] },
     },
     {
       name: 'invoke_rerouting',
       description: 'Ejecuta REROUTING: restaura fallos conmutables por telecontrol remoto.',
-      input_schema: { type: 'object', properties: {}, required: [] },
-    },
-    {
-      name: 'invoke_priority',
-      description: 'Ejecuta PRIORITY: rankea fallos físicos y envía alertas regulatorias si procede.',
       input_schema: { type: 'object', properties: {}, required: [] },
     },
     {
@@ -173,7 +154,7 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     },
     {
       name: 'invoke_comms',
-      description: 'Ejecuta COMMS: envía comunicaciones (SMS, prensa, regulatorio).',
+      description: 'Ejecuta ALERTS & COMMS: redacta y envía SMS, nota de prensa y notificación regulatoria.',
       input_schema: { type: 'object', properties: {}, required: [] },
     },
     {
@@ -186,7 +167,7 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
   const systemPrompt = `Eres el ORCHESTRATOR del sistema de Respuesta a Tormentas de Iberdrola (Girona).
 
 PROTOCOLO OBLIGATORIO:
-FASE 1 (PARALELA): Llama invoke_triage + invoke_rerouting + invoke_priority en el MISMO turno (los tres a la vez). Corren en paralelo.
+FASE 1 (PARALELA): Llama invoke_triage_priority + invoke_rerouting en el MISMO turno (los dos a la vez). Corren en paralelo.
 FASE 2 (SECUENCIAL): Llama invoke_crew_dispatch, luego invoke_resource, luego invoke_comms (en ese orden, uno por turno).
 CIERRE: Llama finalize para calcular KPIs y cerrar el ciclo.
 
@@ -209,7 +190,7 @@ ESCENARIO:
   Sitios críticos     : ${state.faults.filter(f => f.criticalSite).length}
   Clientes afectados  : ${state.totalClients.toLocaleString()}
 
-Inicia el protocolo: llama invoke_triage + invoke_rerouting + invoke_priority en el MISMO turno.`;
+Inicia el protocolo: llama invoke_triage_priority + invoke_rerouting en el MISMO turno.`;
 
   const messages: Anthropic.MessageParam[] = [{ role: 'user', content: userMessage }];
 

@@ -1,4 +1,4 @@
-export type AgentId = 'triage' | 'rerouting' | 'priority' | 'crew-dispatch' | 'resource' | 'comms';
+export type AgentId = 'triage-priority' | 'rerouting' | 'crew-dispatch' | 'resource' | 'comms';
 export type FaultStatus = 'fault' | 'switching' | 'restored' | 'crew-en-route' | 'repairing' | 'repaired';
 export type FaultType = 'switchable' | 'transformer' | 'cable';
 export type CrewSkill = 'A' | 'B' | 'C';
