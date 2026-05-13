@@ -125,7 +125,7 @@ function SupervisorCard() {
         SV
       </div>
       <span className="text-xs font-bold text-white">Supervisor</span>
-      <span className="text-[12px] text-slate-400">Orchestrator</span>
+      <span className="text-[12px] text-slate-400">Status Update</span>
     </div>
   );
 }

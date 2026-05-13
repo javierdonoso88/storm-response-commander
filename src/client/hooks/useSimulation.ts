@@ -5,7 +5,7 @@ import {
 } from '../types';
 
 const AGENT_LABELS: Record<AgentId | 'orchestrator', string> = {
-  orchestrator: 'ORCHESTRATOR',
+  orchestrator: 'STATUS UPDATE',
   'triage-priority': 'TRIAGE & PRIORITY',
   rerouting: 'REMOTE RESTORATION',
   'crew-dispatch': 'CREW-DISPATCH',
