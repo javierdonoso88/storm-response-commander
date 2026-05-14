@@ -8,16 +8,7 @@ Sistema multi-agente de IA para la simulación de respuesta a incidentes eléctr
 
 ## Qué hace
 
-Al abrir la aplicación se muestra una **pantalla de entrada en carrusel** con 4 slides navegables (teclado ←→ o botones):
-
-| Slide | Contenido |
-|-------|-----------|
-| 1 — Resumen | Cifras clave del incidente: 127K clientes, 47 fallos, 7 críticos, 22 brigadas |
-| 2 — Sitios críticos | Los 7 transformadores con SAI/batería: nombre, tipo y barra de tiempo restante con código de colores |
-| 3 — Tipos de fallo | Conmutables (22) · Transformadores (7) · Cables (18) — qué agente los gestiona y cuánto tarda |
-| 4 — Tensiones | Las 4 situaciones de presión configurables: CPD 30 min, escasez piezas, ventana T+4h, pocas brigadas |
-
-Desde cualquier slide se puede acceder directamente al simulador. Hay navegación de vuelta a la landing desde el botón "Inicio" del header.
+Al abrir la aplicación se muestra una **pantalla de presentación** con el caso de uso, las métricas clave del escenario y la arquitectura multi-agente. Desde ahí se accede al simulador interactivo, con navegación de vuelta a la landing en cualquier momento desde el botón "Inicio" del header.
 
 Al iniciar una simulación, un orquestador Claude coordina 5 agentes especializados que razonan sobre el escenario en tiempo real:
 
@@ -173,7 +164,7 @@ src/
 │   ├── App.tsx                  # Layout principal, navegación landing↔simulador, control de overlay
 │   ├── hooks/useSimulation.ts   # Gestión de SSE y estado de simulación
 │   ├── components/
-│   │   ├── LandingPage.tsx      # Carrusel de entrada: 4 slides con contexto del incidente
+│   │   ├── LandingPage.tsx      # Pantalla inicial: caso de uso + arquitectura multi-agente
 │   │   ├── MapPanel.tsx         # Mapa de Girona con nodos de fallo
 │   │   ├── LogPanel.tsx         # Logs CoT en tiempo real por agente
 │   │   ├── ParametersPanel.tsx  # Controles + KPIs (muestra — hasta completar simulación)

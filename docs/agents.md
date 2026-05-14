@@ -190,9 +190,8 @@ Cierre             : finalize
 | `limitedParts` | 0 \| 1 | 0 = inventario completo (2 transformadores); 1 = solo 1 disponible |
 | `storm2Window` | T+4h \| T+6h \| T+8h \| none | Ventana antes de la segunda tormenta; condiciona las decisiones de Crew-Dispatch |
 | `availableCrews` | 8–22 | Brigadas activas (subconjunto de las 22 del escenario base) |
-| `instructions` | string libre | Instrucciones del operador inyectadas como bloque de máxima prioridad en el system prompt de todos los agentes |
 
-El orden de los controles en el panel lateral: SLA → Conmutables → Piezas limitadas → Brigadas → Ventana tormenta 2 → Instrucciones al orquestador → Botón Simular.
+El orden de los parámetros en el panel lateral: SLA → Conmutables → Piezas limitadas → Brigadas → Ventana tormenta 2.
 
 Todos los controles incluyen un tooltip informativo accesible al pasar el cursor. Los KPIs muestran `—` hasta que finaliza la simulación.
 
