@@ -43,12 +43,9 @@ function TooltipLabel({ label, tip }: { label: string; tip: string }) {
 export function ParametersPanel({ params, onChange, onSimulate, running, kpi, drolius }: Props) {
   const [showInfo, setShowInfo] = useState(false);
 
-  const droliusColor = drolius.status === 'available' ? '#22c55e'
-    : drolius.status === 'deployed' ? '#f97316'
-    : '#22d3ee';
+  const droliusColor = drolius.status === 'available' ? '#22c55e' : '#f97316';
   const droliusLabel = drolius.status === 'available' ? 'DISPONIBLE'
-    : drolius.status === 'deployed' ? `EN MISIÓN · ${drolius.task ?? ''}`
-    : 'RETORNANDO';
+    : `EN CAMPO · ${drolius.task ?? ''}`;
 
   return (
     <div className="flex flex-col h-full">
@@ -86,7 +83,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
       {/* Drolius status */}
       <div
         className="mx-3 mt-2 rounded-lg px-3 py-2 flex items-center gap-2"
-        style={{ background: 'rgba(15,24,42,0.7)', border: `1px solid rgba(${droliusColor === '#22c55e' ? '34,197,94' : droliusColor === '#f97316' ? '249,115,22' : '34,211,238'},0.2)` }}
+        style={{ background: 'rgba(15,24,42,0.7)', border: `1px solid rgba(${droliusColor === '#22c55e' ? '34,197,94' : '249,115,22'},0.2)` }}
       >
         <span
           className="text-sm flex-shrink-0"
@@ -415,13 +412,36 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
                   <span className="text-[11px] font-mono font-bold" style={{ color: '#22c55e' }}>22</span>
                 </div>
               </div>
-              <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: '#0a1120', border: '1px solid #1e2d45' }}>
-                <span className="text-[10px] font-bold tracking-widest" style={{ color: '#22c55e' }}>MATERIAL EN ALMACÉN</span>
-                <MaterialRow label="Transformadores" value="2 ud" note="→ 1 ud si piezas limitadas" />
-                <MaterialRow label="Bobinas de cable" value="40 ud" note="suficiente para todos los fallos" />
-                <MaterialRow label="Generador móvil" value="1 ud" note="medida temporal" />
-                <div className="mt-1 rounded p-2 text-[10px] leading-relaxed" style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', color: '#f97316' }}>
-                  Con <strong>piezas limitadas ON</strong>, solo hay 1 transformador para 7 fallos. El agente Resource detecta la escasez y fuerza un conflicto de priorización.
+              <div className="flex flex-col gap-3">
+                <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: '#0a1120', border: '1px solid #1e2d45' }}>
+                  <span className="text-[10px] font-bold tracking-widest" style={{ color: '#22c55e' }}>MATERIAL EN ALMACÉN</span>
+                  <MaterialRow label="Transformadores" value="2 ud" note="→ 1 ud si piezas limitadas" />
+                  <MaterialRow label="Bobinas de cable" value="40 ud" note="suficiente para todos los fallos" />
+                  <MaterialRow label="Generador móvil" value="1 ud" note="medida temporal" />
+                  <div className="mt-1 rounded p-2 text-[10px] leading-relaxed" style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', color: '#f97316' }}>
+                    Con <strong>piezas limitadas ON</strong>, solo hay 1 transformador para 7 fallos. El agente Resource detecta la escasez y fuerza un conflicto de priorización.
+                  </div>
+                </div>
+                <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: 'rgba(167,139,250,0.05)', border: '1px solid rgba(167,139,250,0.2)' }}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-base leading-none">🤖</span>
+                    <span className="text-[10px] font-bold tracking-widest" style={{ color: '#a78bfa' }}>DROLIUS — 1 UNIDAD</span>
+                  </div>
+                  <p className="text-[11px] leading-relaxed" style={{ color: '#6d5acd' }}>
+                    Robot Scout de inspección autónoma. El agente Crew-Dispatch puede desplegarlo a zonas peligrosas antes de enviar brigadas.
+                  </p>
+                  <div className="flex flex-col gap-1 mt-0.5">
+                    {[
+                      { icon: '🔋', text: 'battery_check — confirma batería SAI restante' },
+                      { icon: '🗺️', text: 'zone_access — evalúa accesibilidad para brigada' },
+                      { icon: '🔍', text: 'damage_assessment — documenta daños en el activo' },
+                    ].map(m => (
+                      <div key={m.text} className="flex items-start gap-1.5 text-[10px]" style={{ color: '#475569' }}>
+                        <span className="flex-shrink-0" style={{ fontSize: '10px' }}>{m.icon}</span>
+                        <span>{m.text}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

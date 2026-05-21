@@ -75,7 +75,7 @@ export async function runCrewDispatch(
       },
       handler: async (input) => {
         if (state.drolius.status !== 'available') {
-          return `Error: Drolius no disponible — actualmente ${state.drolius.status === 'deployed' ? `en misión en ${state.drolius.currentTask}` : 'retornando a base'}`;
+          return `Error: Drolius no disponible — actualmente asignado en campo en ${state.drolius.currentTask}`;
         }
         const fault = state.faults.find(f => f.id === input.faultId);
         if (!fault) return `Error: fallo ${input.faultId} no encontrado`;
@@ -84,21 +84,11 @@ export async function runCrewDispatch(
         state.drolius.currentTask = input.faultId as string;
 
         emit({ type: 'drolius_update', status: 'deployed', task: input.faultId as string });
-        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: `Drolius desplegado → ${fault.zone} (${input.faultId}) — misión: ${input.mission}` });
-
-        await new Promise(r => setTimeout(r, 900));
+        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: `Drolius asignado en campo → ${fault.zone} (${input.faultId}) — misión: ${input.mission}` });
 
         const report = buildDroliusReport(fault, input.mission as string);
 
-        state.drolius.status = 'returning';
-        emit({ type: 'drolius_update', status: 'returning', task: input.faultId as string, report });
-        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: `Drolius retorna con informe: ${report.slice(0, 100)}…` });
-
-        await new Promise(r => setTimeout(r, 500));
-
-        state.drolius.status = 'available';
-        state.drolius.currentTask = undefined;
-        emit({ type: 'drolius_update', status: 'available' });
+        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: `Drolius transmite informe: ${report.slice(0, 100)}…` });
 
         return report;
       },

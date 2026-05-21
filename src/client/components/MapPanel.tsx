@@ -201,7 +201,7 @@ export function MapPanel({ faults, drolius }: Props) {
               <Tooltip direction="top" offset={[0, -14]} opacity={0.95} className="map-tooltip">
                 <div style={{ fontSize: 13, lineHeight: 1.5, minWidth: 140 }}>
                   <div style={{ fontWeight: 700, color: '#a78bfa', marginBottom: 2 }}>Drolius Scout</div>
-                  <div style={{ color: '#94a3b8' }}>{drolius.status === 'deployed' ? 'En misión' : 'Retornando a base'}</div>
+                  <div style={{ color: '#94a3b8' }}>Asignado en campo</div>
                   <div style={{ color: '#64748b', fontSize: 11, marginTop: 2 }}>{drolius.task}</div>
                 </div>
               </Tooltip>
