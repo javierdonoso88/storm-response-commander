@@ -77,16 +77,16 @@ export function StatsPanel({ messages, actionMessages }: Props) {
           </div>
         )}
         {actionMessages.map((a, i) => (
-          <div key={i} className="bg-[#111c2e] border border-[#1e2d45] rounded px-2 py-1.5 flex flex-col gap-0.5">
+          <div key={i} className="rounded px-2 py-1.5 flex flex-col gap-0.5" style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border)' }}>
             <div className="flex items-center gap-1.5">
               <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${AGENT_DOT[a.agent] ?? 'bg-slate-500'}`} />
               <span className={`text-[11px] font-bold font-mono ${AGENT_COLOR[a.agent] ?? 'text-slate-400'}`}>
                 {AGENT_LABEL[a.agent] ?? a.agent.toUpperCase()}
               </span>
-              <span className="text-[11px] text-slate-500 truncate ml-1">{a.system}</span>
-              <span className="ml-auto text-[11px] text-slate-600 flex-shrink-0">{timeAgo(a.ts)}</span>
+              <span className="text-[11px] truncate ml-1" style={{ color: 'var(--text-muted)' }}>{a.system}</span>
+              <span className="ml-auto text-[11px] flex-shrink-0" style={{ color: 'var(--text-ghost)' }}>{timeAgo(a.ts)}</span>
             </div>
-            <p className="text-[11px] text-slate-400 leading-snug line-clamp-2 pl-3" title={a.msg}>
+            <p className="text-[11px] leading-snug line-clamp-2 pl-3" style={{ color: 'var(--text-secondary)' }} title={a.msg}>
               {a.msg}
             </p>
           </div>
@@ -94,7 +94,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
       </div>
 
       {/* ── Divider ── */}
-      <div className="border-t" style={{ borderColor: '#1e2d45' }} />
+      <div className="border-t" style={{ borderColor: 'var(--border)' }} />
 
       {/* ── Comunicaciones ── */}
       <div className="panel-header">
@@ -113,15 +113,15 @@ export function StatsPanel({ messages, actionMessages }: Props) {
           </div>
         )}
         {messages.map((msg, i) => (
-          <div key={i} className="bg-[#1a2540] border border-[#1e2d45] rounded p-2 flex flex-col gap-1">
+          <div key={i} className="rounded p-2 flex flex-col gap-1" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
             <div className="flex items-center gap-1.5">
               <span className="text-sm">{CHANNEL_ICON[msg.channel]}</span>
               <span className={`text-[12px] font-bold font-mono ${CHANNEL_COLOR[msg.channel]}`}>
                 {CHANNEL_LABEL[msg.channel]}
               </span>
-              <span className="ml-auto text-[12px] text-slate-600">{timeAgo(msg.ts)}</span>
+              <span className="ml-auto text-[12px]" style={{ color: 'var(--text-ghost)' }}>{timeAgo(msg.ts)}</span>
             </div>
-            <p className="text-[12px] text-slate-400 leading-snug line-clamp-3" title={msg.msg}>
+            <p className="text-[12px] leading-snug line-clamp-3" style={{ color: 'var(--text-secondary)' }} title={msg.msg}>
               {msg.msg}
             </p>
           </div>
