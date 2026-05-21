@@ -137,7 +137,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
             />
             <button
               onClick={() => onChange({ limitedParts: params.limitedParts === 1 ? 0 : 1 })}
-              className="relative w-9 h-5 flex-shrink-0 rounded-full transition-colors duration-200 border"
+              className="relative w-9 h-5 flex-shrink-0 rounded-full transition-colors duration-200 border overflow-hidden"
               style={{
                 background: params.limitedParts === 1 ? 'var(--accent)' : isJoule ? '#c4cdd9' : '#334155',
                 borderColor: params.limitedParts === 1 ? 'var(--accent)' : isJoule ? '#b0bec8' : '#475569',
