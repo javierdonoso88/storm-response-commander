@@ -58,7 +58,7 @@ Cada `emit()` se serializa como un evento SSE y se envía al cliente inmediatame
 | Componente | Modelo | Razón |
 |-----------|--------|-------|
 | Orchestrator (Status Update) | `claude-4.6-sonnet` | Razonamiento narrativo visible en el resumen ejecutivo |
-| Sub-agentes (Triage & Priority, Remote Restoration, Crew-Dispatch, Resource, Alerts & Comms) | `claude-4.5-haiku` | Decisiones estructuradas de tool-use; menor latencia |
+| Sub-agentes (Technician Briefing Agent, Remote Restoration Scada Agent, Service Dispatcher Agent, Resource Capacity Shortage Agent, Communications Insight Agent) | `claude-4.5-haiku` | Decisiones estructuradas de tool-use; menor latencia |
 
 El deployment de Haiku se configura con `AICORE_HAIKU_DEPLOYMENT_ID`. Si no se define, ambos roles usan el deployment de Sonnet como fallback.
 

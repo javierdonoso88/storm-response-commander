@@ -176,7 +176,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
         <div className="flex flex-col gap-1.5">
           <TooltipLabel
             label="Ventana tormenta 2"
-            tip="Tiempo disponible antes de la segunda tormenta. El agente Crew-Dispatch descarta reparaciones que superen este límite para proteger a las brigadas."
+            tip="Tiempo disponible antes de la segunda tormenta. El agente Service Dispatcher descarta reparaciones que superen este límite para proteger a las brigadas."
           />
           <div className="grid grid-cols-2 gap-1">
             {storm2Options.map(opt => (
@@ -428,7 +428,7 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
                     <span className="text-[10px] font-bold tracking-widest" style={{ color: '#a78bfa' }}>DROLIUS — 1 UNIDAD</span>
                   </div>
                   <p className="text-[11px] leading-relaxed" style={{ color: '#6d5acd' }}>
-                    Robot Scout de inspección autónoma. El agente Crew-Dispatch puede desplegarlo a zonas peligrosas antes de enviar brigadas.
+                    Robot Scout de inspección autónoma. El agente Service Dispatcher puede desplegarlo a zonas peligrosas antes de enviar brigadas.
                   </p>
                   <div className="flex flex-col gap-1 mt-0.5">
                     {[
@@ -454,7 +454,7 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
               {[
                 { label: 'CPD Girona — 30 min de batería', desc: 'Si el SLA objetivo supera los 30 min, el fallo TRF-002 casi seguro incumplirá. El agente Triage debe asignarlo rango 1.', color: '#ef4444' },
                 { label: 'Escasez de transformadores', desc: 'Con piezas limitadas, el agente Resource entra en conflicto garantizado: 1 transformador para 7 fallos críticos.', color: '#f97316' },
-                { label: 'Ventana tormenta T+4h', desc: 'El agente Crew-Dispatch no puede asignar reparaciones con ETA > 210 min. Muchos transformadores quedarán sin brigada asignada.', color: '#facc15' },
+                { label: 'Ventana tormenta T+4h', desc: 'El agente Service Dispatcher no puede asignar reparaciones con ETA > 210 min. Muchos transformadores quedarán sin brigada asignada.', color: '#facc15' },
                 { label: 'Pocas brigadas disponibles', desc: 'Con < 12 brigadas, zonas costeras con alta carga (Palamós 6.200, Palafrugell 5.800, Sant Feliu 5.500) quedan sin atender.', color: '#8b5cf6' },
               ].map(t => (
                 <div key={t.label} className="flex gap-3 rounded-lg px-3 py-2.5" style={{ background: '#0a1120', border: '1px solid #1e2d45' }}>

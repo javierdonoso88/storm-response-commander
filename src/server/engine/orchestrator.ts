@@ -46,7 +46,7 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     try {
       const result = await runTriagePriority(params, state, emit);
       emit({ type: 'agent_done', agent: 'triage-priority', summary: result.summary });
-      return `Triage & Priority completado: ${result.summary}`;
+      return `Technician Briefing Agent completado: ${result.summary}`;
     } catch (err) {
       const msg = `Error en triage-priority: ${String(err)}`;
       emit({ type: 'agent_done', agent: 'triage-priority', summary: msg });
@@ -152,27 +152,27 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
   const sdkTools: Anthropic.Tool[] = [
     {
       name: 'invoke_triage_priority',
-      description: 'Ejecuta TRIAGE & PRIORITY: clasifica todos los fallos por severidad y rankea los físicos por urgencia.',
+      description: 'Ejecuta Technician Briefing Agent: clasifica todos los fallos por severidad y rankea los físicos por urgencia.',
       input_schema: { type: 'object', properties: {}, required: [] },
     },
     {
       name: 'invoke_rerouting',
-      description: 'Ejecuta REMOTE RESTORATION: restaura fallos conmutables por telecontrol remoto.',
+      description: 'Ejecuta Remote Restoration Scada Agent: restaura fallos conmutables por telecontrol remoto.',
       input_schema: { type: 'object', properties: {}, required: [] },
     },
     {
       name: 'invoke_crew_dispatch',
-      description: 'Ejecuta CREW-DISPATCH: asigna brigadas a fallos físicos pendientes.',
+      description: 'Ejecuta Service Dispatcher Agent: asigna brigadas a fallos físicos pendientes.',
       input_schema: { type: 'object', properties: {}, required: [] },
     },
     {
       name: 'invoke_resource',
-      description: 'Ejecuta RESOURCE: gestiona inventario y detecta conflictos de material.',
+      description: 'Ejecuta Resource Capacity Shortage Agent: gestiona inventario y detecta conflictos de material.',
       input_schema: { type: 'object', properties: {}, required: [] },
     },
     {
       name: 'invoke_comms',
-      description: 'Ejecuta ALERTS & COMMS: redacta y envía SMS, nota de prensa y notificación regulatoria.',
+      description: 'Ejecuta Communications Insight Agent: redacta y envía SMS, nota de prensa y notificación regulatoria.',
       input_schema: { type: 'object', properties: {}, required: [] },
     },
     {
@@ -182,7 +182,7 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
     },
   ];
 
-  const systemPrompt = `Eres el STATUS UPDATE del sistema de Respuesta a Tormentas de Iberdrola (Girona).
+  const systemPrompt = `Eres el ASSET AND SERVICES ASSISTANT del sistema de Respuesta a Tormentas de Iberdrola (Girona).
 
 PROTOCOLO OBLIGATORIO — sigue este orden exacto sin saltarte ninguna fase:
 FASE 1 (PARALELA): Llama invoke_triage_priority + invoke_rerouting en el MISMO turno (los dos a la vez).

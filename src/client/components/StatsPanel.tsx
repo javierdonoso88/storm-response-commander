@@ -24,12 +24,12 @@ const CHANNEL_LABEL: Record<string, string> = {
 };
 
 const AGENT_LABEL: Record<string, string> = {
-  orchestrator: 'SUPERVISOR',
-  'triage-priority': 'TRIAGE & PRIORITY',
-  rerouting: 'REMOTE RESTORATION',
-  'crew-dispatch': 'CREW-DISPATCH',
-  resource: 'RESOURCE',
-  comms: 'ALERTS & COMMS',
+  orchestrator: 'ASSET AND SERVICES ASSISTANT',
+  'triage-priority': 'TECHNICIAN BRIEFING AGENT',
+  rerouting: 'REMOTE RESTORATION SCADA AGENT',
+  'crew-dispatch': 'SERVICE DISPATCHER AGENT',
+  resource: 'RESOURCE CAPACITY SHORTAGE AGENT',
+  comms: 'COMMUNICATIONS INSIGHT AGENT',
 };
 
 const AGENT_COLOR: Record<string, string> = {

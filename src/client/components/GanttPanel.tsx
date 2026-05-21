@@ -36,11 +36,11 @@ const AGENT_COLORS: Record<AgentId, { bg: string; ring: string; initials: string
 };
 
 const AGENT_SHORT: Record<AgentId, string> = {
-  'triage-priority': 'Triage & Priority',
-  rerouting:         'Remote Restoration',
-  'crew-dispatch':   'Crew Dispatch',
-  resource:          'Resource',
-  comms:             'Alerts & Comms',
+  'triage-priority': 'Technician Briefing Agent',
+  rerouting:         'Remote Restoration Scada Agent',
+  'crew-dispatch':   'Service Dispatcher Agent',
+  resource:          'Resource Capacity Shortage Agent',
+  comms:             'Communications Insight Agent',
 };
 
 const AGENT_TOOLTIP: Record<AgentId | 'orchestrator', string> = {

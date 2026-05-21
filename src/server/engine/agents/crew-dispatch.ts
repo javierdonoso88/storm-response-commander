@@ -126,7 +126,7 @@ export async function runCrewDispatch(
   ];
 
   await runAgent({
-    systemPrompt: `Eres el agente CREW-DISPATCH del sistema de Respuesta a Tormentas de Iberdrola (Girona).
+    systemPrompt: `Eres el agente Service Dispatcher Agent del sistema de Respuesta a Tormentas de Iberdrola (Girona).
 Tu misión: asignar brigadas disponibles a fallos físicos (transformadores y cables).
 Reglas:
 - Skill A = reparación transformadores | Skill B = reparación cables

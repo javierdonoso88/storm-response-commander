@@ -52,7 +52,7 @@ export function LogPanel({ logs, running }: Props) {
         {orchestratorLog && (
           <div className="flex flex-col min-h-0" style={{ flex: '1 1 0' }}>
             <div className="text-[13px] text-amber-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
-              ── STATUS UPDATE ─────────────────────────────
+              ── ASSET AND SERVICES ASSISTANT ──────────────
             </div>
             <div className="flex-1 min-h-0">
               <LogBlock log={orchestratorLog} />

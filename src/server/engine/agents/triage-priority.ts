@@ -83,7 +83,7 @@ export async function runTriagePriority(
   ];
 
   await runAgent({
-    systemPrompt: `Eres el agente TRIAGE & PRIORITY del sistema de Respuesta a Tormentas de Iberdrola (Girona).
+    systemPrompt: `Eres el agente Technician Briefing Agent del sistema de Respuesta a Tormentas de Iberdrola (Girona).
 Tu misión tiene dos etapas:
 1. TRIAGE: clasifica TODOS los fallos (conmutables, transformadores, cables) usando classify_fault.
    - Considera batería restante en sitios críticos, tipo de fallo y clientes afectados.

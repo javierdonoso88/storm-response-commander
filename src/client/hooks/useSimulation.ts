@@ -5,12 +5,12 @@ import {
 } from '../types';
 
 const AGENT_LABELS: Record<AgentId | 'orchestrator', string> = {
-  orchestrator: 'STATUS UPDATE',
-  'triage-priority': 'TRIAGE & PRIORITY',
-  rerouting: 'REMOTE RESTORATION',
-  'crew-dispatch': 'CREW-DISPATCH',
-  resource: 'RESOURCE',
-  comms: 'ALERTS & COMMS',
+  orchestrator: 'Asset and Services Assistant',
+  'triage-priority': 'Technician Briefing Agent',
+  rerouting: 'Remote Restoration Scada Agent',
+  'crew-dispatch': 'Service Dispatcher Agent',
+  resource: 'Resource Capacity Shortage Agent',
+  comms: 'Communications Insight Agent',
 };
 
 const AGENT_ORDER: AgentId[] = ['triage-priority', 'rerouting', 'crew-dispatch', 'resource', 'comms'];

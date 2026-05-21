@@ -16,17 +16,18 @@ const CHALLENGE_CARDS = [
   { accent: '#ef4444', label: 'Fallos de transformador', sub: '7 activos — brigada especializada · 90–180 min reparación' },
   { accent: '#f97316', label: 'Fallos de cable MT/BT', sub: '18 activos — reparación manual · 60–120 min' },
   { accent: '#22d3ee', label: 'Red conmutable', sub: '22 activos — restauración por telecontrol remoto · inmediato' },
+  { accent: '#a78bfa', label: 'Drolius — Robot Scout', sub: 'Inspección autónoma de zonas peligrosas antes del despliegue de brigadas' },
 ];
 
 const PHASE1_AGENTS = [
-  { label: 'TRIAGE & PRIORITY', system: 'SAP S/4HANA Asset Management + Event Mesh', desc: 'Clasifica 47 fallos por severidad y rankea los físicos por urgencia para el despacho', color: '#22d3ee' },
-  { label: 'REMOTE RESTORATION', system: 'SAP Asset Intelligence Network', desc: 'Ejecuta conmutaciones remotas de telecontrol hasta el límite autorizado', color: '#4ade80' },
+  { label: 'TECHNICIAN BRIEFING AGENT', system: 'SAP S/4HANA Asset Management + Event Mesh', desc: 'Clasifica 47 fallos por severidad y rankea los físicos por urgencia para el despacho', color: '#22d3ee' },
+  { label: 'REMOTE RESTORATION SCADA AGENT', system: 'SAP Asset Intelligence Network', desc: 'Ejecuta conmutaciones remotas de telecontrol hasta el límite autorizado', color: '#4ade80' },
 ];
 
 const PHASE2_AGENTS = [
-  { label: 'CREW-DISPATCH', system: 'SAP Field Service Management', desc: 'Asigna brigadas respetando skills y ventana de tormenta', color: '#60a5fa' },
-  { label: 'RESOURCE', system: 'SAP Integrated Business Planning', desc: 'Gestiona inventario y registra conflictos de material', color: '#c084fc' },
-  { label: 'ALERTS & COMMS', system: 'SAP Customer Experience', desc: 'Redacta SMS, notas de prensa y notificaciones regulatorias', color: '#f472b6' },
+  { label: 'SERVICE DISPATCHER AGENT', system: 'SAP Field Service Management', desc: 'Asigna brigadas respetando skills y ventana de tormenta', color: '#60a5fa' },
+  { label: 'RESOURCE CAPACITY SHORTAGE AGENT', system: 'SAP Integrated Business Planning', desc: 'Gestiona inventario y registra conflictos de material', color: '#c084fc' },
+  { label: 'COMMUNICATIONS INSIGHT AGENT', system: 'SAP Customer Experience', desc: 'Redacta SMS, notas de prensa y notificaciones regulatorias', color: '#f472b6' },
 ];
 
 function hexToRgb(hex: string) {
@@ -172,12 +173,21 @@ export function LandingPage({ onEnter }: Props) {
               suministro con los recursos disponibles. Cada minuto cuenta.
             </p>
             <div className="grid grid-cols-2 gap-3">
-              {CHALLENGE_CARDS.map(c => (
+              {CHALLENGE_CARDS.slice(0, 4).map(c => (
                 <div key={c.label} className="rounded-lg p-4" style={{ background: 'rgba(15,24,42,0.8)', border: '1px solid #0d1e35', borderLeft: `3px solid ${c.accent}` }}>
                   <div className="text-sm font-bold text-white mb-1">{c.label}</div>
                   <div className="text-xs leading-relaxed" style={{ color: '#475569' }}>{c.sub}</div>
                 </div>
               ))}
+              <div className="col-span-2 rounded-lg p-4 flex items-center gap-4" style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.25)', borderLeft: '3px solid #a78bfa' }}>
+                <span className="text-2xl flex-shrink-0" style={{ lineHeight: 1 }}>🤖</span>
+                <div>
+                  <div className="text-sm font-bold text-white mb-0.5">Drolius — Robot de Inspección</div>
+                  <div className="text-xs leading-relaxed" style={{ color: '#6d5acd' }}>
+                    Boston Dynamics Scout desplegado en campo. El agente Service Dispatcher Agent puede enviarlo a zonas peligrosas para confirmar batería SAI, evaluar accesibilidad o documentar daños <em style={{ color: '#8b7cf8' }}>antes de arriesgar a una brigada</em>.
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -196,7 +206,7 @@ export function LandingPage({ onEnter }: Props) {
           <div className="flex justify-center mb-5">
             <div className="px-10 py-4 rounded-2xl text-center" style={{ background: 'linear-gradient(135deg,rgba(245,158,11,0.1),rgba(245,158,11,0.04))', border: '1px solid rgba(245,158,11,0.35)', minWidth: 280 }}>
               <div className="text-[10px] font-bold tracking-widest mb-1" style={{ color: '#f59e0b' }}>SUPERVISOR</div>
-              <div className="text-xl font-black">STATUS UPDATE</div>
+              <div className="text-xl font-black">ASSET AND SERVICES ASSISTANT</div>
               <div className="text-[11px] font-mono mt-1" style={{ color: '#475569' }}>SAP AI Core Orchestration</div>
             </div>
           </div>

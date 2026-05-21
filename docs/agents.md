@@ -2,16 +2,16 @@
 
 Todos los agentes comparten la misma interfaz de entrada/salida y usan el bucle genérico de `agentRunner.ts`. El estado del escenario (`ScenarioState`) se pasa por referencia — las herramientas lo mutan directamente.
 
-Cada agente emite eventos `action` vinculados a su sistema SAP de integración. Estos eventos alimentan el panel **Acciones SAP** del frontend en tiempo real. Solo el agente **Alerts & Comms** puede emitir eventos `comms` (SMS, prensa, regulatorio).
+Cada agente emite eventos `action` vinculados a su sistema SAP de integración. Estos eventos alimentan el panel **Acciones SAP** del frontend en tiempo real. Solo el agente **Communications Insight Agent** puede emitir eventos `comms` (SMS, prensa, regulatorio).
 
 | Agente | ID interno | Sistema SAP |
 |--------|-----------|------------|
-| Orchestrator | `orchestrator` | SAP AI Core Orchestration |
-| Triage & Priority | `triage-priority` | SAP S/4HANA Asset Management + Event Mesh |
-| Remote Restoration | `rerouting` | SAP Asset Intelligence Network |
-| Crew-Dispatch | `crew-dispatch` | SAP Field Service Management · Drolius · Boston Dynamics Scout |
-| Resource | `resource` | SAP Integrated Business Planning |
-| Alerts & Comms | `comms` | SAP Customer Experience |
+| Asset and Services Assistant | `orchestrator` | SAP AI Core Orchestration |
+| Technician Briefing Agent | `triage-priority` | SAP S/4HANA Asset Management + Event Mesh |
+| Remote Restoration Scada Agent | `rerouting` | SAP Asset Intelligence Network |
+| Service Dispatcher Agent | `crew-dispatch` | SAP Field Service Management · Drolius · Boston Dynamics Scout |
+| Resource Capacity Shortage Agent | `resource` | SAP Integrated Business Planning |
+| Communications Insight Agent | `comms` | SAP Customer Experience |
 
 ---
 
@@ -36,11 +36,11 @@ Cierre             : finalize
 
 | Herramienta | Descripción |
 |-------------|-------------|
-| `invoke_triage_priority` | Ejecuta el agente Triage & Priority |
-| `invoke_rerouting` | Ejecuta el agente Remote Restoration |
-| `invoke_crew_dispatch` | Ejecuta el agente Crew-Dispatch |
-| `invoke_resource` | Ejecuta el agente Resource |
-| `invoke_comms` | Ejecuta el agente Alerts & Comms |
+| `invoke_triage_priority` | Ejecuta el agente Technician Briefing Agent |
+| `invoke_rerouting` | Ejecuta el agente Remote Restoration Scada Agent |
+| `invoke_crew_dispatch` | Ejecuta el agente Service Dispatcher Agent |
+| `invoke_resource` | Ejecuta el agente Resource Capacity Shortage Agent |
+| `invoke_comms` | Ejecuta el agente Communications Insight Agent |
 | `finalize` | Calcula KPIs (SLA, Seguridad, Eficiencia, TIEPI, MTTR) y emite `kpi` + `done` |
 
 **Eventos `action` emitidos**:
@@ -49,11 +49,11 @@ Cierre             : finalize
 
 ---
 
-## Triage & Priority
+## Technician Briefing Agent
 
 **Archivo**: `src/server/engine/agents/triage-priority.ts`  
 **Entrada**: lista completa de los 47 fallos (ID, tipo, zona, clientes, sitio crítico, batería) + lista de fallos físicos  
-**Propósito**: clasificar todos los fallos por severidad y rankear los físicos por urgencia para Crew-Dispatch
+**Propósito**: clasificar todos los fallos por severidad y rankear los físicos por urgencia para Service Dispatcher Agent
 
 **Etapas internas**:
 1. **Triage** — `classify_fault` para cada uno de los 47 fallos
@@ -83,7 +83,7 @@ Cierre             : finalize
 
 ---
 
-## Remote Restoration
+## Remote Restoration Scada Agent
 
 **Archivo**: `src/server/engine/agents/rerouting.ts`  
 **Entrada**: fallos conmutables pendientes + límite de operaciones de telecontrol  
@@ -107,7 +107,7 @@ Cierre             : finalize
 
 ---
 
-## Crew-Dispatch
+## Service Dispatcher Agent
 
 **Archivo**: `src/server/engine/agents/crew-dispatch.ts`  
 **Entrada**: brigadas disponibles + fallos físicos pendientes + ventana de segunda tormenta + estado de Drolius  
@@ -147,7 +147,7 @@ Cierre             : finalize
 
 ---
 
-## Resource
+## Resource Capacity Shortage Agent
 
 **Archivo**: `src/server/engine/agents/resource.ts`  
 **Entrada**: fallos con `status: 'crew-en-route'` + inventario actual  
@@ -167,11 +167,11 @@ Cierre             : finalize
 
 **`resourceType`**: `transformer` \| `cable` \| `mobile_generator`
 
-**Escenario de conflicto** (`limitedParts = 1`): solo hay 1 transformador en inventario para 7 fallos de transformador. Claude debe asignar el transformador al sitio crítico con menos batería y registrar conflicto para los restantes. El `hadConflict` se propaga a Alerts & Comms para que lo mencione en la notificación regulatoria.
+**Escenario de conflicto** (`limitedParts = 1`): solo hay 1 transformador en inventario para 7 fallos de transformador. Claude debe asignar el transformador al sitio crítico con menos batería y registrar conflicto para los restantes. El `hadConflict` se propaga a Communications Insight Agent para que lo mencione en la notificación regulatoria.
 
 ---
 
-## Alerts & Comms
+## Communications Insight Agent
 
 **Archivo**: `src/server/engine/agents/comms.ts`  
 **Entrada**: resumen del incidente (restaurados, brigadas, clientes, sitios críticos, `hadConflict`, sitios con batería bajo SLA)  
@@ -204,7 +204,7 @@ Cierre             : finalize
 | `minuteSLA` | 30–120 | Tiempo máximo de restauración comprometido (min) |
 | `switchableFaults` | 5–22 | Operaciones de telecontrol autorizadas para la jornada |
 | `limitedParts` | 0 \| 1 | 0 = inventario completo (2 transformadores); 1 = solo 1 disponible |
-| `storm2Window` | T+4h \| T+6h \| T+8h \| none | Ventana antes de la segunda tormenta; condiciona las decisiones de Crew-Dispatch |
+| `storm2Window` | T+4h \| T+6h \| T+8h \| none | Ventana antes de la segunda tormenta; condiciona las decisiones de Service Dispatcher Agent |
 | `availableCrews` | 8–22 | Brigadas activas (subconjunto de las 22 del escenario base) |
 
 El orden de los parámetros en el panel lateral: SLA → Conmutables → Piezas limitadas → Brigadas → Ventana tormenta 2.
@@ -228,8 +228,8 @@ Tiempos estimados por estado: restaurado (telecontrol) = 10 min · crew-en-route
 ## Estados de un fallo
 
 ```
-fault → switching → restored      (telecontrol, agente Remote Restoration)
-fault → crew-en-route             (brigada asignada, agente Crew-Dispatch)
+fault → crew-en-route             (brigada asignada, agente Service Dispatcher Agent)
+fault → switching → restored      (telecontrol, agente Remote Restoration Scada Agent)
 ```
 
 El frontend mapea cada estado a un color en el mapa:

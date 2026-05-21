@@ -14,8 +14,8 @@ Al iniciar una simulación, un orquestador Claude coordina 5 agentes especializa
 
 | Fase | Agentes | Modo |
 |------|---------|------|
-| 1 — Evaluación | Triage & Priority · Remote Restoration | Paralelo |
-| 2 — Ejecución | Crew-Dispatch → Resource → Alerts & Comms | Secuencial |
+| 1 — Evaluación | Technician Briefing Agent · Remote Restoration Scada Agent | Paralelo |
+| 2 — Ejecución | Service Dispatcher Agent → Resource Capacity Shortage Agent → Communications Insight Agent | Secuencial |
 
 Cada agente recibe el estado del escenario, usa herramientas concretas para tomar decisiones (conmutar fallos, despachar brigadas, asignar material, enviar comunicaciones) y emite eventos SSE que actualizan el mapa, los logs y los KPIs en tiempo real.
 
@@ -54,11 +54,13 @@ El informe puede cerrarse y reabrirse mediante el botón **"Ver Informe"** del h
 │  └──────────────────────────┬──────────────────────────────┘    │
 │                              │ runAgent()                        │
 │  ┌──────────────────┐  ┌───────────────────┐                    │
-│  │ Triage & Priority│  │Remote Restoration │                    │
-│  └──────────────────┘  └───────────────────┘                    │
-│  ┌───────────────┐  ┌──────────┐  ┌────────────────┐            │
-│  │ Crew-Dispatch │  │ Resource │  │ Alerts & Comms │            │
-│  └───────────────┘  └──────────┘  └────────────────┘            │
+│  │ Technician Briefing  │  │Remote Restoration  │                    │
+│  │ Agent                │  │Scada Agent         │                    │
+│  └──────────────────────┘  └────────────────────┘                    │
+│  ┌─────────────────────┐  ┌──────────────────────────┐  ┌─────────────────────────┐  │
+│  │ Service Dispatcher  │  │ Resource Capacity Shortage│  │ Communications Insight  │  │
+│  │ Agent               │  │ Agent                    │  │ Agent                   │  │
+│  └─────────────────────┘  └──────────────────────────┘  └─────────────────────────┘  │
 │                                                                  │
 │  ┌───────────────────────────────────────────────────────────┐  │
 │  │  SAP AI Core — Anthropic Claude Sonnet 4.6                │  │
@@ -77,7 +79,7 @@ Ver [docs/architecture.md](docs/architecture.md) para el detalle técnico comple
 - **47 fallos activos**: 22 conmutables (telecontrol), 7 transformadores, 18 cables
 - **7 sitios críticos**: hospitales, CPDs, diálisis, depuradoras, comisarías — con batería limitada
 - **22 brigadas** en 6 bases: Girona, Figueres, Olot, Banyoles, Lloret, Blanes
-- **Drolius** — robot de inspección Boston Dynamics Scout, desplegable desde Crew-Dispatch para reconocimiento previo
+- **Drolius** — robot de inspección Boston Dynamics Scout, desplegable desde Service Dispatcher Agent para reconocimiento previo
 - **Parámetros configurables**: SLA, brigadas disponibles, inventario limitado, ventana de segunda tormenta
 
 ---
@@ -187,7 +189,7 @@ src/
             ├── rerouting.ts        # Restauración remota por telecontrol
             ├── crew-dispatch.ts    # Asignación de brigadas
             ├── resource.ts         # Inventario + conflictos de material
-            └── comms.ts            # Alerts & Comms: SMS · Prensa · Regulatorio
+            └── comms.ts            # Communications Insight Agent: SMS · Prensa · Regulatorio
 ```
 
 ---
