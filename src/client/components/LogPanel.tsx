@@ -121,10 +121,11 @@ function LogBlock({ log, placeholder = false }: {
   const textRef = useRef<HTMLPreElement>(null);
   const { theme } = useTheme();
   const color = AGENT_COLORS[log.agent] ?? '#94a3b8';
-  const logTextColor = theme === 'joule' ? 'var(--text-primary)' : '#a5f3fc';
-  const badgeBg = theme === 'joule' ? `${color}28` : `${color}18`;
-  const blockBorder = theme === 'joule' ? `${color}40` : `${color}25`;
-  const blockBg = theme === 'joule' ? `${color}0d` : `${color}07`;
+  const logTextColor = theme !== 'dark' ? 'var(--text-primary)' : '#a5f3fc';
+  const isLight = theme !== 'dark';
+  const badgeBg = isLight ? `${color}28` : `${color}18`;
+  const blockBorder = isLight ? `${color}40` : `${color}25`;
+  const blockBg = isLight ? `${color}0d` : `${color}07`;
 
   useEffect(() => {
     if (textRef.current) {

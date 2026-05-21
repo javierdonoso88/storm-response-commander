@@ -55,10 +55,10 @@ const droliusIcon = L.divIcon({
 
 export function MapPanel({ faults, drolius }: Props) {
   const { theme } = useTheme();
-  const tileUrl = theme === 'joule'
-    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-  const nodeBorder = theme === 'joule' ? '#ffffff' : '#0d1520';
+  const tileUrl = theme === 'dark'
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+  const nodeBorder = theme === 'dark' ? '#0d1520' : '#ffffff';
   const faultMap = useMemo(() => {
     const m = new Map<string, Fault>();
     faults.forEach(f => m.set(f.id, f));

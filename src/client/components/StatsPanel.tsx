@@ -59,12 +59,12 @@ function timeAgo(ts: number): string {
 
 export function StatsPanel({ messages, actionMessages }: Props) {
   const { theme } = useTheme();
-  const isJoule = theme === 'joule';
+  const isLight = theme !== 'dark';
 
-  const actionsBadgeStyle = isJoule
+  const actionsBadgeStyle = isLight
     ? { background: 'rgba(209,250,229,0.9)', color: '#047857' }
     : { background: 'rgba(6,78,59,0.4)', color: '#34d399' };
-  const commsBadgeStyle = isJoule
+  const commsBadgeStyle = isLight
     ? { background: 'rgba(207,250,254,0.9)', color: '#0e7490' }
     : { background: 'rgba(22,78,99,0.4)', color: '#22d3ee' };
   return (

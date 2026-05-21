@@ -58,6 +58,34 @@
   --card-shadow-lg: 0 4px 20px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.05);
 }
 
+[data-theme="iberdrola"] {
+  --bg-base:        #f2f7f4;
+  --bg-card:        #ffffff;
+  --bg-secondary:   #edf5f0;
+  --bg-tertiary:    #e4f0e8;
+  --bg-header:      #ffffff;
+  --bg-overlay:     rgba(0,40,15,0.55);
+  --bg-panel:       #ffffff;
+  --border:         #c8ddd0;
+  --border-accent:  #aecebe;
+  --text-primary:   #0f2318;
+  --text-secondary: #2d5240;
+  --text-muted:     #5a8268;
+  --text-dim:       #7a9e88;
+  --text-ghost:     #a0bda8;
+  --accent:         #00a651;
+  --accent-subtle:  rgba(0,166,81,0.08);
+  --scrollbar-track: #f2f7f4;
+  --scrollbar-thumb: #aecebe;
+  --scrollbar-thumb-hover: #8ab89a;
+  --status-running-bg:    #fff8e6;
+  --status-running-color: #c2410c;
+  --status-done-bg:       #e8f5ee;
+  --status-done-color:    #15803d;
+  --card-shadow:    0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03);
+  --card-shadow-lg: 0 4px 20px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.05);
+}
+
 /* ── Base layer ────────────────────────────────────────────────── */
 
 @layer base {
@@ -188,6 +216,56 @@
 [data-theme="joule"] .text-slate-500 { color: var(--text-muted) !important; }
 [data-theme="joule"] .text-slate-600 { color: var(--text-dim) !important; }
 [data-theme="joule"] .text-slate-700 { color: var(--text-secondary) !important; }
+
+/* ── Iberdrola theme overrides ─────────────────────────────────── */
+
+[data-theme="iberdrola"] .panel-card {
+  box-shadow: var(--card-shadow);
+  border-color: var(--border);
+}
+
+[data-theme="iberdrola"] .panel-header {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-weight: 700;
+  border-left: 3px solid var(--accent);
+  border-radius: 0;
+}
+
+[data-theme="iberdrola"] .kpi-card {
+  background: var(--bg-card);
+  box-shadow: var(--card-shadow);
+  border-color: var(--border);
+}
+
+[data-theme="iberdrola"] .btn-primary            { background: var(--accent); }
+[data-theme="iberdrola"] .btn-primary:hover:not(:disabled) { background: #008a43; }
+[data-theme="iberdrola"] .btn-primary:active:not(:disabled){ background: #006b33; }
+[data-theme="iberdrola"] .btn-primary:disabled   { background: var(--border-accent); color: var(--text-muted); }
+
+[data-theme="iberdrola"] .text-amber-400  { color: #b45309 !important; }
+[data-theme="iberdrola"] .text-yellow-400 { color: #a16207 !important; }
+[data-theme="iberdrola"] .text-green-400  { color: #15803d !important; }
+[data-theme="iberdrola"] .text-emerald-400{ color: #047857 !important; }
+[data-theme="iberdrola"] .text-cyan-400   { color: #0e7490 !important; }
+[data-theme="iberdrola"] .text-blue-400   { color: #1d4ed8 !important; }
+[data-theme="iberdrola"] .text-purple-400 { color: #6d28d9 !important; }
+[data-theme="iberdrola"] .text-pink-400   { color: #be185d !important; }
+[data-theme="iberdrola"] .text-red-400    { color: #dc2626 !important; }
+[data-theme="iberdrola"] .text-orange-400 { color: #c2410c !important; }
+
+[data-theme="iberdrola"] .bg-emerald-900\/40 { background: rgba(209,250,229,0.9) !important; }
+[data-theme="iberdrola"] .bg-cyan-900\/40    { background: rgba(207,250,254,0.9) !important; }
+[data-theme="iberdrola"] .bg-red-900\/20     { background: rgba(254,226,226,0.8) !important; }
+
+[data-theme="iberdrola"] .bg-\[#111c2e\]      { background: var(--bg-tertiary) !important; }
+[data-theme="iberdrola"] .bg-\[#1a2540\]      { background: var(--bg-secondary) !important; }
+[data-theme="iberdrola"] .border-\[#1e2d45\]  { border-color: var(--border) !important; }
+
+[data-theme="iberdrola"] .text-slate-400 { color: var(--text-secondary) !important; }
+[data-theme="iberdrola"] .text-slate-500 { color: var(--text-muted) !important; }
+[data-theme="iberdrola"] .text-slate-600 { color: var(--text-dim) !important; }
+[data-theme="iberdrola"] .text-slate-700 { color: var(--text-secondary) !important; }
 
 /* ── Utilities ─────────────────────────────────────────────────── */
 

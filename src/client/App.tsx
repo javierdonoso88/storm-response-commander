@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Fault, SimParams } from './types';
 import { useSimulation } from './hooks/useSimulation';
 import { useTheme } from './contexts/ThemeContext';
+import { Theme } from './contexts/ThemeContext';
 import { ParametersPanel } from './components/ParametersPanel';
 import { LogPanel } from './components/LogPanel';
 import { GanttPanel } from './components/GanttPanel';
@@ -23,10 +24,23 @@ export default function App() {
   const [initialFaults, setInitialFaults] = useState<Fault[]>([]);
   const [showLanding, setShowLanding] = useState(true);
   const [showResults, setShowResults] = useState(false);
+  const [showThemePicker, setShowThemePicker] = useState(false);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const { theme, toggle } = useTheme();
+  const themePickerRef = useRef<HTMLDivElement>(null);
+  const { theme, setTheme } = useTheme();
 
   const { state, startSimulation, tickAgentProgress } = useSimulation(initialFaults);
+
+  useEffect(() => {
+    if (!showThemePicker) return;
+    function handleClick(e: MouseEvent) {
+      if (themePickerRef.current && !themePickerRef.current.contains(e.target as Node)) {
+        setShowThemePicker(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showThemePicker]);
 
   useEffect(() => {
     fetch('/api/scenario').then(r => r.json()).then(d => setInitialFaults(d.faults ?? [])).catch(() => {});
@@ -107,15 +121,45 @@ export default function App() {
           <span className="text-xs font-mono whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>{state.elapsedLabel}</span>
         </div>
 
-        {/* Theme toggle */}
-        <button
-          onClick={toggle}
-          title={theme === 'dark' ? 'Cambiar a tema Joule' : 'Cambiar a tema oscuro'}
-          className="flex items-center justify-center w-7 h-7 rounded-lg text-sm flex-shrink-0"
-          style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer' }}
-        >
-          {theme === 'dark' ? '☀' : '🌙'}
-        </button>
+        {/* Theme picker dropdown */}
+        <div className="relative flex-shrink-0" ref={themePickerRef}>
+          <button
+            onClick={() => setShowThemePicker(v => !v)}
+            className="flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-xs font-medium"
+            style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer' }}
+          >
+            <span>{theme === 'dark' ? '🌙' : theme === 'joule' ? '☀' : '⚡'}</span>
+            <span>{theme === 'dark' ? 'Oscuro' : theme === 'joule' ? 'Joule' : 'Iberdrola'}</span>
+            <svg width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M0 0l4 5 4-5z"/></svg>
+          </button>
+          {showThemePicker && (
+            <div
+              className="absolute right-0 top-full mt-1 rounded-lg overflow-hidden z-[9000]"
+              style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-accent)', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', minWidth: 140 }}
+            >
+              {([
+                { value: 'dark', icon: '🌙', label: 'Oscuro' },
+                { value: 'joule', icon: '☀', label: 'SAP Joule' },
+                { value: 'iberdrola', icon: '⚡', label: 'Iberdrola' },
+              ] as { value: Theme; icon: string; label: string }[]).map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => { setTheme(opt.value); setShowThemePicker(false); }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left transition-colors"
+                  style={{
+                    background: theme === opt.value ? 'var(--accent-subtle)' : 'transparent',
+                    color: theme === opt.value ? 'var(--accent)' : 'var(--text-secondary)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span>{opt.icon}</span>
+                  <span className="font-medium">{opt.label}</span>
+                  {theme === opt.value && <span className="ml-auto opacity-70">✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Back to landing */}
         <button

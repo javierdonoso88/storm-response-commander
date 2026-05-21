@@ -44,7 +44,7 @@ function TooltipLabel({ label, tip }: { label: string; tip: string }) {
 export function ParametersPanel({ params, onChange, onSimulate, running, kpi, drolius }: Props) {
   const [showInfo, setShowInfo] = useState(false);
   const { theme } = useTheme();
-  const isJoule = theme === 'joule';
+  const isLight = theme !== 'dark';
 
   const droliusColor = drolius.status === 'available' ? '#22c55e' : '#f97316';
   const droliusLabel = drolius.status === 'available' ? 'DISPONIBLE'
@@ -139,8 +139,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
               onClick={() => onChange({ limitedParts: params.limitedParts === 1 ? 0 : 1 })}
               className="relative w-9 h-5 flex-shrink-0 rounded-full transition-colors duration-200 border"
               style={{
-                background: params.limitedParts === 1 ? 'var(--accent)' : isJoule ? '#c4cdd9' : '#334155',
-                borderColor: params.limitedParts === 1 ? 'var(--accent)' : isJoule ? '#b0bec8' : '#475569',
+                background: params.limitedParts === 1 ? 'var(--accent)' : isLight ? '#c4cdd9' : '#334155',
+                borderColor: params.limitedParts === 1 ? 'var(--accent)' : isLight ? '#b0bec8' : '#475569',
               }}
             >
               <span
@@ -150,7 +150,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
             </button>
           </div>
           {params.limitedParts === 1 && (
-            <div className="text-[12px] rounded px-2 py-1 border" style={{ color: 'var(--status-running-color)', background: 'var(--status-running-bg)', borderColor: isJoule ? 'rgba(194,65,12,0.25)' : '#7c2d12' }}>
+            <div className="text-[12px] rounded px-2 py-1 border" style={{ color: 'var(--status-running-color)', background: 'var(--status-running-bg)', borderColor: isLight ? 'rgba(194,65,12,0.25)' : '#7c2d12' }}>
               Solo 1 transformador disponible
             </div>
           )}
