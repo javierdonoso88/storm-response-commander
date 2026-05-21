@@ -134,7 +134,7 @@ export default function App() {
           {/* TOP: Map + Flow */}
           <div className="flex overflow-hidden gap-2 p-2" style={{ flex: '0 0 42%' }}>
             <div className="overflow-hidden rounded border flex-1" style={{ borderColor: '#1e2d45', boxShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-              <MapPanel faults={state.faults.length > 0 ? state.faults : initialFaults} />
+              <MapPanel faults={state.faults.length > 0 ? state.faults : initialFaults} drolius={state.drolius} />
             </div>
             <div className="overflow-hidden flex-shrink-0" style={{ flex: '0 0 36%' }}>
               <GanttPanel agents={state.agents} conflicts={state.conflicts} />

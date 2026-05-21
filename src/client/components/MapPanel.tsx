@@ -1,11 +1,13 @@
 import { Fragment, useMemo } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Polyline, Tooltip } from 'react-leaflet';
+import { MapContainer, TileLayer, CircleMarker, Polyline, Marker, Tooltip } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Fault, FaultStatus } from '../types';
+import { Fault, FaultStatus, DroliusStatus } from '../types';
 import { FAULT_COORDS, NETWORK_EDGES, MAP_CENTER, MAP_ZOOM } from '../data/mapData';
 
 interface Props {
   faults: Fault[];
+  drolius?: { status: DroliusStatus; task?: string };
 }
 
 const STATUS_COLOR: Record<FaultStatus, string> = {
@@ -43,7 +45,14 @@ function edgeStyle(f1: Fault | undefined, f2: Fault | undefined) {
   return { color: '#1e3a5f', weight: 1.5, opacity: 0.8 };
 }
 
-export function MapPanel({ faults }: Props) {
+const droliusIcon = L.divIcon({
+  html: `<div style="font-size:22px;line-height:1;filter:drop-shadow(0 0 6px #a78bfa)">🤖</div>`,
+  className: '',
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+});
+
+export function MapPanel({ faults, drolius }: Props) {
   const faultMap = useMemo(() => {
     const m = new Map<string, Fault>();
     faults.forEach(f => m.set(f.id, f));
@@ -186,6 +195,18 @@ export function MapPanel({ faults }: Props) {
               </Fragment>
             );
           })}
+          {/* Drolius marker */}
+          {drolius && drolius.status !== 'available' && drolius.task && FAULT_COORDS[drolius.task] && (
+            <Marker position={FAULT_COORDS[drolius.task]} icon={droliusIcon}>
+              <Tooltip direction="top" offset={[0, -14]} opacity={0.95} className="map-tooltip">
+                <div style={{ fontSize: 13, lineHeight: 1.5, minWidth: 140 }}>
+                  <div style={{ fontWeight: 700, color: '#a78bfa', marginBottom: 2 }}>Drolius Scout</div>
+                  <div style={{ color: '#94a3b8' }}>{drolius.status === 'deployed' ? 'En misión' : 'Retornando a base'}</div>
+                  <div style={{ color: '#64748b', fontSize: 11, marginTop: 2 }}>{drolius.task}</div>
+                </div>
+              </Tooltip>
+            </Marker>
+          )}
         </MapContainer>
       </div>
     </div>
