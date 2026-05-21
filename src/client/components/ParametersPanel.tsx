@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SimParams, DroliusStatus } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface Props {
   params: SimParams;
@@ -42,6 +43,8 @@ function TooltipLabel({ label, tip }: { label: string; tip: string }) {
 
 export function ParametersPanel({ params, onChange, onSimulate, running, kpi, drolius }: Props) {
   const [showInfo, setShowInfo] = useState(false);
+  const { theme } = useTheme();
+  const isJoule = theme === 'joule';
 
   const droliusColor = drolius.status === 'available' ? '#22c55e' : '#f97316';
   const droliusLabel = drolius.status === 'available' ? 'DISPONIBLE'
@@ -136,15 +139,15 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
               onClick={() => onChange({ limitedParts: params.limitedParts === 1 ? 0 : 1 })}
               className="relative w-9 h-5 flex-shrink-0 rounded-full transition-colors duration-200 border"
               style={{
-                background: params.limitedParts === 1 ? '#2563eb' : 'var(--border)',
-                borderColor: params.limitedParts === 1 ? '#3b82f6' : 'var(--text-ghost)',
+                background: params.limitedParts === 1 ? 'var(--accent)' : isJoule ? '#c4cdd9' : '#334155',
+                borderColor: params.limitedParts === 1 ? 'var(--accent)' : isJoule ? '#b0bec8' : '#475569',
               }}
             >
               <span className={`absolute top-0.5 w-4 h-4 rounded-full transition-transform duration-200 bg-white shadow-sm ${params.limitedParts === 1 ? 'translate-x-4' : 'translate-x-0.5'}`} />
             </button>
           </div>
           {params.limitedParts === 1 && (
-            <div className="text-[12px] rounded px-2 py-1 border" style={{ color: '#f97316', background: '#451a03', borderColor: '#7c2d12' }}>
+            <div className="text-[12px] rounded px-2 py-1 border" style={{ color: 'var(--status-running-color)', background: 'var(--status-running-bg)', borderColor: isJoule ? 'rgba(194,65,12,0.25)' : '#7c2d12' }}>
               Solo 1 transformador disponible
             </div>
           )}
@@ -176,7 +179,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
                 className="text-[12px] py-1 px-2 rounded border transition-all font-mono"
                 style={
                   params.storm2Window === opt
-                    ? { background: '#1d4ed8', color: '#fff', borderColor: '#2563eb', cursor: 'pointer' }
+                    ? { background: 'var(--accent)', color: '#fff', borderColor: 'var(--accent)', cursor: 'pointer' }
                     : { background: 'var(--border)', color: 'var(--text-muted)', borderColor: 'var(--text-ghost)', cursor: 'pointer' }
                 }
               >
@@ -199,9 +202,9 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
               background: 'var(--bg-base)',
               border: '1px solid var(--border)',
               color: 'var(--text-secondary)',
-              caretColor: '#3b82f6',
+              caretColor: 'var(--accent)',
             }}
-            onFocus={e => { e.currentTarget.style.borderColor = '#3b82f6'; }}
+            onFocus={e => { e.currentTarget.style.borderColor = 'var(--accent)'; }}
             onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
           />
           <span className="text-[10px]" style={{ color: 'var(--text-ghost)' }}>
