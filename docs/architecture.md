@@ -206,33 +206,18 @@ Eficiencia = fallos_atendidos / fallos_totales × 100
 
 ## Sistema de temas (oscuro / Joule)
 
-El header del simulador incluye un botón ☀/🌙 que alterna entre dos temas:
+El header del simulador incluye un desplegable de tema con tres opciones:
 
 | Tema | Fondo | Borde | Acento |
 |------|-------|-------|--------|
 | Oscuro (default) | `#0d1520` navy | `#1e2d45` | `#22d3ee` cyan |
-| Joule | `#f0f4f8` blanco-gris | `#e2e8f0` | `#7c3aed` púrpura SAP |
+| SAP Joule | `#f3f5f8` blanco-gris | `#dde3ec` | `#6d28d9` púrpura SAP |
+| Iberdrola | `#f2f7f4` verde-claro | `#c8ddd0` | `#00a651` verde Iberdrola |
 
 **Implementación**:
 
-- `ThemeContext.tsx` — React Context que expone `{ theme, toggle }`. Persiste en `localStorage('src-theme')` y escribe `data-theme="joule"` (o `"dark"`) en `document.documentElement`.
-- `globals.css` — todas las variables de diseño se definen en `:root` (dark, default) y se sobreescriben en `[data-theme="joule"]`:
-
-```css
-:root {
-  --bg-base: #0d1520;
-  --accent:  #22d3ee;
-  --border:  #1e2d45;
-  /* ... */
-}
-[data-theme="joule"] {
-  --bg-base: #f0f4f8;
-  --accent:  #7c3aed;
-  --border:  #e2e8f0;
-  /* ... */
-}
-```
-
+- `ThemeContext.tsx` — React Context que expone `{ theme, setTheme }`. Soporta `Theme = 'dark' | 'joule' | 'iberdrola'`. Persiste en `localStorage('src-theme')` y escribe `data-theme="<tema>"` en `document.documentElement`.
+- `globals.css` — variables en `:root` (dark), `[data-theme="joule"]` y `[data-theme="iberdrola"]`. Los dos temas claros comparten la misma estructura de tokens; difieren en el valor de `--accent` y en los matices de fondo (gris-azulado en Joule, verde-claro en Iberdrola). Los componentes detectan "tema claro" con `isLight = theme !== 'dark'`.
 - Todos los componentes usan `var(--token)` en sus estilos inline. `MapPanel` y `ParametersPanel` también consumen `useTheme()` para lógica JS que no puede resolverse con CSS vars (URL del tile CartoDB `dark_all` ↔ `light_all`, color del borde de los nodos del mapa, y estilos condicionales del toggle switch).
 - Las clases de Tailwind con valores arbitrarios (e.g. `bg-[#111c2e]`) se sobrescriben con selectores `[data-theme="joule"] .bg-\[#111c2e\]` en `globals.css`.
 
