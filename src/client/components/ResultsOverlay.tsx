@@ -353,6 +353,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
     <div class="sap-box"><div class="sap-system">SAP Integrated Business Planning</div><div class="sap-value" style="color:#9333ea">${actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && a.msg.includes('Material reservado')).length}</div><div class="sap-label">Materiales reservados</div></div>
     <div class="sap-box"><div class="sap-system">SAP Customer Experience</div><div class="sap-value" style="color:#db2777">${commsMessages.length}</div><div class="sap-label">Mensajes enviados vía SAP CX</div></div>
     <div class="sap-box"><div class="sap-system">SAP S/4HANA Asset Management</div><div class="sap-value" style="color:#0891b2">${faults.length}</div><div class="sap-label">Activos analizados en S/4HANA</div></div>
+    <div class="sap-box"><div class="sap-system">Drolius · Boston Dynamics Scout</div><div class="sap-value" style="color:#9333ea">${actionMessages.filter(a => a.system === 'Drolius · Boston Dynamics Scout' && a.msg.includes('desplegado')).length}</div><div class="sap-label">Misiones de inspección ejecutadas</div></div>
   </div>
 
   ${orchPlain ? `
@@ -414,6 +415,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
   const cxMessages = commsMessages.length;
   const ainSwitches = restored.length; // direct from fault state — more reliable than actionMessages
   const s4Assets = faults.length;
+  const droliusMissions = actionMessages.filter(a => a.system === 'Drolius · Boston Dynamics Scout' && a.msg.includes('desplegado')).length;
 
   // Pending actions sorted: critical first, then by clients desc
   const pendingSorted = [...pending].sort((a, b) => {
@@ -506,6 +508,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
               <SapKpiCard system="SAP Integrated Business Planning" value={ibpMaterials} label={`Materiales reservados${ibpReplenish > 0 ? ` · ${ibpReplenish} reposición solicitada` : ''}`} color="#c084fc" />
               <SapKpiCard system="SAP Customer Experience" value={cxMessages} label="Mensajes enviados vía SAP CX" color="#f472b6" />
               <SapKpiCard system="SAP S/4HANA Asset Management" value={s4Assets} label="Activos analizados en S/4HANA" color="#22d3ee" />
+              <SapKpiCard system="Drolius · Boston Dynamics Scout" value={droliusMissions} label="Misiones de inspección ejecutadas" color="#a78bfa" />
             </div>
           </div>
 
