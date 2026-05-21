@@ -23,7 +23,7 @@ Al finalizar, aparece automáticamente un **Resumen Ejecutivo** con:
 - KPIs visuales con gauges circulares SVG (SLA, Seguridad, Eficiencia operativa)
 - Indicadores de tiempo (TIEPI — minutos medios de interrupción ponderados por clientes, MTTR — tiempo medio de reposición de fallos atendidos)
 - Indicadores operativos: clientes restaurados, fallos atendidos, sitios críticos cubiertos, acciones pendientes
-- KPIs de integración SAP: sistemas tocados, órdenes FSM, conmutaciones AIN, materiales IBP, mensajes CX, activos S/4HANA
+- KPIs de integración SAP: sistemas tocados, órdenes FSM, conmutaciones AIN, materiales IBP, mensajes CX, activos S/4HANA, misiones Drolius
 - Resumen narrativo del orquestador (texto CoT limpio de markdown)
 - Acciones pendientes con recomendaciones de mitigación priorizadas
 
@@ -77,6 +77,7 @@ Ver [docs/architecture.md](docs/architecture.md) para el detalle técnico comple
 - **47 fallos activos**: 22 conmutables (telecontrol), 7 transformadores, 18 cables
 - **7 sitios críticos**: hospitales, CPDs, diálisis, depuradoras, comisarías — con batería limitada
 - **22 brigadas** en 6 bases: Girona, Figueres, Olot, Banyoles, Lloret, Blanes
+- **Drolius** — robot de inspección Boston Dynamics Scout, desplegable desde Crew-Dispatch para reconocimiento previo
 - **Parámetros configurables**: SLA, brigadas disponibles, inventario limitado, ventana de segunda tormenta
 
 ---

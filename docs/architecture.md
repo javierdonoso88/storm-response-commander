@@ -46,6 +46,7 @@ Cada `emit()` se serializa como un evento SSE y se envía al cliente inmediatame
 | `comms` | `{ channel, msg }` | Añade mensaje al feed de comunicaciones |
 | `action` | `{ agent, system, msg }` | Añade entrada al feed de Acciones SAP |
 | `conflict` | `{ winner, loser, reason }` | Muestra alerta de conflicto |
+| `drolius_update` | `{ status, task?, report? }` | Actualiza chip de estado de Drolius en panel lateral |
 | `safety_tick` | `{ elapsed, limit }` | Actualiza barra de progreso de seguridad |
 | `kpi` | `{ sla, safety, efficiency, tiepi, mttr }` | Actualiza métricas finales |
 | `done` | `{ elapsed }` | Cierra la simulación |
@@ -160,7 +161,7 @@ Los handlers devuelven strings descriptivos en éxito o `"Error: ..."` en fallo,
 
 ## Estado compartido via closure
 
-El `ScenarioState` (faults, crews, inventory) se crea en `runOrchestrator` y se pasa por referencia a cada agente. Las herramientas mutan el estado in-place:
+El `ScenarioState` (faults, crews, inventory, drolius) se crea en `runOrchestrator` y se pasa por referencia a cada agente. Las herramientas mutan el estado in-place:
 
 ```typescript
 // rerouting.ts — attempt_remote_switch
@@ -174,6 +175,17 @@ emit({ type: 'asset_update', id: fault.id, status: 'restored' });
 crew.status = 'busy';
 fault.status = 'crew-en-route';
 emit({ type: 'asset_update', id: fault.id, status: 'crew-en-route' });
+
+// crew-dispatch.ts — dispatch_drolius
+state.drolius.status = 'deployed';
+emit({ type: 'drolius_update', status: 'deployed', task: faultId });
+await sleep(900);
+// ... genera informe ...
+state.drolius.status = 'returning';
+emit({ type: 'drolius_update', status: 'returning', report });
+await sleep(500);
+state.drolius.status = 'available';
+emit({ type: 'drolius_update', status: 'available' });
 ```
 
 Esto garantiza que cuando `resource.ts` recibe el estado, los fallos ya tienen `status: 'crew-en-route'` asignado por crew-dispatch.
@@ -205,7 +217,7 @@ Aparece automáticamente 800 ms después de recibir el evento `done`. Puede cerr
 |---------|----------------|
 | KPI gauges circulares (SLA · Seguridad · Eficiencia) | `kpi` state del evento `kpi` |
 | Indicadores operativos (clientes, fallos, críticos, pendientes) | `faults` array |
-| KPIs de integración SAP (6 sistemas) | `actionMessages` + `faults` |
+| KPIs de integración SAP (7 sistemas, incluido Drolius) | `actionMessages` + `faults` |
 | Análisis del orquestador | `agentLogs.find(l => l.agent === 'orchestrator').text` |
 | Acciones pendientes con mitigación | `faults.filter(f => f.status === 'fault')` |
 

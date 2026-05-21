@@ -9,7 +9,7 @@ Cada agente emite eventos `action` vinculados a su sistema SAP de integración. 
 | Orchestrator | `orchestrator` | SAP AI Core Orchestration |
 | Triage & Priority | `triage-priority` | SAP S/4HANA Asset Management + Event Mesh |
 | Remote Restoration | `rerouting` | SAP Asset Intelligence Network |
-| Crew-Dispatch | `crew-dispatch` | SAP Field Service Management |
+| Crew-Dispatch | `crew-dispatch` | SAP Field Service Management · Drolius · Boston Dynamics Scout |
 | Resource | `resource` | SAP Integrated Business Planning |
 | Alerts & Comms | `comms` | SAP Customer Experience |
 
@@ -108,19 +108,34 @@ Cierre             : finalize
 ## Crew-Dispatch
 
 **Archivo**: `src/server/engine/agents/crew-dispatch.ts`  
-**Entrada**: brigadas disponibles + fallos físicos pendientes + ventana de segunda tormenta  
-**Propósito**: asignar brigadas a fallos, respetando skills y la ventana de seguridad
+**Entrada**: brigadas disponibles + fallos físicos pendientes + ventana de segunda tormenta + estado de Drolius  
+**Propósito**: asignar brigadas a fallos, respetando skills y la ventana de seguridad; opcionalmente desplegar Drolius para inspección previa
 
 **Herramientas**:
 
 | Herramienta | Parámetros | Efecto en estado |
 |-------------|-----------|-----------------|
 | `dispatch_crew` | `crewId, faultId, eta, reason` | `crew.status = 'busy'`, `fault.status = 'crew-en-route'`, emite `asset_update` |
+| `dispatch_drolius` | `faultId, mission` | Emite `drolius_update` × 3 (deployed → returning → available), devuelve informe |
 | `skip_fault` | `faultId, reason` | Registra fallo sin asignar (sin efecto en estado) |
 | `complete_dispatch` | `summary` | Cierra agente |
 
 **Eventos `action` emitidos** (`SAP Field Service Management`):
 - Por cada `dispatch_crew` exitoso: orden de trabajo creada con brigada, fallo, zona y ETA
+
+**Eventos emitidos** (`Drolius · Boston Dynamics Scout`):
+- Despliegue: `Drolius desplegado → <zona> (<faultId>) — misión: <tipo>`
+- Retorno: `Drolius retorna con informe: <primeros 100 chars>`
+
+**Misiones Drolius** (`mission`):
+
+| Misión | Información devuelta |
+|--------|---------------------|
+| `battery_check` | Nivel de batería SAI (BMS directo), temperatura transformador, carga actual, recomendación de urgencia |
+| `zone_access` | Condiciones de zona, obstáculos detectados, ajuste de ETA para brigada |
+| `damage_assessment` | Tipo de daño, materiales necesarios, nivel de seguridad de zona |
+
+**Comportamiento de Drolius**: solo una misión simultánea. El robot pasa por tres estados (`available → deployed → returning → available`) emitiendo `drolius_update` en cada transición para actualizar el chip en tiempo real en el panel lateral. Los informes son deterministas basados en los datos del fallo (no aleatorios) para asegurar coherencia entre simulaciones. Claude recibe el informe como resultado de herramienta y puede ajustar sus decisiones de despacho en consecuencia.
 
 **Skills**:
 - Skill **A** → reparación de transformadores
