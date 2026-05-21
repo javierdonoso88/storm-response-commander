@@ -30,6 +30,8 @@ Cierre             : finalize
 
 **Detección de paralelismo**: si todos los `tool_use` del turno pertenecen a `phase1Tools = {'invoke_triage_priority', 'invoke_rerouting'}`, se ejecutan con `Promise.all`. En cualquier otro caso, loop secuencial.
 
+**Configuración del modelo**: `max_tokens: 8192` (aumentado desde 4096 para evitar que la Fase 2 se omita cuando Claude genera razonamiento largo tras los resultados de la Fase 1). El system prompt prohíbe explícitamente el análisis extendido entre fases.
+
 **Herramientas**:
 
 | Herramienta | Descripción |
@@ -116,7 +118,7 @@ Cierre             : finalize
 | Herramienta | Parámetros | Efecto en estado |
 |-------------|-----------|-----------------|
 | `dispatch_crew` | `crewId, faultId, eta, reason` | `crew.status = 'busy'`, `fault.status = 'crew-en-route'`, emite `asset_update` |
-| `dispatch_drolius` | `faultId, mission` | Emite `drolius_update` × 3 (deployed → returning → available), devuelve informe |
+| `dispatch_drolius` | `faultId, mission` | Emite `drolius_update` × 1 (deployed), devuelve informe; Drolius permanece desplegado |
 | `skip_fault` | `faultId, reason` | Registra fallo sin asignar (sin efecto en estado) |
 | `complete_dispatch` | `summary` | Cierra agente |
 
@@ -125,7 +127,6 @@ Cierre             : finalize
 
 **Eventos emitidos** (`Drolius · Boston Dynamics Scout`):
 - Despliegue: `Drolius desplegado → <zona> (<faultId>) — misión: <tipo>`
-- Retorno: `Drolius retorna con informe: <primeros 100 chars>`
 
 **Misiones Drolius** (`mission`):
 
@@ -135,7 +136,7 @@ Cierre             : finalize
 | `zone_access` | Condiciones de zona, obstáculos detectados, ajuste de ETA para brigada |
 | `damage_assessment` | Tipo de daño, materiales necesarios, nivel de seguridad de zona |
 
-**Comportamiento de Drolius**: solo una misión simultánea. El robot pasa por tres estados (`available → deployed → returning → available`) emitiendo `drolius_update` en cada transición para actualizar el chip en tiempo real en el panel lateral. Los informes son deterministas basados en los datos del fallo (no aleatorios) para asegurar coherencia entre simulaciones. Claude recibe el informe como resultado de herramienta y puede ajustar sus decisiones de despacho en consecuencia.
+**Comportamiento de Drolius**: solo una misión por simulación. El robot pasa de `available` a `deployed` de forma permanente: emite un único `drolius_update` (deployed) y devuelve el informe instantáneamente sin delays. Permanece en estado `deployed` en la ubicación del fallo por el resto de la simulación. Los informes son deterministas basados en los datos del fallo (no aleatorios) para asegurar coherencia entre simulaciones. Claude recibe el informe como resultado de herramienta y puede ajustar sus decisiones de despacho en consecuencia.
 
 **Skills**:
 - Skill **A** → reparación de transformadores

@@ -46,7 +46,7 @@ Cada `emit()` se serializa como un evento SSE y se envía al cliente inmediatame
 | `comms` | `{ channel, msg }` | Añade mensaje al feed de comunicaciones |
 | `action` | `{ agent, system, msg }` | Añade entrada al feed de Acciones SAP |
 | `conflict` | `{ winner, loser, reason }` | Muestra alerta de conflicto |
-| `drolius_update` | `{ status, task?, report? }` | Actualiza chip de estado de Drolius en panel lateral |
+| `drolius_update` | `{ status, task?, report? }` | Actualiza chip de estado de Drolius en panel lateral; `status` es `'deployed'` (único estado emitido) |
 | `safety_tick` | `{ elapsed, limit }` | Actualiza barra de progreso de seguridad |
 | `kpi` | `{ sla, safety, efficiency, tiepi, mttr }` | Actualiza métricas finales |
 | `done` | `{ elapsed }` | Cierra la simulación |
@@ -179,13 +179,10 @@ emit({ type: 'asset_update', id: fault.id, status: 'crew-en-route' });
 // crew-dispatch.ts — dispatch_drolius
 state.drolius.status = 'deployed';
 emit({ type: 'drolius_update', status: 'deployed', task: faultId });
-await sleep(900);
-// ... genera informe ...
-state.drolius.status = 'returning';
-emit({ type: 'drolius_update', status: 'returning', report });
-await sleep(500);
-state.drolius.status = 'available';
-emit({ type: 'drolius_update', status: 'available' });
+// genera informe instantáneamente (sin delays)
+const report = generateReport(fault, mission);
+return report;
+// Drolius permanece en estado 'deployed' por el resto de la simulación
 ```
 
 Esto garantiza que cuando `resource.ts` recibe el estado, los fallos ya tienen `status: 'crew-en-route'` asignado por crew-dispatch.
