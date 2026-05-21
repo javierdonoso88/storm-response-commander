@@ -24,6 +24,10 @@
   --scrollbar-track: #0d1520;
   --scrollbar-thumb: #334155;
   --scrollbar-thumb-hover: #475569;
+  --status-running-bg:    #451a03;
+  --status-running-color: #f97316;
+  --status-done-bg:       #052e16;
+  --status-done-color:    #22c55e;
 }
 
 [data-theme="joule"] {
@@ -46,6 +50,10 @@
   --scrollbar-track: #f0f4f8;
   --scrollbar-thumb: #cbd5e1;
   --scrollbar-thumb-hover: #94a3b8;
+  --status-running-bg:    #fff7ed;
+  --status-running-color: #ea580c;
+  --status-done-bg:       #f0fdf4;
+  --status-done-color:    #16a34a;
 }
 
 /* ── Base layer ────────────────────────────────────────────────── */

@@ -65,11 +65,11 @@ export default function App() {
         {/* Status chip */}
         <div className="ml-2">
           {state.running ? (
-            <span className="sap-tag" style={{ background: '#451a03', color: '#f97316' }}>
+            <span className="sap-tag" style={{ background: 'var(--status-running-bg)', color: 'var(--status-running-color)' }}>
               <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" /> En ejecución
             </span>
           ) : state.done ? (
-            <span className="sap-tag" style={{ background: '#052e16', color: '#22c55e' }}>✓ Completado</span>
+            <span className="sap-tag" style={{ background: 'var(--status-done-bg)', color: 'var(--status-done-color)' }}>✓ Completado</span>
           ) : (
             <span className="sap-tag" style={{ background: 'var(--border)', color: 'var(--text-muted)' }}>Standby</span>
           )}

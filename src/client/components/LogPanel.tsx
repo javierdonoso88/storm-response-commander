@@ -16,6 +16,15 @@ const AGENT_COLORS: Record<AgentId | 'orchestrator', string> = {
   comms:             '#22c55e',
 };
 
+const AGENT_LABELS: Record<AgentId | 'orchestrator', string> = {
+  orchestrator:      'Asset and Services Assistant',
+  'triage-priority': 'Technician Briefing Agent',
+  rerouting:         'Remote Restoration Scada Agent',
+  'crew-dispatch':   'Service Dispatcher Agent',
+  resource:          'Resource Capacity Shortage Agent',
+  comms:             'Communications Insight Agent',
+};
+
 const PHASE1: (AgentId | 'orchestrator')[] = ['triage-priority', 'rerouting'];
 const PHASE2: (AgentId | 'orchestrator')[] = ['crew-dispatch', 'resource', 'comms'];
 
@@ -53,7 +62,7 @@ export function LogPanel({ logs, running }: Props) {
         {orchestratorLog && (
           <div className="flex flex-col min-h-0" style={{ flex: '1 1 0' }}>
             <div className="text-[13px] text-amber-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
-              ── ASSET AND SERVICES ASSISTANT ──────────────
+              ── SUPERVISOR ──────────────────────────────
             </div>
             <div className="flex-1 min-h-0">
               <LogBlock log={orchestratorLog} />
@@ -102,7 +111,7 @@ export function LogPanel({ logs, running }: Props) {
 }
 
 function placeholderLog(agent: AgentId | 'orchestrator'): AgentLog {
-  return { agent, label: agent.toUpperCase(), text: '', complete: false };
+  return { agent, label: AGENT_LABELS[agent] ?? agent.toUpperCase(), text: '', complete: false };
 }
 
 function LogBlock({ log, placeholder = false }: {
@@ -113,6 +122,9 @@ function LogBlock({ log, placeholder = false }: {
   const { theme } = useTheme();
   const color = AGENT_COLORS[log.agent] ?? '#94a3b8';
   const logTextColor = theme === 'joule' ? 'var(--text-primary)' : '#a5f3fc';
+  const badgeBg = theme === 'joule' ? `${color}28` : `${color}18`;
+  const blockBorder = theme === 'joule' ? `${color}40` : `${color}25`;
+  const blockBg = theme === 'joule' ? `${color}0d` : `${color}07`;
 
   useEffect(() => {
     if (textRef.current) {
@@ -124,19 +136,19 @@ function LogBlock({ log, placeholder = false }: {
     <div
       className="rounded-md border flex flex-col overflow-hidden h-full"
       style={{
-        borderColor: `${color}25`,
-        backgroundColor: `${color}07`,
+        borderColor: blockBorder,
+        backgroundColor: blockBg,
         opacity: placeholder ? 0.35 : 1,
       }}
     >
       {/* Header */}
       <div
         className="flex items-center gap-1.5 px-2 py-1 border-b flex-shrink-0"
-        style={{ borderColor: `${color}20` }}
+        style={{ borderColor: blockBorder }}
       >
         <span
           className="text-[13px] font-bold font-mono px-1.5 py-0.5 rounded"
-          style={{ color, backgroundColor: `${color}18` }}
+          style={{ color, backgroundColor: badgeBg }}
         >
           {log.label}
         </span>
