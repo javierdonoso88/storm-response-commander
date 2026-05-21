@@ -233,8 +233,12 @@ El header del simulador incluye un botón ☀/🌙 que alterna entre dos temas:
 }
 ```
 
-- Todos los componentes usan `var(--token)` en sus estilos inline. Solo `MapPanel` necesita lógica JS (`useTheme`) para alternar la URL del tile CartoDB (`dark_all` ↔ `light_all`) y el color del borde de los nodos del mapa.
+- Todos los componentes usan `var(--token)` en sus estilos inline. `MapPanel` y `ParametersPanel` también consumen `useTheme()` para lógica JS que no puede resolverse con CSS vars (URL del tile CartoDB `dark_all` ↔ `light_all`, color del borde de los nodos del mapa, y estilos condicionales del toggle switch).
 - Las clases de Tailwind con valores arbitrarios (e.g. `bg-[#111c2e]`) se sobrescriben con selectores `[data-theme="joule"] .bg-\[#111c2e\]` en `globals.css`.
+
+**Toggle switch (`ParametersPanel`):** El knob usa `position: absolute` con `left: 2px` (OFF) / `left: 16px` (ON) y `transition-all` para la animación. Se usa `left` explícito en lugar de `translateX` porque sin `left: 0` de partida, el transform opera desde la posición estática del elemento, que en algunos navegadores no es el borde izquierdo del botón. El estado OFF usa un gris medio (`#c4cdd9` Joule / `#334155` dark) para que el knob blanco sea visible en ambos temas.
+
+**Chips de estado de la simulación (`App.tsx`):** Los colores de fondo/texto de los chips "En ejecución" y "Completado" usan tokens CSS `--status-running-bg/color` y `--status-done-bg/color`, definidos en `:root` (naranja-oscuro / verde-oscuro) y sobreescritos en `[data-theme="joule"]` (naranja-crema / verde-claro).
 
 ---
 
