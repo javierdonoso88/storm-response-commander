@@ -204,6 +204,40 @@ Eficiencia = fallos_atendidos / fallos_totales × 100
 
 ---
 
+## Sistema de temas (oscuro / Joule)
+
+El header del simulador incluye un botón ☀/🌙 que alterna entre dos temas:
+
+| Tema | Fondo | Borde | Acento |
+|------|-------|-------|--------|
+| Oscuro (default) | `#0d1520` navy | `#1e2d45` | `#22d3ee` cyan |
+| Joule | `#f0f4f8` blanco-gris | `#e2e8f0` | `#7c3aed` púrpura SAP |
+
+**Implementación**:
+
+- `ThemeContext.tsx` — React Context que expone `{ theme, toggle }`. Persiste en `localStorage('src-theme')` y escribe `data-theme="joule"` (o `"dark"`) en `document.documentElement`.
+- `globals.css` — todas las variables de diseño se definen en `:root` (dark, default) y se sobreescriben en `[data-theme="joule"]`:
+
+```css
+:root {
+  --bg-base: #0d1520;
+  --accent:  #22d3ee;
+  --border:  #1e2d45;
+  /* ... */
+}
+[data-theme="joule"] {
+  --bg-base: #f0f4f8;
+  --accent:  #7c3aed;
+  --border:  #e2e8f0;
+  /* ... */
+}
+```
+
+- Todos los componentes usan `var(--token)` en sus estilos inline. Solo `MapPanel` necesita lógica JS (`useTheme`) para alternar la URL del tile CartoDB (`dark_all` ↔ `light_all`) y el color del borde de los nodos del mapa.
+- Las clases de Tailwind con valores arbitrarios (e.g. `bg-[#111c2e]`) se sobrescriben con selectores `[data-theme="joule"] .bg-\[#111c2e\]` en `globals.css`.
+
+---
+
 ## Resumen Ejecutivo (`ResultsOverlay.tsx`)
 
 Aparece automáticamente 800 ms después de recibir el evento `done`. Puede cerrarse y reabrirse con el botón "Ver Informe" del header hasta que se lance una nueva simulación.
@@ -220,7 +254,7 @@ Aparece automáticamente 800 ms después de recibir el evento `done`. Puede cerr
 
 **Limpieza y formateo de texto CoT:** `renderMarkdown()` convierte el texto generado por Claude a JSX con formato visual: encabezados `##`/`###` como etiquetas cian en mayúsculas, `**bold**` en blanco brillante, `*italic*` en slate claro, `` `código` `` con fondo cian oscuro, y listas `- item` como viñetas. Las líneas que empiezan por `**` (negrita) se distinguen correctamente de los bullets (`- ` / `* `) mediante regex precisas (`/^[-*]\s/`) para evitar bucles infinitos durante el render.
 
-**Gauges SVG:** Arco de círculo calculado con `strokeDasharray = (value/100) × 2πr`. El arco vacío usa `#1e2d45` y el lleno el color del umbral (verde ≥80, naranja ≥60, rojo <60). `zIndex: 2000` para solapar el mapa Leaflet (z-index máximo ~1000).
+**Gauges SVG:** Arco de círculo calculado con `strokeDasharray = (value/100) × 2πr`. El arco vacío usa `var(--border)` y el lleno el color del umbral (verde ≥80, naranja ≥60, rojo <60). `zIndex: 2000` para solapar el mapa Leaflet (z-index máximo ~1000).
 
 **Descarga PDF:** El botón "Descargar PDF" genera un documento HTML completo con fondo blanco en memoria (KPIs, stats operativos, integración SAP, análisis del orquestador, acciones pendientes con mitigación), lo abre en una ventana nueva con `window.open()` y llama a `window.print()` tras 400 ms para dar tiempo al render. Sin dependencias externas — todo el HTML y CSS se genera como string en el cliente.
 

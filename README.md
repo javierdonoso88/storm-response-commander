@@ -10,6 +10,8 @@ Sistema multi-agente de IA para la simulación de respuesta a incidentes eléctr
 
 Al abrir la aplicación se muestra una **pantalla de presentación** con el caso de uso, las métricas clave del escenario y la arquitectura multi-agente. Desde ahí se accede al simulador interactivo, con navegación de vuelta a la landing en cualquier momento desde el botón "Inicio" del header.
 
+El header incluye un **botón de tema** (☀ / 🌙) que alterna entre el tema oscuro navy/cyan y el tema **SAP Joule** (blanco, bordes gris claro, acento púrpura `#7c3aed`). La preferencia se persiste en `localStorage`.
+
 Al iniciar una simulación, un orquestador Claude coordina 5 agentes especializados que razonan sobre el escenario en tiempo real:
 
 | Fase | Agentes | Modo |
@@ -88,7 +90,7 @@ Ver [docs/architecture.md](docs/architecture.md) para el detalle técnico comple
 
 | Capa | Stack |
 |------|-------|
-| Frontend | React 18, TypeScript, Vite, Tailwind CSS, React-Leaflet |
+| Frontend | React 18, TypeScript, Vite, Tailwind CSS, React-Leaflet, CSS custom properties |
 | Backend | Node.js, Express, SSE |
 | IA | Anthropic Claude Sonnet 4.6 (orchestrator) · Haiku 4.5 (sub-agentes) vía SAP AI Core |
 | SDK | `@anthropic-ai/sdk` con adaptador custom para AI Core |
@@ -165,6 +167,8 @@ cf restage storm-response-commander
 src/
 ├── client/
 │   ├── App.tsx                  # Layout principal, navegación landing↔simulador, control de overlay
+│   ├── contexts/
+│   │   └── ThemeContext.tsx      # Tema oscuro / Joule — CSS vars + localStorage
 │   ├── hooks/useSimulation.ts   # Gestión de SSE y estado de simulación
 │   ├── components/
 │   │   ├── LandingPage.tsx      # Pantalla inicial: caso de uso + arquitectura multi-agente
