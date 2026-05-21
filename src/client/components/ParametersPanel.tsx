@@ -23,17 +23,17 @@ function TooltipLabel({ label, tip }: { label: string; tip: string }) {
       }}
       onMouseLeave={() => setPos(null)}
     >
-      <span className="text-xs text-slate-400 font-medium truncate">{label}</span>
-      <span className="text-[10px] text-slate-600 flex-shrink-0 select-none">ⓘ</span>
+      <span className="text-xs font-medium truncate text-slate-400">{label}</span>
+      <span className="text-[10px] flex-shrink-0 select-none text-slate-600">ⓘ</span>
       {pos && (
         <div
           className="fixed w-52 z-[9999] pointer-events-none"
           style={{ left: pos.x, top: pos.y, transform: 'translateY(-50%)' }}
         >
-          <div className="rounded-lg px-3 py-2.5 text-[11px] leading-relaxed shadow-2xl" style={{ background: '#0a1525', border: '1px solid #1e3a5f', color: '#94a3b8' }}>
+          <div className="rounded-lg px-3 py-2.5 text-[11px] leading-relaxed shadow-2xl" style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-accent)', color: 'var(--text-secondary)' }}>
             {tip}
           </div>
-          <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent" style={{ borderRightColor: '#1e3a5f' }} />
+          <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent" style={{ borderRightColor: 'var(--border-accent)' }} />
         </div>
       )}
     </div>
@@ -51,8 +51,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
     <div className="flex flex-col h-full">
 
       {/* Section header */}
-      <div className="px-3 py-2 border-b" style={{ background: '#0d1520', borderColor: '#1e2d45' }}>
-        <span className="text-[13px] font-semibold uppercase tracking-widest text-slate-500">Parámetros</span>
+      <div className="px-3 py-2 border-b" style={{ background: 'var(--bg-base)', borderColor: 'var(--border)' }}>
+        <span className="text-[13px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Parámetros</span>
       </div>
 
       {/* Context block */}
@@ -65,15 +65,15 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
           <button
             onClick={() => setShowInfo(true)}
             className="text-[10px] font-medium px-2 py-0.5 rounded transition-colors"
-            style={{ color: '#64748b', border: '1px solid #1e3a5f', background: 'rgba(30,58,95,0.3)' }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#94a3b8'; e.currentTarget.style.borderColor = '#3b82f6'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#64748b'; e.currentTarget.style.borderColor = '#1e3a5f'; }}
+            style={{ color: 'var(--text-muted)', border: '1px solid var(--border-accent)', background: 'var(--bg-secondary)', cursor: 'pointer' }}
+            onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = '#3b82f6'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-accent)'; }}
           >
             más info
           </button>
         </div>
-        <p className="text-[11px] leading-relaxed" style={{ color: '#64748b' }}>
-          Tormenta severa en <strong style={{ color: '#94a3b8' }}>Comarques de Girona</strong>. 127K clientes sin suministro, 7 sitios críticos con batería limitada. Configura los parámetros y ejecuta la simulación multi-agente.
+        <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+          Tormenta severa en <strong style={{ color: 'var(--text-secondary)' }}>Comarques de Girona</strong>. 127K clientes sin suministro, 7 sitios críticos con batería limitada. Configura los parámetros y ejecuta la simulación multi-agente.
         </p>
       </div>
 
@@ -83,27 +83,17 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
       {/* Drolius status */}
       <div
         className="mx-3 mt-2 rounded-lg px-3 py-2 flex items-center gap-2"
-        style={{ background: 'rgba(15,24,42,0.7)', border: `1px solid rgba(${droliusColor === '#22c55e' ? '34,197,94' : '249,115,22'},0.2)` }}
+        style={{ background: 'var(--bg-secondary)', border: `1px solid rgba(${droliusColor === '#22c55e' ? '34,197,94' : '249,115,22'},0.2)` }}
       >
-        <span
-          className="text-sm flex-shrink-0"
-          style={{ lineHeight: 1 }}
-          title="Drolius — robot de inspección"
-        >🤖</span>
+        <span className="text-sm flex-shrink-0" style={{ lineHeight: 1 }} title="Drolius — robot de inspección">🤖</span>
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-1.5">
-            <span
-              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-              style={{
-                background: droliusColor,
-                animation: drolius.status !== 'available' ? 'pulse 1s infinite' : 'none',
-              }}
-            />
+            <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: droliusColor, animation: drolius.status !== 'available' ? 'pulse 1s infinite' : 'none' }} />
             <span className="text-[10px] font-bold tracking-wider truncate" style={{ color: droliusColor }}>
               DROLIUS · {droliusLabel}
             </span>
           </div>
-          <span className="text-[10px]" style={{ color: '#334155' }}>
+          <span className="text-[10px]" style={{ color: 'var(--text-ghost)' }}>
             {drolius.status === 'available' ? 'Robot de inspección en standby' : 'Inspección en curso…'}
           </span>
         </div>
@@ -146,8 +136,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
               onClick={() => onChange({ limitedParts: params.limitedParts === 1 ? 0 : 1 })}
               className="relative w-9 h-5 flex-shrink-0 rounded-full transition-colors duration-200 border"
               style={{
-                background: params.limitedParts === 1 ? '#2563eb' : '#1e2d45',
-                borderColor: params.limitedParts === 1 ? '#3b82f6' : '#334155',
+                background: params.limitedParts === 1 ? '#2563eb' : 'var(--border)',
+                borderColor: params.limitedParts === 1 ? '#3b82f6' : 'var(--text-ghost)',
               }}
             >
               <span className={`absolute top-0.5 w-4 h-4 rounded-full transition-transform duration-200 bg-white shadow-sm ${params.limitedParts === 1 ? 'translate-x-4' : 'translate-x-0.5'}`} />
@@ -186,8 +176,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
                 className="text-[12px] py-1 px-2 rounded border transition-all font-mono"
                 style={
                   params.storm2Window === opt
-                    ? { background: '#1d4ed8', color: '#fff', borderColor: '#2563eb' }
-                    : { background: '#1e2d45', color: '#64748b', borderColor: '#334155' }
+                    ? { background: '#1d4ed8', color: '#fff', borderColor: '#2563eb', cursor: 'pointer' }
+                    : { background: 'var(--border)', color: 'var(--text-muted)', borderColor: 'var(--text-ghost)', cursor: 'pointer' }
                 }
               >
                 {opt === 'none' ? 'Sin tormenta' : opt}
@@ -198,7 +188,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
 
         {/* Operator instructions */}
         <div className="flex flex-col gap-1.5">
-          <span className="text-[10px] font-bold tracking-widest" style={{ color: '#475569' }}>INSTRUCCIONES AL ORQUESTADOR</span>
+          <span className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-dim)' }}>INSTRUCCIONES AL ORQUESTADOR</span>
           <textarea
             value={params.instructions ?? ''}
             onChange={e => onChange({ instructions: e.target.value })}
@@ -206,15 +196,15 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
             rows={4}
             className="w-full rounded-lg text-[11px] leading-relaxed resize-none outline-none p-2.5"
             style={{
-              background: '#0d1520',
-              border: '1px solid #1e2d45',
-              color: '#94a3b8',
+              background: 'var(--bg-base)',
+              border: '1px solid var(--border)',
+              color: 'var(--text-secondary)',
               caretColor: '#3b82f6',
             }}
             onFocus={e => { e.currentTarget.style.borderColor = '#3b82f6'; }}
-            onBlur={e => { e.currentTarget.style.borderColor = '#1e2d45'; }}
+            onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
           />
-          <span className="text-[10px]" style={{ color: '#334155' }}>
+          <span className="text-[10px]" style={{ color: 'var(--text-ghost)' }}>
             Se inyecta como contexto prioritario en el prompt del orquestador.
           </span>
         </div>
@@ -230,13 +220,13 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
         </button>
 
         {/* KPIs */}
-        <div className="border-t pt-3 flex flex-col gap-2.5" style={{ borderColor: '#1e2d45' }}>
-          <span className="text-[13px] font-semibold uppercase tracking-widest text-slate-600">KPIs</span>
-          <KPIRow label="SLA" sub="clientes cubiertos" value={kpi.sla} color={kpi.sla === null ? '#334155' : kpi.sla >= 80 ? '#22c55e' : kpi.sla >= 60 ? '#f97316' : '#ef4444'} />
-          <KPIRow label="Seguridad" sub="sitios críticos" value={kpi.safety} color={kpi.safety === null ? '#334155' : kpi.safety === 100 ? '#22c55e' : kpi.safety >= 70 ? '#f97316' : '#ef4444'} />
-          <KPIRow label="Eficiencia" sub="fallos gestionados" value={kpi.efficiency} color={kpi.efficiency === null ? '#334155' : kpi.efficiency >= 80 ? '#22c55e' : kpi.efficiency >= 60 ? '#f97316' : '#ef4444'} />
-          <KPIMinuteRow label="TIEPI" sub="interrupción media" value={kpi.tiepi} color={kpi.tiepi === null ? '#334155' : kpi.tiepi <= 60 ? '#22c55e' : kpi.tiepi <= 120 ? '#f97316' : '#ef4444'} />
-          <KPIMinuteRow label="MTTR" sub="tiempo medio reposición" value={kpi.mttr} color={kpi.mttr === null ? '#334155' : kpi.mttr <= 60 ? '#22c55e' : kpi.mttr <= 120 ? '#f97316' : '#ef4444'} />
+        <div className="border-t pt-3 flex flex-col gap-2.5" style={{ borderColor: 'var(--border)' }}>
+          <span className="text-[13px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>KPIs</span>
+          <KPIRow label="SLA" sub="clientes cubiertos" value={kpi.sla} color={kpi.sla === null ? 'var(--text-ghost)' : kpi.sla >= 80 ? '#22c55e' : kpi.sla >= 60 ? '#f97316' : '#ef4444'} />
+          <KPIRow label="Seguridad" sub="sitios críticos" value={kpi.safety} color={kpi.safety === null ? 'var(--text-ghost)' : kpi.safety === 100 ? '#22c55e' : kpi.safety >= 70 ? '#f97316' : '#ef4444'} />
+          <KPIRow label="Eficiencia" sub="fallos gestionados" value={kpi.efficiency} color={kpi.efficiency === null ? 'var(--text-ghost)' : kpi.efficiency >= 80 ? '#22c55e' : kpi.efficiency >= 60 ? '#f97316' : '#ef4444'} />
+          <KPIMinuteRow label="TIEPI" sub="interrupción media" value={kpi.tiepi} color={kpi.tiepi === null ? 'var(--text-ghost)' : kpi.tiepi <= 60 ? '#22c55e' : kpi.tiepi <= 120 ? '#f97316' : '#ef4444'} />
+          <KPIMinuteRow label="MTTR" sub="tiempo medio reposición" value={kpi.mttr} color={kpi.mttr === null ? 'var(--text-ghost)' : kpi.mttr <= 60 ? '#22c55e' : kpi.mttr <= 120 ? '#f97316' : '#ef4444'} />
         </div>
 
       </div>
@@ -259,9 +249,9 @@ function SliderField({ label, tip, value, valueColor, min, max, step, current, o
         type="range" min={min} max={max} step={step} value={current}
         onChange={e => onChange(Number(e.target.value))}
         className="w-full h-1 rounded-full appearance-none cursor-pointer"
-        style={{ accentColor: accent, background: '#1e2d45' }}
+        style={{ accentColor: accent, background: 'var(--border)' }}
       />
-      <div className="flex justify-between text-[12px]" style={{ color: '#334155' }}>
+      <div className="flex justify-between text-[12px]" style={{ color: 'var(--text-ghost)' }}>
         <span>{min}</span><span>{max}</span>
       </div>
     </div>
@@ -275,7 +265,7 @@ function KPIMinuteRow({ label, sub, value, color }: { label: string; sub: string
         <span className="text-[12px] font-semibold text-slate-400">{label}</span>
         <span className="text-[13px] text-slate-600">{sub}</span>
       </div>
-      <span className="text-[13px] font-bold font-mono whitespace-nowrap" style={{ color: value === null ? '#334155' : color }}>
+      <span className="text-[13px] font-bold font-mono whitespace-nowrap" style={{ color }}>
         {value === null ? '—' : `${value} min`}
       </span>
     </div>
@@ -290,11 +280,11 @@ function KPIRow({ label, sub, value, color }: { label: string; sub: string; valu
           <span className="text-[12px] font-semibold text-slate-400">{label}</span>
           <span className="text-[13px] text-slate-600">{sub}</span>
         </div>
-        <span className="text-[13px] font-bold font-mono" style={{ color: value === null ? '#334155' : color }}>
+        <span className="text-[13px] font-bold font-mono" style={{ color }}>
           {value === null ? '—' : `${value}%`}
         </span>
       </div>
-      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#1e2d45' }}>
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
         {value !== null && (
           <div className="h-full rounded-full transition-all duration-700" style={{ width: `${value}%`, background: color }} />
         )}
@@ -307,38 +297,39 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+      style={{ background: 'var(--bg-overlay)', backdropFilter: 'blur(4px)' }}
       onClick={onClose}
     >
       <div
         className="relative w-full max-w-2xl max-h-[85vh] overflow-y-auto rounded-xl shadow-2xl flex flex-col"
-        style={{ background: '#0d1520', border: '1px solid #1e3a5f' }}
+        style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-accent)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b sticky top-0" style={{ background: '#0d1520', borderColor: '#1e2d45' }}>
+        <div className="flex items-center justify-between px-5 py-4 border-b sticky top-0" style={{ background: 'var(--bg-panel)', borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
             <span className="text-[13px] font-bold tracking-widest" style={{ color: '#ef4444' }}>INCIDENTE ACTIVO</span>
-            <span className="text-[11px] font-mono" style={{ color: '#334155' }}>— Tormenta severa · Comarques de Girona</span>
+            <span className="text-[11px] font-mono" style={{ color: 'var(--text-ghost)' }}>— Tormenta severa · Comarques de Girona</span>
           </div>
           <button
             onClick={onClose}
-            className="text-slate-600 hover:text-slate-300 text-lg leading-none w-6 h-6 flex items-center justify-center rounded transition-colors"
+            className="text-lg leading-none w-6 h-6 flex items-center justify-center rounded transition-colors"
+            style={{ color: 'var(--text-muted)', cursor: 'pointer' }}
           >×</button>
         </div>
 
         <div className="px-5 py-4 flex flex-col gap-6">
 
           {/* Resumen */}
-          <div className="rounded-lg p-4 flex flex-col gap-3" style={{ background: '#0a1120', border: '1px solid #1e2d45' }}>
+          <div className="rounded-lg p-4 flex flex-col gap-3" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
             <InfoSectionTitle>Resumen del incidente</InfoSectionTitle>
             <div className="grid grid-cols-3 gap-3">
               <StatBox value="127.000" label="clientes sin suministro" color="#ef4444" />
               <StatBox value="47" label="fallos activos" color="#f97316" />
               <StatBox value="7" label="sitios críticos" color="#facc15" />
             </div>
-            <p className="text-[11px] leading-relaxed" style={{ color: '#64748b' }}>
+            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
               Una tormenta severa ha golpeado simultáneamente múltiples zonas de las Comarques de Girona. Los agentes de IA deben coordinar la restauración priorizando la infraestructura crítica con batería limitada antes de que se agote, mientras gestionan los recursos físicos disponibles.
             </p>
           </div>
@@ -346,7 +337,7 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
           {/* Sitios críticos */}
           <div className="flex flex-col gap-3">
             <InfoSectionTitle>Sitios críticos con SAI / batería</InfoSectionTitle>
-            <p className="text-[11px]" style={{ color: '#475569' }}>Infraestructuras con suministro de emergencia que se agotará si no se restaura la red a tiempo.</p>
+            <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>Infraestructuras con suministro de emergencia que se agotará si no se restaura la red a tiempo.</p>
             <div className="flex flex-col gap-1.5">
               {[
                 { id: 'TRF-002', site: 'CPD Ajuntament de Girona', type: 'Centro de datos', battery: 30, urgency: 'crítica' },
@@ -357,16 +348,16 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
                 { id: 'TRF-007', site: 'Hospital Universitari de Santa Caterina', type: 'Hospital', battery: 360, urgency: 'media' },
                 { id: 'TRF-005', site: "Punt d'Atenció Continuada Olot", type: 'Hospital', battery: 480, urgency: 'baja' },
               ].map(s => (
-                <div key={s.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{ background: '#0a1120', border: '1px solid #1e2d45' }}>
-                  <span className="text-[10px] font-mono w-16 flex-shrink-0" style={{ color: '#334155' }}>{s.id}</span>
+                <div key={s.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                  <span className="text-[10px] font-mono w-16 flex-shrink-0" style={{ color: 'var(--text-ghost)' }}>{s.id}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[11px] font-medium truncate" style={{ color: '#94a3b8' }}>{s.site}</div>
-                    <div className="text-[10px]" style={{ color: '#475569' }}>{s.type}</div>
+                    <div className="text-[11px] font-medium truncate" style={{ color: 'var(--text-secondary)' }}>{s.site}</div>
+                    <div className="text-[10px]" style={{ color: 'var(--text-dim)' }}>{s.type}</div>
                   </div>
                   <div className="flex items-center gap-1.5 flex-shrink-0">
-                    <span className="text-[11px] font-mono font-bold" style={{ color: s.battery <= 60 ? '#ef4444' : s.battery <= 180 ? '#f97316' : '#64748b' }}>{s.battery} min</span>
+                    <span className="text-[11px] font-mono font-bold" style={{ color: s.battery <= 60 ? '#ef4444' : s.battery <= 180 ? '#f97316' : 'var(--text-muted)' }}>{s.battery} min</span>
                     <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide" style={{
-                      color: s.urgency === 'crítica' ? '#fca5a5' : s.urgency === 'alta' ? '#fdba74' : s.urgency === 'media' ? '#fde68a' : '#94a3b8',
+                      color: s.urgency === 'crítica' ? '#fca5a5' : s.urgency === 'alta' ? '#fdba74' : s.urgency === 'media' ? '#fde68a' : 'var(--text-secondary)',
                       background: s.urgency === 'crítica' ? 'rgba(239,68,68,0.15)' : s.urgency === 'alta' ? 'rgba(249,115,22,0.15)' : s.urgency === 'media' ? 'rgba(250,204,21,0.12)' : 'rgba(148,163,184,0.1)',
                     }}>{s.urgency}</span>
                   </div>
@@ -383,8 +374,8 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
               <FaultTypeBox count={7} label="Transformadores" desc="Sustitución física de transformador en campo" color="#f97316" />
               <FaultTypeBox count={18} label="Cables" desc="Reparación física de línea en campo" color="#8b5cf6" />
             </div>
-            <p className="text-[11px] leading-relaxed" style={{ color: '#475569' }}>
-              El parámetro <strong style={{ color: '#64748b' }}>Conmutables</strong> controla cuántos fallos SW puede restaurar el agente Remote Restoration por telecontrol. Los que excedan el límite se degradan a fallo de cable y requieren brigada. Los parámetros <strong style={{ color: '#64748b' }}>Brigadas</strong> y <strong style={{ color: '#64748b' }}>Piezas limitadas</strong> afectan directamente a cuántos fallos físicos pueden atenderse.
+            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>
+              El parámetro <strong style={{ color: 'var(--text-muted)' }}>Conmutables</strong> controla cuántos fallos SW puede restaurar el agente Remote Restoration por telecontrol. Los que excedan el límite se degradan a fallo de cable y requieren brigada. Los parámetros <strong style={{ color: 'var(--text-muted)' }}>Brigadas</strong> y <strong style={{ color: 'var(--text-muted)' }}>Piezas limitadas</strong> afectan directamente a cuántos fallos físicos pueden atenderse.
             </p>
           </div>
 
@@ -392,7 +383,7 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
           <div className="flex flex-col gap-3">
             <InfoSectionTitle>Recursos disponibles</InfoSectionTitle>
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: '#0a1120', border: '1px solid #1e2d45' }}>
+              <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                 <span className="text-[10px] font-bold tracking-widest" style={{ color: '#22c55e' }}>BRIGADAS — 6 bases</span>
                 {[
                   { base: 'Girona', n: 7 },
@@ -403,17 +394,17 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
                   { base: 'Banyoles', n: 2 },
                 ].map(b => (
                   <div key={b.base} className="flex items-center justify-between">
-                    <span className="text-[11px]" style={{ color: '#64748b' }}>{b.base}</span>
-                    <span className="text-[11px] font-mono font-bold" style={{ color: '#475569' }}>{b.n}</span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{b.base}</span>
+                    <span className="text-[11px] font-mono font-bold" style={{ color: 'var(--text-dim)' }}>{b.n}</span>
                   </div>
                 ))}
-                <div className="border-t pt-2 flex items-center justify-between" style={{ borderColor: '#1e2d45' }}>
-                  <span className="text-[11px] font-medium" style={{ color: '#64748b' }}>Total máximo</span>
+                <div className="border-t pt-2 flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
+                  <span className="text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>Total máximo</span>
                   <span className="text-[11px] font-mono font-bold" style={{ color: '#22c55e' }}>22</span>
                 </div>
               </div>
               <div className="flex flex-col gap-3">
-                <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: '#0a1120', border: '1px solid #1e2d45' }}>
+                <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                   <span className="text-[10px] font-bold tracking-widest" style={{ color: '#22c55e' }}>MATERIAL EN ALMACÉN</span>
                   <MaterialRow label="Transformadores" value="2 ud" note="→ 1 ud si piezas limitadas" />
                   <MaterialRow label="Bobinas de cable" value="40 ud" note="suficiente para todos los fallos" />
@@ -436,7 +427,7 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
                       { icon: '🗺️', text: 'zone_access — evalúa accesibilidad para brigada' },
                       { icon: '🔍', text: 'damage_assessment — documenta daños en el activo' },
                     ].map(m => (
-                      <div key={m.text} className="flex items-start gap-1.5 text-[10px]" style={{ color: '#475569' }}>
+                      <div key={m.text} className="flex items-start gap-1.5 text-[10px]" style={{ color: 'var(--text-dim)' }}>
                         <span className="flex-shrink-0" style={{ fontSize: '10px' }}>{m.icon}</span>
                         <span>{m.text}</span>
                       </div>
@@ -457,11 +448,11 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
                 { label: 'Ventana tormenta T+4h', desc: 'El agente Service Dispatcher no puede asignar reparaciones con ETA > 210 min. Muchos transformadores quedarán sin brigada asignada.', color: '#facc15' },
                 { label: 'Pocas brigadas disponibles', desc: 'Con < 12 brigadas, zonas costeras con alta carga (Palamós 6.200, Palafrugell 5.800, Sant Feliu 5.500) quedan sin atender.', color: '#8b5cf6' },
               ].map(t => (
-                <div key={t.label} className="flex gap-3 rounded-lg px-3 py-2.5" style={{ background: '#0a1120', border: '1px solid #1e2d45' }}>
+                <div key={t.label} className="flex gap-3 rounded-lg px-3 py-2.5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                   <div className="w-1.5 rounded-full flex-shrink-0 mt-0.5" style={{ background: t.color, minHeight: '16px' }} />
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-[11px] font-semibold" style={{ color: '#94a3b8' }}>{t.label}</span>
-                    <span className="text-[11px] leading-relaxed" style={{ color: '#475569' }}>{t.desc}</span>
+                    <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>{t.label}</span>
+                    <span className="text-[11px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>{t.desc}</span>
                   </div>
                 </div>
               ))}
@@ -475,24 +466,24 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
 }
 
 function InfoSectionTitle({ children }: { children: React.ReactNode }) {
-  return <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: '#475569' }}>{children}</span>;
+  return <span className="text-[11px] font-bold tracking-widest uppercase" style={{ color: 'var(--text-dim)' }}>{children}</span>;
 }
 
 function StatBox({ value, label, color }: { value: string; label: string; color: string }) {
   return (
-    <div className="rounded-lg p-3 flex flex-col gap-1 text-center" style={{ background: '#0d1520', border: '1px solid #1e2d45' }}>
+    <div className="rounded-lg p-3 flex flex-col gap-1 text-center" style={{ background: 'var(--bg-base)', border: '1px solid var(--border)' }}>
       <span className="text-[20px] font-bold font-mono leading-none" style={{ color }}>{value}</span>
-      <span className="text-[10px] leading-tight" style={{ color: '#475569' }}>{label}</span>
+      <span className="text-[10px] leading-tight" style={{ color: 'var(--text-dim)' }}>{label}</span>
     </div>
   );
 }
 
 function FaultTypeBox({ count, label, desc, color }: { count: number; label: string; desc: string; color: string }) {
   return (
-    <div className="rounded-lg p-3 flex flex-col gap-1.5" style={{ background: '#0a1120', border: '1px solid #1e2d45' }}>
+    <div className="rounded-lg p-3 flex flex-col gap-1.5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
       <span className="text-[22px] font-bold font-mono leading-none" style={{ color }}>{count}</span>
-      <span className="text-[11px] font-semibold" style={{ color: '#64748b' }}>{label}</span>
-      <span className="text-[10px] leading-tight" style={{ color: '#334155' }}>{desc}</span>
+      <span className="text-[11px] font-semibold" style={{ color: 'var(--text-muted)' }}>{label}</span>
+      <span className="text-[10px] leading-tight" style={{ color: 'var(--text-ghost)' }}>{desc}</span>
     </div>
   );
 }
@@ -501,10 +492,10 @@ function MaterialRow({ label, value, note }: { label: string; value: string; not
   return (
     <div className="flex flex-col gap-0.5">
       <div className="flex items-center justify-between">
-        <span className="text-[11px]" style={{ color: '#64748b' }}>{label}</span>
-        <span className="text-[11px] font-mono font-bold" style={{ color: '#94a3b8' }}>{value}</span>
+        <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{label}</span>
+        <span className="text-[11px] font-mono font-bold" style={{ color: 'var(--text-secondary)' }}>{value}</span>
       </div>
-      <span className="text-[10px]" style={{ color: '#334155' }}>{note}</span>
+      <span className="text-[10px]" style={{ color: 'var(--text-ghost)' }}>{note}</span>
     </div>
   );
 }

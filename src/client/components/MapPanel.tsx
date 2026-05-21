@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Fault, FaultStatus, DroliusStatus } from '../types';
 import { FAULT_COORDS, NETWORK_EDGES, MAP_CENTER, MAP_ZOOM } from '../data/mapData';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface Props {
   faults: Fault[];
@@ -53,6 +54,11 @@ const droliusIcon = L.divIcon({
 });
 
 export function MapPanel({ faults, drolius }: Props) {
+  const { theme } = useTheme();
+  const tileUrl = theme === 'joule'
+    ? 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+  const nodeBorder = theme === 'joule' ? '#ffffff' : '#0d1520';
   const faultMap = useMemo(() => {
     const m = new Map<string, Fault>();
     faults.forEach(f => m.set(f.id, f));
@@ -78,14 +84,14 @@ export function MapPanel({ faults, drolius }: Props) {
         <MapContainer
           center={MAP_CENTER}
           zoom={MAP_ZOOM}
-          style={{ height: '100%', width: '100%', background: '#0d1520' }}
+          style={{ height: '100%', width: '100%', background: 'var(--bg-base)' }}
           zoomControl={true}
           scrollWheelZoom={true}
           attributionControl={false}
         >
-          {/* Dark CartoDB tiles */}
+          {/* CartoDB tiles — switches with theme */}
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            url={tileUrl}
             subdomains="abcd"
             maxZoom={19}
           />
@@ -158,7 +164,7 @@ export function MapPanel({ faults, drolius }: Props) {
                   pathOptions={{
                     fillColor: color,
                     fillOpacity: 0.92,
-                    color: '#0d1520',
+                    color: nodeBorder,
                     weight: 1.5,
                   }}
                 >

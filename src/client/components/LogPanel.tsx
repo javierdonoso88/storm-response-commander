@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { AgentId, AgentLog } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface Props {
   logs: AgentLog[];
@@ -109,7 +110,9 @@ function LogBlock({ log, placeholder = false }: {
   placeholder?: boolean;
 }) {
   const textRef = useRef<HTMLPreElement>(null);
+  const { theme } = useTheme();
   const color = AGENT_COLORS[log.agent] ?? '#94a3b8';
+  const logTextColor = theme === 'joule' ? 'var(--text-primary)' : '#a5f3fc';
 
   useEffect(() => {
     if (textRef.current) {
@@ -155,7 +158,7 @@ function LogBlock({ log, placeholder = false }: {
           fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
           fontSize: '11px',
           lineHeight: 1.55,
-          color: placeholder ? '#334155' : '#a5f3fc',
+          color: placeholder ? 'var(--text-ghost)' : logTextColor,
           margin: 0,
           flex: '1 1 0',
           minHeight: 0,

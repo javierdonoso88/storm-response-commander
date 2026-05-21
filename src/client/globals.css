@@ -2,12 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme tokens ──────────────────────────────────────────────── */
+
+:root {
+  --bg-base:        #0d1520;
+  --bg-card:        #111827;
+  --bg-secondary:   #1a2540;
+  --bg-tertiary:    #111c2e;
+  --bg-header:      #0a0f1a;
+  --bg-overlay:     rgba(4,8,16,0.88);
+  --bg-panel:       #0a1525;
+  --border:         #1e2d45;
+  --border-accent:  #2d3f5e;
+  --text-primary:   #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted:     #64748b;
+  --text-dim:       #475569;
+  --text-ghost:     #334155;
+  --accent:         #22d3ee;
+  --accent-subtle:  rgba(34,211,238,0.08);
+  --scrollbar-track: #0d1520;
+  --scrollbar-thumb: #334155;
+  --scrollbar-thumb-hover: #475569;
+}
+
+[data-theme="joule"] {
+  --bg-base:        #f0f4f8;
+  --bg-card:        #ffffff;
+  --bg-secondary:   #f8fafc;
+  --bg-tertiary:    #f1f5f9;
+  --bg-header:      #ffffff;
+  --bg-overlay:     rgba(15,23,42,0.65);
+  --bg-panel:       #ffffff;
+  --border:         #e2e8f0;
+  --border-accent:  #cbd5e1;
+  --text-primary:   #1e293b;
+  --text-secondary: #64748b;
+  --text-muted:     #94a3b8;
+  --text-dim:       #94a3b8;
+  --text-ghost:     #cbd5e1;
+  --accent:         #7c3aed;
+  --accent-subtle:  rgba(124,58,237,0.06);
+  --scrollbar-track: #f0f4f8;
+  --scrollbar-thumb: #cbd5e1;
+  --scrollbar-thumb-hover: #94a3b8;
+}
+
+/* ── Base layer ────────────────────────────────────────────────── */
+
 @layer base {
   * { box-sizing: border-box; }
 
   body {
-    background-color: #0d1520;
-    color: #e2e8f0;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
     font-family: 'IBM Plex Sans', Arial, Helvetica, sans-serif;
     font-size: 15px;
     margin: 0;
@@ -23,28 +71,30 @@
   }
 
   ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: #0d1520; }
-  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-thumb-hover); }
 }
+
+/* ── Component layer ───────────────────────────────────────────── */
 
 @layer components {
   .panel-card {
     @apply rounded border;
-    background: #111827;
-    border-color: #1e2d45;
+    background: var(--bg-card);
+    border-color: var(--border);
     box-shadow: 0 2px 8px 0 rgba(0,0,0,0.4);
   }
 
   .panel-header {
     @apply px-3 py-2 border-b flex items-center gap-2;
-    background: #0d1520;
-    border-color: #1e2d45;
+    background: var(--bg-base);
+    border-color: var(--border);
     font-size: 0.8rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #64748b;
+    color: var(--text-muted);
     border-radius: 3px 3px 0 0;
   }
 
@@ -54,7 +104,7 @@
   }
   .btn-primary:hover:not(:disabled) { background: #1d4ed8; }
   .btn-primary:active:not(:disabled) { background: #1e40af; }
-  .btn-primary:disabled { background: #1e3a5f; cursor: not-allowed; }
+  .btn-primary:disabled { background: var(--border); cursor: not-allowed; }
 
   .sap-tag {
     @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-semibold;
@@ -66,10 +116,27 @@
 
   .kpi-card {
     @apply rounded border p-3 flex flex-col gap-1;
-    background: #0d1520;
-    border-color: #1e2d45;
+    background: var(--bg-base);
+    border-color: var(--border);
   }
 }
+
+/* ── Joule theme overrides ─────────────────────────────────────── */
+
+[data-theme="joule"] .panel-card {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+[data-theme="joule"] .bg-\[#111c2e\] { background: var(--bg-tertiary) !important; }
+[data-theme="joule"] .bg-\[#1a2540\] { background: var(--bg-secondary) !important; }
+[data-theme="joule"] .border-\[#1e2d45\] { border-color: var(--border) !important; }
+[data-theme="joule"] .text-slate-400 { color: var(--text-secondary) !important; }
+[data-theme="joule"] .text-slate-500 { color: var(--text-muted) !important; }
+[data-theme="joule"] .text-slate-600 { color: var(--text-dim) !important; }
+[data-theme="joule"] .text-slate-700 { color: var(--text-secondary) !important; }
+[data-theme="joule"] .btn-primary:disabled { background: #94a3b8; }
+
+/* ── Utilities ─────────────────────────────────────────────────── */
 
 @layer utilities {
   .animate-blink {
@@ -86,21 +153,21 @@
   }
 }
 
-/* ── Leaflet / Map overrides ─────────────────────────────────── */
+/* ── Leaflet / Map overrides ───────────────────────────────────── */
 
 .map-tooltip {
-  background: #1a2540 !important;
-  border: 1px solid #2d3f5e !important;
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-accent) !important;
   border-radius: 4px !important;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
   padding: 8px 10px !important;
-  color: #e2e8f0 !important;
+  color: var(--text-primary) !important;
   font-family: 'IBM Plex Sans', Arial, sans-serif !important;
   font-size: 13px !important;
 }
 
 .leaflet-tooltip-top.map-tooltip::before {
-  border-top-color: #2d3f5e !important;
+  border-top-color: var(--border-accent) !important;
 }
 
 @keyframes pulse-ring {
@@ -111,13 +178,13 @@
 .node-pulse-ring { animation: pulse-ring 1.6s ease-out infinite; }
 
 .leaflet-control-zoom a {
-  background: #1a2540 !important;
-  color: #e2e8f0 !important;
-  border-color: #2d3f5e !important;
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-accent) !important;
   font-size: 16px !important;
 }
 .leaflet-control-zoom a:hover {
-  background: #243050 !important;
+  background: var(--bg-card) !important;
   color: #f59e0b !important;
 }
 .leaflet-control-attribution { display: none !important; }

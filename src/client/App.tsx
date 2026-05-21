@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Fault, SimParams } from './types';
 import { useSimulation } from './hooks/useSimulation';
+import { useTheme } from './contexts/ThemeContext';
 import { ParametersPanel } from './components/ParametersPanel';
 import { LogPanel } from './components/LogPanel';
 import { GanttPanel } from './components/GanttPanel';
@@ -23,6 +24,7 @@ export default function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [showResults, setShowResults] = useState(false);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const { theme, toggle } = useTheme();
 
   const { state, startSimulation, tickAgentProgress } = useSimulation(initialFaults);
 
@@ -50,12 +52,12 @@ export default function App() {
   }
 
   return (
-    <div className="flex flex-col h-screen" style={{ background: '#0d1520' }}>
+    <div className="flex flex-col h-screen" style={{ background: 'var(--bg-base)' }}>
 
       {/* Header */}
       <header className="flex items-center gap-3 px-4 h-11 flex-shrink-0 border-b"
-        style={{ background: '#0a0f1a', borderColor: '#1e2d45' }}>
-        <span className="text-white font-bold text-sm tracking-wide flex items-center gap-2">
+        style={{ background: 'var(--bg-header)', borderColor: 'var(--border)' }}>
+        <span className="font-bold text-sm tracking-wide flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 18, width: 'auto' }} />
           Storm Response Commander
         </span>
@@ -69,7 +71,7 @@ export default function App() {
           ) : state.done ? (
             <span className="sap-tag" style={{ background: '#052e16', color: '#22c55e' }}>✓ Completado</span>
           ) : (
-            <span className="sap-tag" style={{ background: '#1e2d45', color: '#64748b' }}>Standby</span>
+            <span className="sap-tag" style={{ background: 'var(--border)', color: 'var(--text-muted)' }}>Standby</span>
           )}
         </div>
 
@@ -78,7 +80,12 @@ export default function App() {
           <button
             onClick={() => setShowResults(v => !v)}
             className="flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-lg"
-            style={{ background: showResults ? 'rgba(34,211,238,0.15)' : 'rgba(34,211,238,0.06)', color: '#22d3ee', border: '1px solid rgba(34,211,238,0.25)', cursor: 'pointer' }}
+            style={{
+              background: showResults ? 'rgba(124,58,237,0.15)' : 'var(--accent-subtle)',
+              color: 'var(--accent)',
+              border: `1px solid color-mix(in srgb, var(--accent) 40%, transparent)`,
+              cursor: 'pointer',
+            }}
           >
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -89,22 +96,32 @@ export default function App() {
 
         {/* Safety window bar */}
         <div className="ml-auto flex items-center gap-2" style={{ minWidth: 240 }}>
-          <span className="text-xs text-slate-500 font-mono whitespace-nowrap">VENTANA {params.storm2Window}</span>
-          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: '#1e2d45' }}>
+          <span className="text-xs font-mono whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>VENTANA {params.storm2Window}</span>
+          <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
             <div className="h-full rounded-full transition-all duration-500"
               style={{
                 width: `${safetyPct}%`,
                 background: safetyPct > 80 ? '#ef4444' : safetyPct > 60 ? '#f97316' : '#3b82f6',
               }} />
           </div>
-          <span className="text-xs text-slate-500 font-mono whitespace-nowrap">{state.elapsedLabel}</span>
+          <span className="text-xs font-mono whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>{state.elapsedLabel}</span>
         </div>
+
+        {/* Theme toggle */}
+        <button
+          onClick={toggle}
+          title={theme === 'dark' ? 'Cambiar a tema Joule' : 'Cambiar a tema oscuro'}
+          className="flex items-center justify-center w-7 h-7 rounded-lg text-sm flex-shrink-0"
+          style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer' }}
+        >
+          {theme === 'dark' ? '☀' : '🌙'}
+        </button>
 
         {/* Back to landing */}
         <button
           onClick={() => setShowLanding(true)}
           className="flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-lg"
-          style={{ background: 'rgba(255,255,255,0.03)', color: '#475569', border: '1px solid #1e2d45', cursor: 'pointer' }}
+          style={{ background: 'var(--bg-secondary)', color: 'var(--text-dim)', border: '1px solid var(--border)', cursor: 'pointer' }}
         >
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -117,7 +134,7 @@ export default function App() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* Sidebar */}
-        <aside className="w-52 flex-shrink-0 border-r overflow-y-auto" style={{ background: '#111827', borderColor: '#1e2d45' }}>
+        <aside className="w-52 flex-shrink-0 border-r overflow-y-auto" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
           <ParametersPanel
             params={params}
             onChange={p => setParams(prev => ({ ...prev, ...p }))}
@@ -129,11 +146,11 @@ export default function App() {
         </aside>
 
         {/* Content */}
-        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: '#0d1520' }}>
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: 'var(--bg-base)' }}>
 
           {/* TOP: Map + Flow */}
           <div className="flex overflow-hidden gap-2 p-2" style={{ flex: '0 0 42%' }}>
-            <div className="overflow-hidden rounded border flex-1" style={{ borderColor: '#1e2d45', boxShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
+            <div className="overflow-hidden rounded border flex-1" style={{ borderColor: 'var(--border)', boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}>
               <MapPanel faults={state.faults.length > 0 ? state.faults : initialFaults} drolius={state.drolius} />
             </div>
             <div className="overflow-hidden flex-shrink-0" style={{ flex: '0 0 36%' }}>

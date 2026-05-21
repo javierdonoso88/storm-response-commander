@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ActionMessage, AgentLog, CommsMessage, ConflictEvent, Fault, KPIState } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface Props {
   faults: Fault[];
@@ -49,11 +50,11 @@ function renderMarkdown(raw: string) {
     const parts = text.split(/(\*\*.*?\*\*|\*.*?\*|`[^`]+`)/g);
     return parts.map((p, i) => {
       if (p.startsWith('**') && p.endsWith('**'))
-        return <strong key={i} style={{ color: '#e2e8f0', fontWeight: 700 }}>{p.slice(2, -2)}</strong>;
+        return <strong key={i} style={{ color: 'var(--text-primary)', fontWeight: 700 }}>{p.slice(2, -2)}</strong>;
       if (p.startsWith('*') && p.endsWith('*'))
-        return <em key={i} style={{ color: '#cbd5e1' }}>{p.slice(1, -1)}</em>;
+        return <em key={i} style={{ color: 'var(--text-secondary)' }}>{p.slice(1, -1)}</em>;
       if (p.startsWith('`') && p.endsWith('`'))
-        return <code key={i} className="px-1 rounded text-xs font-mono" style={{ background: 'rgba(34,211,238,0.08)', color: '#22d3ee' }}>{p.slice(1, -1)}</code>;
+        return <code key={i} className="px-1 rounded text-xs font-mono" style={{ background: 'var(--accent-subtle)', color: 'var(--accent)' }}>{p.slice(1, -1)}</code>;
       return p;
     });
   };
@@ -68,7 +69,7 @@ function renderMarkdown(raw: string) {
     if (/^#{2,3}\s+/.test(line)) {
       const text = line.replace(/^#{2,3}\s+/, '');
       nodes.push(
-        <div key={key++} className="text-[10px] font-black tracking-widest mt-4 mb-1.5 first:mt-0" style={{ color: '#22d3ee' }}>
+        <div key={key++} className="text-[10px] font-black tracking-widest mt-4 mb-1.5 first:mt-0" style={{ color: 'var(--accent)' }}>
           {text.toUpperCase()}
         </div>
       );
@@ -79,7 +80,7 @@ function renderMarkdown(raw: string) {
     if (/^#\s+/.test(line)) {
       const text = line.replace(/^#\s+/, '');
       nodes.push(
-        <div key={key++} className="text-xs font-black tracking-widest mt-4 mb-2 first:mt-0" style={{ color: '#22d3ee' }}>
+        <div key={key++} className="text-xs font-black tracking-widest mt-4 mb-2 first:mt-0" style={{ color: 'var(--accent)' }}>
           {text.toUpperCase()}
         </div>
       );
@@ -96,8 +97,8 @@ function renderMarkdown(raw: string) {
       nodes.push(
         <ul key={key++} className="flex flex-col gap-1 my-1.5 ml-1">
           {items.map((item, j) => (
-            <li key={j} className="flex gap-2 text-sm leading-relaxed" style={{ color: '#94a3b8' }}>
-              <span className="mt-[6px] w-1 h-1 rounded-full flex-shrink-0" style={{ background: '#334155' }} />
+            <li key={j} className="flex gap-2 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              <span className="mt-[6px] w-1 h-1 rounded-full flex-shrink-0" style={{ background: 'var(--text-ghost)' }} />
               <span>{renderInline(item)}</span>
             </li>
           ))}
@@ -108,7 +109,7 @@ function renderMarkdown(raw: string) {
 
     // Horizontal rule
     if (/^---+$/.test(line)) {
-      nodes.push(<div key={key++} className="my-3" style={{ height: 1, background: '#1e2d45' }} />);
+      nodes.push(<div key={key++} className="my-3" style={{ height: 1, background: 'var(--border)' }} />);
       i++; continue;
     }
 
@@ -123,7 +124,7 @@ function renderMarkdown(raw: string) {
     }
     if (paraLines.length) {
       nodes.push(
-        <p key={key++} className="text-sm leading-relaxed my-1" style={{ color: '#94a3b8' }}>
+        <p key={key++} className="text-sm leading-relaxed my-1" style={{ color: 'var(--text-secondary)' }}>
           {renderInline(paraLines.join(' '))}
         </p>
       );
@@ -155,19 +156,19 @@ const URGENCY_COLOR = { high: '#ef4444', medium: '#f97316', low: '#f59e0b' };
 const URGENCY_LABEL = { high: 'CRÍTICO', medium: 'MODERADO', low: 'BAJO' };
 
 function MinuteKpiCard({ label, sublabel, value, thresholds }: { label: string; sublabel: string; value: number | null; thresholds: [number, number] }) {
-  const color = value === null ? '#334155' : value <= thresholds[0] ? '#22c55e' : value <= thresholds[1] ? '#f97316' : '#ef4444';
+  const color = value === null ? 'var(--text-ghost)' : value <= thresholds[0] ? '#22c55e' : value <= thresholds[1] ? '#f97316' : '#ef4444';
   const grade = value === null ? '' : value <= thresholds[0] ? 'ÓPTIMO' : value <= thresholds[1] ? 'ACEPTABLE' : 'CRÍTICO';
   return (
     <div className="flex items-center gap-4 flex-1">
       <div>
-        <div className="text-[10px] font-black tracking-widest mb-0.5" style={{ color: '#475569' }}>{label}</div>
+        <div className="text-[10px] font-black tracking-widest mb-0.5" style={{ color: 'var(--text-dim)' }}>{label}</div>
         <div className="flex items-baseline gap-1">
           <span className="text-3xl font-black font-mono" style={{ color }}>{value === null ? '—' : value}</span>
           {value !== null && <span className="text-base font-bold" style={{ color }}>min</span>}
         </div>
         {grade && <div className="text-[10px] font-black tracking-widest mt-0.5" style={{ color }}>{grade}</div>}
       </div>
-      <div className="text-[11px] leading-relaxed max-w-[180px]" style={{ color: '#334155' }}>{sublabel}</div>
+      <div className="text-[11px] leading-relaxed max-w-[180px]" style={{ color: 'var(--text-ghost)' }}>{sublabel}</div>
     </div>
   );
 }
@@ -181,7 +182,7 @@ function KpiBlock({ value, label, colorFn = kpiColor, gradeFn = kpiGrade }: { va
     <div className="flex flex-col items-center gap-3 flex-1">
       <div className="relative flex items-center justify-center" style={{ width: 130, height: 130 }}>
         <svg width="130" height="130" viewBox="0 0 130 130" style={{ transform: 'rotate(-90deg)' }}>
-          <circle cx="65" cy="65" r={r} fill="none" stroke="#1e2d45" strokeWidth="10" />
+          <circle cx="65" cy="65" r={r} fill="none" strokeWidth="10" style={{ stroke: 'var(--border)' }} />
           <circle
             cx="65" cy="65" r={r} fill="none"
             stroke={color} strokeWidth="10"
@@ -195,7 +196,7 @@ function KpiBlock({ value, label, colorFn = kpiColor, gradeFn = kpiGrade }: { va
           <span className="text-[10px] font-black tracking-widest mt-1" style={{ color }}>{gradeFn(value)}</span>
         </div>
       </div>
-      <span className="text-[10px] font-bold tracking-widest" style={{ color: '#475569' }}>{label}</span>
+      <span className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-dim)' }}>{label}</span>
     </div>
   );
 }
@@ -205,13 +206,14 @@ function SapKpiCard({ system, value, label, color }: { system: string; value: st
     <div className="rounded-xl p-4 flex flex-col gap-1.5" style={{ background: `rgba(${hexToRgb(color)},0.06)`, border: `1px solid rgba(${hexToRgb(color)},0.2)` }}>
       <div className="text-[10px] font-mono truncate" style={{ color: `rgba(${hexToRgb(color)},0.6)` }}>{system}</div>
       <div className="text-3xl font-black" style={{ color }}>{value}</div>
-      <div className="text-[11px] font-semibold text-white leading-tight">{label}</div>
+      <div className="text-[11px] font-semibold leading-tight" style={{ color: 'var(--text-primary)' }}>{label}</div>
     </div>
   );
 }
 
 export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMessages, conflicts, elapsedLabel, onClose }: Props) {
   const [vis, setVis] = useState(false);
+  const { theme } = useTheme();
   useEffect(() => { const t = setTimeout(() => setVis(true), 50); return () => clearTimeout(t); }, []);
 
   function downloadReport() {
@@ -413,7 +415,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
   const ibpMaterials = actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && a.msg.includes('Material reservado')).length;
   const ibpReplenish = actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && a.msg.includes('reposición')).length;
   const cxMessages = commsMessages.length;
-  const ainSwitches = restored.length; // direct from fault state — more reliable than actionMessages
+  const ainSwitches = restored.length;
   const s4Assets = faults.length;
   const droliusMissions = actionMessages.filter(a => a.system === 'Drolius · Boston Dynamics Scout' && a.msg.includes('desplegado')).length;
 
@@ -424,57 +426,61 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
     return b.affectedClients - a.affectedClients;
   });
 
+  const panelShadow = theme === 'joule'
+    ? '0 2px 32px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06)'
+    : '0 0 100px rgba(34,211,238,0.07), 0 40px 80px rgba(0,0,0,0.8)';
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center p-4"
-      style={{ background: 'rgba(4,8,16,0.88)', backdropFilter: 'blur(14px)', zIndex: 2000, opacity: vis ? 1 : 0, transition: 'opacity 0.3s' }}
+      style={{ background: 'var(--bg-overlay)', backdropFilter: 'blur(14px)', zIndex: 2000, opacity: vis ? 1 : 0, transition: 'opacity 0.3s' }}
     >
       <div
         className="w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-2xl flex flex-col"
         style={{
-          background: 'linear-gradient(160deg,#0a1525 0%,#080e1a 100%)',
-          border: '1px solid #1e2d45',
-          boxShadow: '0 0 100px rgba(34,211,238,0.07), 0 40px 80px rgba(0,0,0,0.8)',
+          background: 'var(--bg-panel)',
+          border: '1px solid var(--border-accent)',
+          boxShadow: panelShadow,
           transform: vis ? 'scale(1)' : 'scale(0.95)',
           transition: 'transform 0.4s cubic-bezier(0.4,0,0.2,1)',
         }}
       >
         {/* ── Header ── */}
-        <div className="flex items-center gap-3 px-6 py-4 flex-shrink-0" style={{ borderBottom: '1px solid #1e2d45' }}>
+        <div className="flex items-center gap-3 px-6 py-4 flex-shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-xs font-black tracking-widest" style={{ color: '#22d3ee' }}>RESUMEN EJECUTIVO</span>
-          <span className="text-xs font-mono" style={{ color: '#1e3a5f' }}>·</span>
-          <span className="text-xs font-mono" style={{ color: '#334155' }}>Ciclo completado · {elapsedLabel}</span>
+          <span className="text-xs font-black tracking-widest" style={{ color: 'var(--accent)' }}>RESUMEN EJECUTIVO</span>
+          <span className="text-xs font-mono" style={{ color: 'var(--text-ghost)' }}>·</span>
+          <span className="text-xs font-mono" style={{ color: 'var(--text-ghost)' }}>Ciclo completado · {elapsedLabel}</span>
           <span className="ml-auto text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: '#052e16', color: '#22c55e', border: '1px solid #14532d' }}>
             ✓ MISIÓN COMPLETADA
           </span>
           <button
             onClick={onClose}
             className="ml-3 w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
-            style={{ background: 'rgba(255,255,255,0.04)', color: '#475569', border: '1px solid #1e2d45', cursor: 'pointer' }}
+            style={{ background: 'var(--bg-secondary)', color: 'var(--text-dim)', border: '1px solid var(--border)', cursor: 'pointer' }}
           >✕</button>
         </div>
 
         <div className="p-6 flex flex-col gap-5">
 
           {/* ── KPIs ── */}
-          <div className="rounded-2xl px-8 py-6 flex flex-col gap-5" style={{ background: 'rgba(10,18,35,0.6)', border: '1px solid #1e2d45' }}>
+          <div className="rounded-2xl px-8 py-6 flex flex-col gap-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
             <div className="flex items-center gap-8">
               <KpiBlock value={kpi.sla ?? 0} label="SLA" />
-              <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
+              <div style={{ width: 1, height: 100, background: 'var(--border)', flexShrink: 0 }} />
               <KpiBlock value={kpi.safety ?? 0} label="SEGURIDAD" colorFn={safetyColor} gradeFn={safetyGrade} />
-              <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
+              <div style={{ width: 1, height: 100, background: 'var(--border)', flexShrink: 0 }} />
               <KpiBlock value={kpi.efficiency ?? 0} label="EFICIENCIA OPERATIVA" />
-              <div style={{ width: 1, height: 100, background: '#1e2d45', flexShrink: 0 }} />
+              <div style={{ width: 1, height: 100, background: 'var(--border)', flexShrink: 0 }} />
               <div className="flex flex-col items-center gap-1 flex-shrink-0">
-                <div className="text-4xl font-black font-mono" style={{ color: '#22d3ee' }}>{elapsedLabel}</div>
-                <div className="text-[10px] font-bold tracking-widest mt-1" style={{ color: '#475569' }}>DURACIÓN CICLO</div>
+                <div className="text-4xl font-black font-mono" style={{ color: 'var(--accent)' }}>{elapsedLabel}</div>
+                <div className="text-[10px] font-bold tracking-widest mt-1" style={{ color: 'var(--text-dim)' }}>DURACIÓN CICLO</div>
               </div>
             </div>
-            <div style={{ height: 1, background: '#1e2d45' }} />
+            <div style={{ height: 1, background: 'var(--border)' }} />
             <div className="flex items-center gap-10">
               <MinuteKpiCard label="TIEPI" sublabel="Tiempo de Interrupción Equiv. Potencia Instalada" value={kpi.tiepi} thresholds={[60, 120]} />
-              <div style={{ width: 1, height: 48, background: '#1e2d45', flexShrink: 0 }} />
+              <div style={{ width: 1, height: 48, background: 'var(--border)', flexShrink: 0 }} />
               <MinuteKpiCard label="MTTR" sublabel="Mean Time To Repair — Tiempo medio de reposición" value={kpi.mttr} thresholds={[60, 120]} />
             </div>
           </div>
@@ -487,20 +493,20 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
               { value: `${criticalsCovered.length}`, unit: `/ ${criticals.length}`, label: 'Sitios críticos cubiertos', sub: criticalsCovered.length === criticals.length ? 'Cobertura total' : `${criticalsPending.length} sin cobertura`, color: criticalsCovered.length === criticals.length ? '#22c55e' : '#ef4444' },
               { value: `${pending.length}`, unit: '', label: 'Acciones pendientes', sub: pending.length === 0 ? 'Sin fallos sin atender' : `${pending.filter(f => f.criticalSite).length} críticos · ${pending.filter(f => !f.criticalSite).length} residenciales`, color: pending.length === 0 ? '#22c55e' : '#f97316' },
             ].map(s => (
-              <div key={s.label} className="rounded-xl p-4" style={{ background: 'rgba(10,18,35,0.6)', border: '1px solid #1e2d45' }}>
+              <div key={s.label} className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                 <div className="flex items-baseline gap-1 mb-1">
                   <span className="text-3xl font-black" style={{ color: s.color }}>{s.value}</span>
-                  {s.unit && <span className="text-sm font-bold" style={{ color: '#334155' }}>{s.unit}</span>}
+                  {s.unit && <span className="text-sm font-bold" style={{ color: 'var(--text-ghost)' }}>{s.unit}</span>}
                 </div>
-                <div className="text-xs font-bold text-white mb-0.5">{s.label}</div>
-                <div className="text-[11px]" style={{ color: '#334155' }}>{s.sub}</div>
+                <div className="text-xs font-bold mb-0.5" style={{ color: 'var(--text-primary)' }}>{s.label}</div>
+                <div className="text-[11px]" style={{ color: 'var(--text-ghost)' }}>{s.sub}</div>
               </div>
             ))}
           </div>
 
           {/* ── SAP Integration KPIs ── */}
           <div>
-            <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: '#1e3a5f' }}>INTEGRACIÓN SAP</div>
+            <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: 'var(--text-ghost)' }}>INTEGRACIÓN SAP</div>
             <div className="grid grid-cols-3 gap-3">
               <SapKpiCard system="SAP AI Core Orchestration" value={uniqueSystems} label="Sistemas SAP integrados" color="#f59e0b" />
               <SapKpiCard system="SAP Field Service Management" value={fsmActions} label="Órdenes de trabajo creadas" color="#60a5fa" />
@@ -512,14 +518,14 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
             </div>
           </div>
 
-          {/* ── Status Update executive summary ── */}
+          {/* ── Asset and Services Assistant executive summary ── */}
           <div>
-            <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: '#1e3a5f' }}>ANÁLISIS ASSET AND SERVICES ASSISTANT</div>
-            <div className="rounded-xl px-6 py-5" style={{ background: 'rgba(10,18,35,0.6)', border: '1px solid #1e2d45' }}>
+            <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: 'var(--text-ghost)' }}>ANÁLISIS ASSET AND SERVICES ASSISTANT</div>
+            <div className="rounded-xl px-6 py-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
               {orchRaw ? (
                 <div>{renderMarkdown(orchRaw)}</div>
               ) : (
-                <p className="text-sm italic" style={{ color: '#334155' }}>Resumen del orquestador no disponible.</p>
+                <p className="text-sm italic" style={{ color: 'var(--text-ghost)' }}>Resumen del orquestador no disponible.</p>
               )}
             </div>
           </div>
@@ -528,7 +534,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
           {pendingSorted.length > 0 && (
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <div className="text-[10px] font-bold tracking-widest" style={{ color: '#1e3a5f' }}>ACCIONES PENDIENTES</div>
+                <div className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-ghost)' }}>ACCIONES PENDIENTES</div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: 'rgba(249,115,22,0.12)', color: '#f97316', border: '1px solid rgba(249,115,22,0.25)' }}>
                   {pendingSorted.length} fallo{pendingSorted.length > 1 ? 's' : ''} sin resolver
                 </span>
@@ -538,7 +544,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
                   const { action, urgency } = getMitigation(fault);
                   const uColor = URGENCY_COLOR[urgency];
                   return (
-                    <div key={fault.id} className="rounded-xl p-4 flex gap-4" style={{ background: 'rgba(10,18,35,0.6)', border: `1px solid rgba(${hexToRgb(uColor)},0.25)` }}>
+                    <div key={fault.id} className="rounded-xl p-4 flex gap-4" style={{ background: 'var(--bg-secondary)', border: `1px solid rgba(${hexToRgb(uColor)},0.25)` }}>
                       <div className="flex-shrink-0 mt-0.5">
                         <span className="text-[10px] font-black px-2 py-1 rounded" style={{ background: `rgba(${hexToRgb(uColor)},0.12)`, color: uColor, border: `1px solid rgba(${hexToRgb(uColor)},0.3)` }}>
                           {URGENCY_LABEL[urgency]}
@@ -546,9 +552,9 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span className="text-xs font-black text-white">{fault.id}</span>
-                          <span className="text-xs font-mono" style={{ color: '#475569' }}>{fault.zone}</span>
-                          <span className="text-xs font-mono" style={{ color: '#334155' }}>
+                          <span className="text-xs font-black" style={{ color: 'var(--text-primary)' }}>{fault.id}</span>
+                          <span className="text-xs font-mono" style={{ color: 'var(--text-dim)' }}>{fault.zone}</span>
+                          <span className="text-xs font-mono" style={{ color: 'var(--text-ghost)' }}>
                             {fault.type === 'transformer' ? 'Transformador' : fault.type === 'cable' ? 'Cable' : 'Conmutable'} · {fault.affectedClients.toLocaleString('es-ES')} clientes
                           </span>
                           {fault.criticalSite && (
@@ -557,8 +563,8 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
                             </span>
                           )}
                         </div>
-                        <p className="text-xs leading-relaxed" style={{ color: '#64748b' }}>
-                          <span className="font-semibold" style={{ color: '#94a3b8' }}>Mitigación: </span>{action}
+                        <p className="text-xs leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+                          <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>Mitigación: </span>{action}
                         </p>
                       </div>
                     </div>
@@ -571,16 +577,16 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
         </div>
 
         {/* ── Footer ── */}
-        <div className="flex items-center justify-between px-6 py-4 flex-shrink-0 mt-auto" style={{ borderTop: '1px solid #0d1e35' }}>
+        <div className="flex items-center justify-between px-6 py-4 flex-shrink-0 mt-auto" style={{ borderTop: '1px solid var(--border)' }}>
           <div className="flex items-center gap-2">
             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 13, opacity: 0.25 }} />
-            <span className="text-[11px] font-mono" style={{ color: '#1e3a5f' }}>Storm Response Commander · Iberdrola Girona</span>
+            <span className="text-[11px] font-mono" style={{ color: 'var(--text-ghost)' }}>Storm Response Commander · Iberdrola Girona</span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={downloadReport}
               className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold"
-              style={{ background: 'rgba(34,211,238,0.05)', color: '#475569', border: '1px solid #1e2d45', cursor: 'pointer' }}
+              style={{ background: 'var(--bg-secondary)', color: 'var(--text-dim)', border: '1px solid var(--border)', cursor: 'pointer' }}
             >
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -590,7 +596,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
             <button
               onClick={onClose}
               className="px-5 py-2 rounded-lg text-xs font-bold"
-              style={{ background: 'rgba(34,211,238,0.07)', color: '#22d3ee', border: '1px solid rgba(34,211,238,0.2)', cursor: 'pointer' }}
+              style={{ background: 'var(--accent-subtle)', color: 'var(--accent)', border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)', cursor: 'pointer' }}
             >
               Cerrar y volver al simulador
             </button>

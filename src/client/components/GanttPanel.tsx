@@ -9,12 +9,12 @@ function Tooltip({ text, children, position = 'top' }: { text: string; children:
       {children}
       {show && (
         <div
-          className={`absolute left-1/2 -translate-x-1/2 z-50 w-52 rounded px-2.5 py-2 text-xs text-slate-200 leading-snug pointer-events-none ${isTop ? 'bottom-full mb-2' : 'top-full mt-2'}`}
-          style={{ background: '#1a2540', border: '1px solid #2d3f5e', boxShadow: '0 4px 16px rgba(0,0,0,0.6)' }}>
+          className={`absolute left-1/2 -translate-x-1/2 z-50 w-52 rounded px-2.5 py-2 text-xs leading-snug pointer-events-none ${isTop ? 'bottom-full mb-2' : 'top-full mt-2'}`}
+          style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-accent)', boxShadow: '0 4px 16px rgba(0,0,0,0.3)', color: 'var(--text-secondary)' }}>
           {text}
           {isTop
-            ? <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: '5px solid #2d3f5e' }} />
-            : <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: '5px solid #2d3f5e' }} />
+            ? <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderTop: `5px solid var(--border-accent)` }} />
+            : <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0" style={{ borderLeft: '5px solid transparent', borderRight: '5px solid transparent', borderBottom: `5px solid var(--border-accent)` }} />
           }
         </div>
       )}
@@ -101,11 +101,11 @@ export function GanttPanel({ agents, conflicts }: Props) {
 
         {/* Conflicts */}
         {conflicts.length > 0 && (
-          <div className="w-full mt-2 border-t border-[#1e2d45] pt-2">
+          <div className="w-full mt-2 pt-2" style={{ borderTop: '1px solid var(--border)' }}>
             <div className="text-[13px] text-red-400 uppercase tracking-wider mb-1">⚡ Conflictos</div>
             {conflicts.slice(0, 2).map((c, i) => (
               <Tooltip key={i} text={c.reason} position="top">
-                <div className="text-[13px] text-slate-500 bg-red-900/20 rounded px-2 py-1 mb-1 leading-snug cursor-help">
+                <div className="text-[13px] bg-red-900/20 rounded px-2 py-1 mb-1 leading-snug cursor-help" style={{ color: 'var(--text-muted)' }}>
                   <span className="text-red-400">{c.winner.toUpperCase()}</span> &gt; <span>{c.loser.toUpperCase()}</span>
                 </div>
               </Tooltip>
@@ -119,13 +119,13 @@ export function GanttPanel({ agents, conflicts }: Props) {
 
 function SupervisorCard() {
   return (
-    <div className="flex flex-col items-center gap-1 bg-[#1a2540] border border-[#2d3f5e] rounded-lg p-3 w-28">
+    <div className="flex flex-col items-center gap-1 rounded-lg p-3 w-28" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-accent)' }}>
       <div className="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white"
         style={{ background: 'linear-gradient(135deg, #c2410c, #ea580c)' }}>
         SV
       </div>
-      <span className="text-xs font-bold text-white">Supervisor</span>
-      <span className="text-[12px] text-slate-400">Status Update</span>
+      <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Supervisor</span>
+      <span className="text-[12px]" style={{ color: 'var(--text-secondary)' }}>Status Update</span>
     </div>
   );
 }
@@ -141,8 +141,8 @@ function AgentCard({ id, agent }: { id: AgentId; agent?: AgentState }) {
       title={AGENT_TOOLTIP[id]}
       className="flex flex-col items-center gap-1 rounded-lg p-2.5 transition-all duration-300"
       style={{
-        background: '#1a2540',
-        border: `1px solid ${isRunning ? meta.ring : isDone ? '#1e3a1e' : '#1e2d45'}`,
+        background: 'var(--bg-secondary)',
+        border: `1px solid ${isRunning ? meta.ring : isDone ? '#166534' : 'var(--border)'}`,
         boxShadow: isRunning ? `0 0 12px ${meta.ring}40` : 'none',
         minWidth: 72,
       }}
@@ -162,32 +162,32 @@ function AgentCard({ id, agent }: { id: AgentId; agent?: AgentState }) {
           />
         )}
       </div>
-      <span className="text-[12px] font-semibold text-center text-white leading-tight">
+      <span className="text-[12px] font-semibold text-center leading-tight" style={{ color: 'var(--text-primary)' }}>
         {AGENT_SHORT[id]}
       </span>
       <StatusBadge status={status} color={meta.ring} />
       {agent?.startTime && (
-        <span className="text-[13px] text-slate-600 font-mono">{agent.startTime}</span>
+        <span className="text-[13px] font-mono" style={{ color: 'var(--text-ghost)' }}>{agent.startTime}</span>
       )}
     </div>
   );
 }
 
 function StatusBadge({ status, color }: { status: AgentState['status']; color: string }) {
-  if (status === 'pending')  return <span className="text-[13px] text-slate-500">Pending</span>;
+  if (status === 'pending')  return <span className="text-[13px]" style={{ color: 'var(--text-muted)' }}>Pending</span>;
   if (status === 'running')  return <span className="text-[13px] font-bold" style={{ color }}>Running…</span>;
   return <span className="text-[13px] text-green-400">Done ✓</span>;
 }
 
 function Arrow() {
   return (
-    <div className="text-slate-600 text-base leading-none">▼</div>
+    <div className="text-base leading-none" style={{ color: 'var(--text-ghost)' }}>▼</div>
   );
 }
 
 function FlowArrow() {
   return (
-    <div className="text-slate-600 text-xs font-bold tracking-widest">›››</div>
+    <div className="text-xs font-bold tracking-widest" style={{ color: 'var(--text-ghost)' }}>›››</div>
   );
 }
 
