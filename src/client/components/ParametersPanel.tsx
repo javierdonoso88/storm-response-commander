@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SimParams } from '../types';
+import { SimParams, DroliusStatus } from '../types';
 
 interface Props {
   params: SimParams;
@@ -7,6 +7,7 @@ interface Props {
   onSimulate: () => void;
   running: boolean;
   kpi: { sla: number | null; safety: number | null; efficiency: number | null; tiepi: number | null; mttr: number | null };
+  drolius: { status: DroliusStatus; task?: string };
 }
 
 const storm2Options: SimParams['storm2Window'][] = ['T+4h', 'T+6h', 'T+8h', 'none'];
@@ -39,8 +40,15 @@ function TooltipLabel({ label, tip }: { label: string; tip: string }) {
   );
 }
 
-export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: Props) {
+export function ParametersPanel({ params, onChange, onSimulate, running, kpi, drolius }: Props) {
   const [showInfo, setShowInfo] = useState(false);
+
+  const droliusColor = drolius.status === 'available' ? '#22c55e'
+    : drolius.status === 'deployed' ? '#f97316'
+    : '#22d3ee';
+  const droliusLabel = drolius.status === 'available' ? 'DISPONIBLE'
+    : drolius.status === 'deployed' ? `EN MISIÓN · ${drolius.task ?? ''}`
+    : 'RETORNANDO';
 
   return (
     <div className="flex flex-col h-full">
@@ -74,6 +82,35 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi }: 
 
       {/* Info modal */}
       {showInfo && <IncidentInfoModal onClose={() => setShowInfo(false)} />}
+
+      {/* Drolius status */}
+      <div
+        className="mx-3 mt-2 rounded-lg px-3 py-2 flex items-center gap-2"
+        style={{ background: 'rgba(15,24,42,0.7)', border: `1px solid rgba(${droliusColor === '#22c55e' ? '34,197,94' : droliusColor === '#f97316' ? '249,115,22' : '34,211,238'},0.2)` }}
+      >
+        <span
+          className="text-sm flex-shrink-0"
+          style={{ lineHeight: 1 }}
+          title="Drolius — robot de inspección"
+        >🤖</span>
+        <div className="flex flex-col min-w-0">
+          <div className="flex items-center gap-1.5">
+            <span
+              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+              style={{
+                background: droliusColor,
+                animation: drolius.status !== 'available' ? 'pulse 1s infinite' : 'none',
+              }}
+            />
+            <span className="text-[10px] font-bold tracking-wider truncate" style={{ color: droliusColor }}>
+              DROLIUS · {droliusLabel}
+            </span>
+          </div>
+          <span className="text-[10px]" style={{ color: '#334155' }}>
+            {drolius.status === 'available' ? 'Robot de inspección en standby' : 'Inspección en curso…'}
+          </span>
+        </div>
+      </div>
 
       <div className="flex flex-col gap-4 p-3 flex-1 overflow-y-auto">
 

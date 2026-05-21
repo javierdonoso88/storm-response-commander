@@ -1,6 +1,7 @@
 export type AgentId = 'triage-priority' | 'rerouting' | 'crew-dispatch' | 'resource' | 'comms';
 export type FaultStatus = 'fault' | 'switching' | 'restored' | 'crew-en-route' | 'repairing' | 'repaired';
 export type FaultType = 'switchable' | 'transformer' | 'cable';
+export type DroliusStatus = 'available' | 'deployed' | 'returning';
 
 export interface SimParams {
   minuteSLA: number;
@@ -79,4 +80,5 @@ export type SimEvent =
   | { type: 'kpi'; sla: number; safety: number; efficiency: number; tiepi: number; mttr: number }
   | { type: 'conflict'; winner: AgentId; loser: AgentId; reason: string }
   | { type: 'action'; agent: AgentId | 'orchestrator'; system: string; msg: string }
+  | { type: 'drolius_update'; status: DroliusStatus; task?: string; report?: string }
   | { type: 'done'; elapsed: string };

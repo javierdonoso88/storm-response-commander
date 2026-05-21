@@ -124,6 +124,7 @@ export default function App() {
             onSimulate={() => { setShowResults(false); startSimulation(params); }}
             running={state.running}
             kpi={state.kpi}
+            drolius={state.drolius}
           />
         </aside>
 

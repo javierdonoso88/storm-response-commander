@@ -1,4 +1,4 @@
-import { SimParams, ScenarioState, AgentResult, SimEvent } from '../types';
+import { SimParams, ScenarioState, AgentResult, SimEvent, Fault } from '../types';
 import { runAgent, ToolDef } from '../agentRunner';
 
 export async function runCrewDispatch(
@@ -59,6 +59,51 @@ export async function runCrewDispatch(
       },
     },
     {
+      name: 'dispatch_drolius',
+      description: 'Despliega a Drolius (robot canino de inspección) a una zona de fallo para obtener datos en tiempo real: estado de la batería SAI, accesibilidad de la zona y evaluación de daños. Especialmente útil antes de enviar brigada a zonas peligrosas o con batería crítica. Solo disponible si Drolius no está ya desplegado.',
+      input_schema: {
+        type: 'object' as const,
+        properties: {
+          faultId: { type: 'string', description: 'ID del fallo a inspeccionar' },
+          mission: {
+            type: 'string',
+            enum: ['battery_check', 'zone_access', 'damage_assessment'],
+            description: 'Tipo de misión: battery_check = confirmar batería SAI restante; zone_access = evaluar accesibilidad para brigada; damage_assessment = evaluar daños físicos en el activo',
+          },
+        },
+        required: ['faultId', 'mission'],
+      },
+      handler: async (input) => {
+        if (state.drolius.status !== 'available') {
+          return `Error: Drolius no disponible — actualmente ${state.drolius.status === 'deployed' ? `en misión en ${state.drolius.currentTask}` : 'retornando a base'}`;
+        }
+        const fault = state.faults.find(f => f.id === input.faultId);
+        if (!fault) return `Error: fallo ${input.faultId} no encontrado`;
+
+        state.drolius.status = 'deployed';
+        state.drolius.currentTask = input.faultId as string;
+
+        emit({ type: 'drolius_update', status: 'deployed', task: input.faultId as string });
+        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: `Drolius desplegado → ${fault.zone} (${input.faultId}) — misión: ${input.mission}` });
+
+        await new Promise(r => setTimeout(r, 900));
+
+        const report = buildDroliusReport(fault, input.mission as string);
+
+        state.drolius.status = 'returning';
+        emit({ type: 'drolius_update', status: 'returning', task: input.faultId as string, report });
+        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: `Drolius retorna con informe: ${report.slice(0, 100)}…` });
+
+        await new Promise(r => setTimeout(r, 500));
+
+        state.drolius.status = 'available';
+        state.drolius.currentTask = undefined;
+        emit({ type: 'drolius_update', status: 'available' });
+
+        return report;
+      },
+    },
+    {
       name: 'skip_fault',
       description: 'Marca un fallo como no asignable en este ciclo (sin brigada disponible o ventana insuficiente).',
       input_schema: {
@@ -99,6 +144,7 @@ Reglas:
 - Luego: residenciales por clientes afectados (mayor primero)
 - Ventana de tormenta: ${params.storm2Window}. Límite seguridad: ${safetyLimitMin}min. Si es T+4h, evita asignar transformadores con ETA > 210min
 - Si no hay brigada con el skill necesario disponible, usa skip_fault
+- DROLIUS: tienes disponible el robot de inspección Drolius. Úsalo opcionalmente en sitios críticos con batería muy baja o zonas de difícil acceso ANTES de enviar brigada, para confirmar datos. Una sola misión a la vez.
 Llama a dispatch_crew para cada asignación posible, skip_fault para inasignables, luego complete_dispatch.
 Responde en español. Sé operacional y preciso.`,
     userMessage: `BRIGADAS DISPONIBLES (${availableCrews.length} total):
@@ -110,7 +156,8 @@ ${faultList || 'Ningún fallo físico pendiente'}
 SLA: ${params.minuteSLA}min | Ventana tormenta 2: ${params.storm2Window}
 Tiempo reparación estimado: transformador 90-180min, cable 60-120min
 
-Asigna brigadas con dispatch_crew, omite inasignables con skip_fault, luego complete_dispatch.${params.instructions?.trim() ? `\n\nINSTRUCCIONES DEL OPERADOR (prioridad máxima — ajusta asignaciones en consecuencia):\n${params.instructions.trim()}` : ''}`,
+Asigna brigadas con dispatch_crew, omite inasignables con skip_fault, luego complete_dispatch.
+DROLIUS disponible: ${state.drolius.status === 'available' ? 'SÍ — puedes desplegarlo con dispatch_drolius para inspección previa' : 'NO (ocupado)'}.${params.instructions?.trim() ? `\n\nINSTRUCCIONES DEL OPERADOR (prioridad máxima — ajusta asignaciones en consecuencia):\n${params.instructions.trim()}` : ''}`,
     tools,
     emit,
     agentId: 'crew-dispatch',
@@ -126,4 +173,40 @@ Asigna brigadas con dispatch_crew, omite inasignables con skip_fault, luego comp
     dispatches,
     commsMessages: [],
   };
+}
+
+function buildDroliusReport(fault: Fault, mission: string): string {
+  const zone = fault.zone;
+  const id = fault.id;
+
+  const ACCESS_CONDITIONS = fault.batteryMinutes !== undefined && fault.batteryMinutes <= 60
+    ? 'zona parcialmente inundada — agua 15-20 cm en acceso principal. Requiere calzado de protección y EPI nivel 2.'
+    : 'zona accesible — sin obstáculos significativos. Condiciones: pavimento mojado, visibilidad reducida por lluvia.';
+
+  if (mission === 'battery_check' && fault.criticalSite) {
+    const remaining = fault.batteryMinutes ?? 0;
+    const tempC = 68 + (remaining % 30);
+    return `[DROLIUS INFORME — ${id} · ${fault.criticalSite}] ` +
+      `Batería SAI confirmada: ${remaining} min restantes (lectura directa del BMS). ` +
+      `Temperatura transformador: ${tempC}°C — dentro de margen operativo. ` +
+      `Estado bypass: activo. Carga actual: ${55 + (remaining % 40)}% capacidad nominal. ` +
+      `Recomendación: prioridad ${remaining <= 60 ? 'CRÍTICA — brigada inmediata' : 'alta — brigada en < 90 min'}.`;
+  }
+
+  if (mission === 'zone_access') {
+    return `[DROLIUS INFORME ACCESO — ${id} · ${zone}] ` +
+      `${ACCESS_CONDITIONS} ` +
+      `Ruta alternativa disponible por vía secundaria (+12 min de ETA). ` +
+      `Obstáculos detectados: ${fault.type === 'transformer' ? 'árbol caído a 30 m del activo — motosierra necesaria' : 'derribo de panel de señalización — despejable manualmente'}. ` +
+      `Estimación ETA brigada ajustada: ${fault.type === 'transformer' ? '+20 min sobre ETA nominal' : '+8 min sobre ETA nominal'}.`;
+  }
+
+  // damage_assessment
+  const damageDesc = fault.type === 'transformer'
+    ? 'Impacto de rayo confirmado en devanado primario. Aislante exterior con quemaduras visibles. Requiere sustitución completa del equipo. Confirmado: Skill A obligatorio.'
+    : `Rotura de conductor en ${Math.floor(Math.random() * 3) + 1} punto(s). Longitud afectada estimada: ${20 + (fault.affectedClients % 50)} m. Requiere ${Math.ceil(fault.affectedClients / 1500)} bobina(s) de cable.`;
+
+  return `[DROLIUS INFORME DAÑOS — ${id} · ${zone}] ${damageDesc} ` +
+    `Nivel de seguridad zona: ${fault.batteryMinutes !== undefined && fault.batteryMinutes <= 60 ? 'ALTO RIESGO — presencia de alta tensión cercana' : 'MEDIO — proceder con EPI estándar'}. ` +
+    `ETA reparación estimada: ${fault.type === 'transformer' ? '120-180 min' : '60-100 min'}.`;
 }

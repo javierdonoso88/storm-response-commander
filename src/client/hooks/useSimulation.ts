@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import {
   AgentId, AgentLog, AgentState, AgentStatus, ActionMessage, CommsMessage, ConflictEvent,
-  Fault, KPIState, SimEvent, SimParams
+  Fault, KPIState, SimEvent, SimParams, DroliusStatus
 } from '../types';
 
 const AGENT_LABELS: Record<AgentId | 'orchestrator', string> = {
@@ -34,6 +34,7 @@ export interface SimulationState {
   safetyElapsed: number;
   safetyLimit: number;
   elapsedLabel: string;
+  drolius: { status: DroliusStatus; task?: string };
 }
 
 export function useSimulation(initialFaults: Fault[]) {
@@ -50,6 +51,7 @@ export function useSimulation(initialFaults: Fault[]) {
     safetyElapsed: 0,
     safetyLimit: 360 * 60,
     elapsedLabel: 'T+00:00',
+    drolius: { status: 'available' },
   });
 
   const startSimulation = useCallback((params: SimParams) => {
@@ -65,6 +67,7 @@ export function useSimulation(initialFaults: Fault[]) {
       actionMessages: [],
       conflicts: [],
       safetyElapsed: 0,
+      drolius: { status: 'available' },
     }));
 
     simulateWithFetch(params);
@@ -175,6 +178,12 @@ export function useSimulation(initialFaults: Fault[]) {
           return {
             ...prev,
             actionMessages: [{ agent: event.agent, system: event.system, msg: event.msg, ts: Date.now() }, ...prev.actionMessages].slice(0, 200),
+          };
+
+        case 'drolius_update':
+          return {
+            ...prev,
+            drolius: { status: event.status, task: event.task },
           };
 
         case 'done':

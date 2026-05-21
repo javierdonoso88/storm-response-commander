@@ -1,4 +1,4 @@
-import { Fault, Crew, Inventory, ScenarioState } from './types';
+import { Fault, Crew, Inventory, ScenarioState, DroliusUnit } from './types';
 
 export const BASE_SCENARIO: ScenarioState = {
   totalClients: 127000,
@@ -7,6 +7,9 @@ export const BASE_SCENARIO: ScenarioState = {
     cables: 40,
     mobileGenerators: 1,
   },
+  drolius: {
+    status: 'available',
+  } as DroliusUnit,
   faults: [
     // === SWITCHABLE FAULTS (22) — telecontrol remote operation ===
     { id: 'SW-001', type: 'switchable', zone: 'Girona Nord', affectedClients: 3200, gridPos: { col: 3, row: 1 }, status: 'fault' },
@@ -130,6 +133,7 @@ export function buildScenario(params: { availableCrews: number; switchableFaults
       ...BASE_SCENARIO.inventory,
       transformers: params.limitedParts === 1 ? 1 : 2,
     },
+    drolius: { status: 'available' },
   };
 
   // Mark extra switchable faults as non-switchable (set to cable type) if below threshold

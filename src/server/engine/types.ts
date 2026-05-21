@@ -2,6 +2,7 @@ export type AgentId = 'triage-priority' | 'rerouting' | 'crew-dispatch' | 'resou
 export type FaultStatus = 'fault' | 'switching' | 'restored' | 'crew-en-route' | 'repairing' | 'repaired';
 export type FaultType = 'switchable' | 'transformer' | 'cable';
 export type CrewSkill = 'A' | 'B' | 'C';
+export type DroliusStatus = 'available' | 'deployed' | 'returning';
 
 export interface SimParams {
   minuteSLA: number;          // 30–120 min
@@ -38,11 +39,17 @@ export interface Inventory {
   mobileGenerators: number;
 }
 
+export interface DroliusUnit {
+  status: DroliusStatus;
+  currentTask?: string;
+}
+
 export interface ScenarioState {
   faults: Fault[];
   crews: Crew[];
   inventory: Inventory;
   totalClients: number;
+  drolius: DroliusUnit;
 }
 
 export type SimEvent =
@@ -55,6 +62,7 @@ export type SimEvent =
   | { type: 'kpi'; sla: number; safety: number; efficiency: number; tiepi: number; mttr: number }
   | { type: 'conflict'; winner: AgentId; loser: AgentId; reason: string }
   | { type: 'action'; agent: AgentId | 'orchestrator'; system: string; msg: string }
+  | { type: 'drolius_update'; status: DroliusStatus; task?: string; report?: string }
   | { type: 'done'; elapsed: string };
 
 export interface AgentResult {
