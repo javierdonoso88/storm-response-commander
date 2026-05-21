@@ -1,4 +1,5 @@
 import { ActionMessage, CommsMessage } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface Props {
   messages: CommsMessage[];
@@ -57,6 +58,15 @@ function timeAgo(ts: number): string {
 }
 
 export function StatsPanel({ messages, actionMessages }: Props) {
+  const { theme } = useTheme();
+  const isJoule = theme === 'joule';
+
+  const actionsBadgeStyle = isJoule
+    ? { background: 'rgba(209,250,229,0.9)', color: '#047857' }
+    : { background: 'rgba(6,78,59,0.4)', color: '#34d399' };
+  const commsBadgeStyle = isJoule
+    ? { background: 'rgba(207,250,254,0.9)', color: '#0e7490' }
+    : { background: 'rgba(22,78,99,0.4)', color: '#22d3ee' };
   return (
     <div className="panel-card flex flex-col h-full overflow-hidden">
 
@@ -65,7 +75,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
         <span className="text-emerald-400">⚙</span>
         ACCIONES SAP
         {actionMessages.length > 0 && (
-          <span className="ml-auto text-[12px] bg-emerald-900/40 text-emerald-400 px-1.5 py-0.5 rounded">
+          <span className="ml-auto text-[12px] px-1.5 py-0.5 rounded font-semibold" style={actionsBadgeStyle}>
             {actionMessages.length}
           </span>
         )}
@@ -101,7 +111,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
         <span className="text-cyan-400">◎</span>
         COMUNICACIONES
         {messages.length > 0 && (
-          <span className="ml-auto text-[12px] bg-cyan-900/40 text-cyan-400 px-1.5 py-0.5 rounded">
+          <span className="ml-auto text-[12px] px-1.5 py-0.5 rounded font-semibold" style={commsBadgeStyle}>
             {messages.length} enviados
           </span>
         )}
