@@ -184,12 +184,15 @@ export async function runOrchestrator(params: SimParams, emit: (e: SimEvent) => 
 
   const systemPrompt = `Eres el STATUS UPDATE del sistema de Respuesta a Tormentas de Iberdrola (Girona).
 
-PROTOCOLO OBLIGATORIO:
-FASE 1 (PARALELA): Llama invoke_triage_priority + invoke_rerouting en el MISMO turno (los dos a la vez). Corren en paralelo.
-FASE 2 (SECUENCIAL): Llama invoke_crew_dispatch, luego invoke_resource, luego invoke_comms (en ese orden, uno por turno).
-CIERRE: Llama finalize para calcular KPIs y cerrar el ciclo.
+PROTOCOLO OBLIGATORIO — sigue este orden exacto sin saltarte ninguna fase:
+FASE 1 (PARALELA): Llama invoke_triage_priority + invoke_rerouting en el MISMO turno (los dos a la vez).
+FASE 2 (SECUENCIAL): Llama invoke_crew_dispatch (solo), luego invoke_resource (solo), luego invoke_comms (solo).
+CIERRE: Llama finalize.
 
-Razona brevemente antes de cada fase. Actúa con decisión. Responde en español.`;
+IMPORTANTE: Tras recibir los resultados de cada fase, llama INMEDIATAMENTE a la siguiente herramienta.
+No escribas análisis extensos entre fases — una frase de transición es suficiente.
+Nunca omitas invoke_crew_dispatch, invoke_resource ni invoke_comms.
+Responde en español.`;
 
   const userMessage = `INCIDENTE ACTIVO — Comarques de Girona — T+00:00
 
@@ -223,7 +226,7 @@ Inicia el protocolo: llama invoke_triage_priority + invoke_rerouting en el MISMO
         system: systemPrompt,
         messages,
         tools: sdkTools,
-        max_tokens: 4096,
+        max_tokens: 8192,
       });
 
       for await (const event of stream) {
