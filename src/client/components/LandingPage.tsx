@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useTheme, Theme } from '../contexts/ThemeContext';
 
 interface Props {
   onEnter: () => void;
@@ -63,11 +64,25 @@ function AgentCard({ label, system, desc, color }: { label: string; system: stri
 
 export function LandingPage({ onEnter }: Props) {
   const [vis, setVis] = useState(false);
+  const [showThemePicker, setShowThemePicker] = useState(false);
+  const themePickerRef = useRef<HTMLDivElement>(null);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const t = setTimeout(() => setVis(true), 60);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (!showThemePicker) return;
+    function handleClick(e: MouseEvent) {
+      if (themePickerRef.current && !themePickerRef.current.contains(e.target as Node)) {
+        setShowThemePicker(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [showThemePicker]);
 
   const fade = (delay: number) =>
     `transition-all duration-700 ${vis ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}` +
@@ -84,9 +99,50 @@ export function LandingPage({ onEnter }: Props) {
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 17 }} />
         <span className="text-sm font-semibold" style={{ color: 'var(--text-ghost)', margin: '0 2px' }}>|</span>
         <span className="text-sm font-semibold tracking-wide" style={{ color: 'var(--text-muted)' }}>Storm Response Commander</span>
+
+        {/* Theme picker */}
+        <div className="relative flex-shrink-0 ml-auto" ref={themePickerRef}>
+          <button
+            onClick={() => setShowThemePicker(v => !v)}
+            className="flex items-center gap-1.5 px-2.5 h-7 rounded-lg text-xs font-medium"
+            style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer' }}
+          >
+            <span>{theme === 'dark' ? '🌙' : theme === 'joule' ? '☀' : '⚡'}</span>
+            <span>{theme === 'dark' ? 'Oscuro' : theme === 'joule' ? 'Joule' : 'Iberdrola'}</span>
+            <svg width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M0 0l4 5 4-5z"/></svg>
+          </button>
+          {showThemePicker && (
+            <div
+              className="absolute right-0 top-full mt-1 rounded-lg overflow-hidden z-[9000]"
+              style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-accent)', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', minWidth: 140 }}
+            >
+              {([
+                { value: 'dark', icon: '🌙', label: 'Oscuro' },
+                { value: 'joule', icon: '☀', label: 'SAP Joule' },
+                { value: 'iberdrola', icon: '⚡', label: 'Iberdrola' },
+              ] as { value: Theme; icon: string; label: string }[]).map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => { setTheme(opt.value); setShowThemePicker(false); }}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-xs text-left transition-colors"
+                  style={{
+                    background: theme === opt.value ? 'var(--accent-subtle)' : 'transparent',
+                    color: theme === opt.value ? 'var(--accent)' : 'var(--text-secondary)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <span>{opt.icon}</span>
+                  <span className="font-medium">{opt.label}</span>
+                  {theme === opt.value && <span className="ml-auto opacity-70">✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <button
           onClick={onEnter}
-          className="ml-auto text-xs font-bold px-4 py-1.5 rounded-lg"
+          className="text-xs font-bold px-4 py-1.5 rounded-lg"
           style={{ background: 'var(--accent-subtle)', color: 'var(--accent)', border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)', cursor: 'pointer' }}
         >
           Abrir Simulador →
