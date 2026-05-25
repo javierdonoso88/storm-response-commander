@@ -10,7 +10,7 @@ Sistema multi-agente de IA para la simulación de respuesta a incidentes eléctr
 
 Al abrir la aplicación se muestra una **pantalla de presentación** con el caso de uso, las métricas clave del escenario y la arquitectura multi-agente. Desde ahí se accede al simulador interactivo, con navegación de vuelta a la landing en cualquier momento desde el botón "Inicio" del header.
 
-El header incluye un **botón de tema** (☀ / 🌙) que alterna entre el tema oscuro navy/cyan y el tema **SAP Joule** (blanco, bordes gris claro, acento púrpura `#7c3aed`). La preferencia se persiste en `localStorage`.
+El header incluye un **desplegable de tema** con tres opciones: **Oscuro** (navy/cyan), **SAP Joule** (blanco-gris, acento púrpura `#6d28d9`) e **Iberdrola** (verde-claro, acento verde `#00a651`). La preferencia se persiste en `localStorage`.
 
 Al iniciar una simulación, un orquestador Claude coordina 5 agentes especializados que razonan sobre el escenario en tiempo real:
 
