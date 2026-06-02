@@ -169,37 +169,40 @@ export function GanttPanel({ agents, conflicts }: Props) {
   const agentMap = new Map(agents.map(a => [a.id, a]));
 
   // ── Connector paths ──────────────────────────────────────────────────────
-  // 1. Orch right → Technician left (col0 mid → col1 row0)
+  // 1. Orch right → Technician left (col0 row1 → col1 row0, curve up)
   const orch_r  = right(0, 1);
   const tech_l  = left(1, 0);
   const d_orch_tech = `M ${orch_r.x} ${orch_r.y} C ${orch_r.x + 40} ${orch_r.y}, ${tech_l.x - 40} ${tech_l.y}, ${tech_l.x} ${tech_l.y}`;
 
-  // 2. Orch right → Remote SCADA left (col0 mid → col1 row1, straight)
+  // 2. Orch right → Remote SCADA left (col0 row1 → col1 row1, straight)
   const scada_l = left(1, 1);
   const d_orch_scada = bezier(orch_r.x, orch_r.y, scada_l.x, scada_l.y, 28);
 
-  // 3. Technician bottom → Orch top (return arc)
+  // 3. Technician → Orch return arc (top loop)
   const tech_b  = bottom(1, 0);
   const orch_t  = top(0, 1);
-  // Route: tech bottom → down → left → orch top
   const loopY   = ROW0_Y - 22;
   const d_tech_orch = `M ${tech_b.x} ${tech_b.y} L ${tech_b.x} ${loopY} L ${orch_t.x} ${loopY} L ${orch_t.x} ${orch_t.y}`;
 
-  // 4. Remote SCADA right → Dispatcher left  (same row)
-  const scada_r = right(1, 1);
-  const disp_l  = left(2, 1);
-  const d_scada_disp = bezier(scada_r.x, scada_r.y, disp_l.x, disp_l.y);
+  // 4. Remote SCADA → Orch return (bottom of scada → left → orch bottom)
+  const scada_b  = bottom(1, 1);
+  const orch_b   = bottom(0, 1);
+  const scadaRetY = ROW1_Y + NH + 14;
+  const d_scada_orch = `M ${scada_b.x} ${scada_b.y} L ${scada_b.x} ${scadaRetY} L ${orch_b.x} ${scadaRetY} L ${orch_b.x} ${orch_b.y}`;
 
-  // 5. Dispatcher → Resources (same row)
+  // 5. Orch → Dispatcher (col0 row1 right → col2 row1 left, skip col1)
+  const disp_l  = left(2, 1);
+  const d_orch_disp = bezier(orch_r.x, orch_r.y, disp_l.x, disp_l.y, 60);
+
+  // 6. Dispatcher → Resources (same row)
   const d_disp_res = bezier(right(2,1).x, right(2,1).y, left(3,1).x, left(3,1).y);
 
-  // 6. Resources → Comms (same row)
+  // 7. Resources → Comms (same row)
   const d_res_comms = bezier(right(3,1).x, right(3,1).y, left(4,1).x, left(4,1).y);
 
-  // 7. Comms bottom → Orch bottom (return arc below)
+  // 8. Comms → Orch return (bottom arc below all)
   const comms_b = bottom(4, 1);
-  const orch_b  = bottom(0, 1);
-  const retY    = ROW1_Y + NH + 22;
+  const retY    = ROW1_Y + NH + 28;
   const d_comms_orch = `M ${comms_b.x} ${comms_b.y} L ${comms_b.x} ${retY} L ${orch_b.x} ${retY} L ${orch_b.x} ${orch_b.y}`;
 
   // Phase label positions
@@ -240,7 +243,8 @@ export function GanttPanel({ agents, conflicts }: Props) {
             <Conn d={d_orch_tech} />
             <Conn d={d_orch_scada} />
             <Conn d={d_tech_orch} />
-            <Conn d={d_scada_disp} />
+            <Conn d={d_scada_orch} />
+            <Conn d={d_orch_disp} />
             <Conn d={d_disp_res} />
             <Conn d={d_res_comms} />
             <Conn d={d_comms_orch} />
