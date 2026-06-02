@@ -98,7 +98,6 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
   return (
     <foreignObject x={x} y={y} width={NW} height={NH} style={{ overflow: 'visible' }}>
       <div
-        className={isRunning ? 'n8n-node-running' : undefined}
         title={AGENT_TOOLTIP[id]}
         style={{
           width: NW, height: NH,
@@ -148,7 +147,8 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
           {meta.sub}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+        <div className={isRunning ? 'n8n-node-running' : undefined}
+          style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
           <div style={{
             width: 6, height: 6, borderRadius: '50%',
             background: isRunning ? color : isDone ? '#22c55e' : pendingDot,
