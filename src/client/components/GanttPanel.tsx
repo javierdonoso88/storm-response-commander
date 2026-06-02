@@ -157,6 +157,31 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
 }
 
 // ── Connector ─────────────────────────────────────────────────────────────────
+
+// Build a path through waypoints with rounded corners (quadratic bezier at each turn)
+function roundedPath(pts: [number, number][], r = 12): string {
+  if (pts.length < 2) return '';
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i - 1];
+    const [x1, y1] = pts[i];
+    const [x2, y2] = pts[i + 1];
+    // Direction vectors
+    const d0x = x1 - x0, d0y = y1 - y0;
+    const d1x = x2 - x1, d1y = y2 - y1;
+    const len0 = Math.sqrt(d0x * d0x + d0y * d0y);
+    const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
+    const t0 = Math.min(r, len0 / 2) / len0;
+    const t1 = Math.min(r, len1 / 2) / len1;
+    const px = x1 - d0x * t0, py = y1 - d0y * t0; // point before corner
+    const qx = x1 + d1x * t1, qy = y1 + d1y * t1; // point after corner
+    d += ` L ${px} ${py} Q ${x1} ${y1} ${qx} ${qy}`;
+  }
+  const last = pts[pts.length - 1];
+  d += ` L ${last[0]} ${last[1]}`;
+  return d;
+}
+
 function Conn({ d, color = ACCENT }: { d: string; color?: string }) {
   return (
     <path d={d} fill="none" stroke={color} strokeWidth={1.2}
@@ -178,23 +203,23 @@ export function GanttPanel({ agents, conflicts }: Props) {
   const scada_l = left(1, 1);
   const d_orch_scada = bezier(orch_r.x, orch_r.y, scada_l.x, scada_l.y, 28);
 
-  // 3. Technician → Orch return arc (top loop)
+  // 3. Technician → Orch return arc (top loop, rounded corners)
   const tech_b  = bottom(1, 0);
   const orch_t  = top(0, 1);
   const loopY   = ROW0_Y - 22;
-  const d_tech_orch = `M ${tech_b.x} ${tech_b.y} L ${tech_b.x} ${loopY} L ${orch_t.x} ${loopY} L ${orch_t.x} ${orch_t.y}`;
+  const d_tech_orch = roundedPath([[tech_b.x, tech_b.y], [tech_b.x, loopY], [orch_t.x, loopY], [orch_t.x, orch_t.y]]);
 
-  // 4. Remote SCADA → Orch return (bottom of scada → left → orch bottom)
+  // 4. Remote SCADA → Orch return (rounded corners)
   const scada_b  = bottom(1, 1);
   const orch_b   = bottom(0, 1);
   const scadaRetY = ROW1_Y + NH + 14;
-  const d_scada_orch = `M ${scada_b.x} ${scada_b.y} L ${scada_b.x} ${scadaRetY} L ${orch_b.x} ${scadaRetY} L ${orch_b.x} ${orch_b.y}`;
+  const d_scada_orch = roundedPath([[scada_b.x, scada_b.y], [scada_b.x, scadaRetY], [orch_b.x, scadaRetY], [orch_b.x, orch_b.y]]);
 
-  // 5. Orch → Dispatcher: arc over the top — separate lane from Technician return (loopY=-22)
+  // 5. Orch → Dispatcher: arc over the top (rounded corners, separate lane)
   const orch_top = top(0, 1);
   const disp_top = top(2, 1);
-  const dispLaneY = ROW0_Y - 6;   // just above row1 nodes, below Technician loop lane
-  const d_orch_disp = `M ${orch_top.x} ${orch_top.y} L ${orch_top.x} ${dispLaneY} L ${disp_top.x} ${dispLaneY} L ${disp_top.x} ${disp_top.y}`;
+  const dispLaneY = ROW0_Y - 6;
+  const d_orch_disp = roundedPath([[orch_top.x, orch_top.y], [orch_top.x, dispLaneY], [disp_top.x, dispLaneY], [disp_top.x, disp_top.y]]);
 
   // 6. Dispatcher → Resources (same row)
   const d_disp_res = bezier(right(2,1).x, right(2,1).y, left(3,1).x, left(3,1).y);
@@ -202,10 +227,10 @@ export function GanttPanel({ agents, conflicts }: Props) {
   // 7. Resources → Comms (same row)
   const d_res_comms = bezier(right(3,1).x, right(3,1).y, left(4,1).x, left(4,1).y);
 
-  // 8. Comms → Orch return (bottom arc below all)
+  // 8. Comms → Orch return (bottom arc below all, rounded corners)
   const comms_b = bottom(4, 1);
   const retY    = ROW1_Y + NH + 28;
-  const d_comms_orch = `M ${comms_b.x} ${comms_b.y} L ${comms_b.x} ${retY} L ${orch_b.x} ${retY} L ${orch_b.x} ${orch_b.y}`;
+  const d_comms_orch = roundedPath([[comms_b.x, comms_b.y], [comms_b.x, retY], [orch_b.x, retY], [orch_b.x, orch_b.y]]);
 
   // Phase label positions
   const phase1X = cx(1);
