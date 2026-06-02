@@ -24,6 +24,7 @@ function initialAgents(): AgentState[] {
 export interface SimulationState {
   running: boolean;
   done: boolean;
+  orchestratorStatus: AgentStatus;
   agentLogs: AgentLog[];
   agents: AgentState[];
   faults: Fault[];
@@ -41,6 +42,7 @@ export function useSimulation(initialFaults: Fault[]) {
   const [state, setState] = useState<SimulationState>({
     running: false,
     done: false,
+    orchestratorStatus: 'pending',
     agentLogs: [],
     agents: initialAgents(),
     faults: initialFaults,
@@ -59,6 +61,7 @@ export function useSimulation(initialFaults: Fault[]) {
       ...prev,
       running: true,
       done: false,
+      orchestratorStatus: 'running',
       agentLogs: [],
       agents: initialAgents(),
       faults: initialFaults.map(f => ({ ...f, status: 'fault' as const })),
@@ -191,6 +194,7 @@ export function useSimulation(initialFaults: Fault[]) {
             ...prev,
             running: false,
             done: true,
+            orchestratorStatus: 'done',
             elapsedLabel: event.elapsed,
             agents: prev.agents.map(a =>
               a.status === 'running' ? { ...a, status: 'done' as AgentStatus, progress: 100 } : a

@@ -1,9 +1,10 @@
-import { AgentId, AgentState } from '../types';
+import { AgentId, AgentState, AgentStatus } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface Props {
   agents: AgentState[];
   conflicts: { winner: AgentId; loser: AgentId; reason: string }[];
+  orchestratorStatus?: AgentStatus;
 }
 
 // ── Colors — same as LogPanel ────────────────────────────────────────────────
@@ -169,9 +170,17 @@ function Conn({ d, accent }: { d: string; accent: string }) {
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
-export function GanttPanel({ agents, conflicts }: Props) {
+export function GanttPanel({ agents, conflicts, orchestratorStatus = 'pending' }: Props) {
   const agentMap = new Map(agents.map(a => [a.id, a]));
   const { theme } = useTheme();
+
+  // Synthesize a fake AgentState for the orchestrator node
+  const orchAgent: AgentState = {
+    id: 'triage-priority', // reuse type, irrelevant here
+    label: 'Asset and Services Assistant',
+    status: orchestratorStatus,
+    progress: orchestratorStatus === 'running' ? 50 : orchestratorStatus === 'done' ? 100 : 0,
+  };
 
   // Connector color adapts to theme
   const accent = theme === 'dark' ? '#38bdf8' : theme === 'joule' ? '#6d28d9' : '#00a651';
@@ -239,7 +248,7 @@ export function GanttPanel({ agents, conflicts }: Props) {
             <Conn d={d_res_comms}  accent={accent} />
 
             {/* Nodes */}
-            <N8nNode id="orchestrator"      agent={undefined}                        x={colX(0)} y={ROW1_Y} />
+            <N8nNode id="orchestrator"      agent={orchAgent}                        x={colX(0)} y={ROW1_Y} />
             <N8nNode id="triage-priority"   agent={agentMap.get('triage-priority')}  x={colX(1)} y={ROW0_Y} />
             <N8nNode id="rerouting"         agent={agentMap.get('rerouting')}        x={colX(1)} y={ROW1_Y} />
             <N8nNode id="crew-dispatch"     agent={agentMap.get('crew-dispatch')}    x={colX(2)} y={ROW1_Y} />
