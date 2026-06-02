@@ -190,9 +190,11 @@ export function GanttPanel({ agents, conflicts }: Props) {
   const scadaRetY = ROW1_Y + NH + 14;
   const d_scada_orch = `M ${scada_b.x} ${scada_b.y} L ${scada_b.x} ${scadaRetY} L ${orch_b.x} ${scadaRetY} L ${orch_b.x} ${orch_b.y}`;
 
-  // 5. Orch → Dispatcher (col0 row1 right → col2 row1 left, skip col1)
-  const disp_l  = left(2, 1);
-  const d_orch_disp = bezier(orch_r.x, orch_r.y, disp_l.x, disp_l.y, 60);
+  // 5. Orch → Dispatcher: arc over the top — separate lane from Technician return (loopY=-22)
+  const orch_top = top(0, 1);
+  const disp_top = top(2, 1);
+  const dispLaneY = ROW0_Y - 6;   // just above row1 nodes, below Technician loop lane
+  const d_orch_disp = `M ${orch_top.x} ${orch_top.y} L ${orch_top.x} ${dispLaneY} L ${disp_top.x} ${dispLaneY} L ${disp_top.x} ${disp_top.y}`;
 
   // 6. Dispatcher → Resources (same row)
   const d_disp_res = bezier(right(2,1).x, right(2,1).y, left(3,1).x, left(3,1).y);
