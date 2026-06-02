@@ -162,7 +162,7 @@ export function LandingPage({ onEnter }: Props) {
         <div className={`mb-7 inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest ${fade(0)}`}
           style={{ background: 'var(--accent-subtle)', border: '1px solid color-mix(in srgb, var(--accent) 25%, transparent)', color: 'var(--accent)' }}>
           <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
-          SAP AI CORE &times; ANTHROPIC CLAUDE SONNET 4.6
+          SAP AI CORE &times; SAP JOULE MULTI-AGENT
         </div>
 
         {/* title */}
@@ -255,7 +255,7 @@ export function LandingPage({ onEnter }: Props) {
           <div className="text-xs font-bold tracking-widest mb-3 text-center" style={{ color: 'var(--accent)' }}>ARQUITECTURA MULTI-AGENTE</div>
           <h2 className="font-black mb-2 text-center" style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', color: 'var(--text-primary)' }}>Orquestación autónoma con SAP</h2>
           <p className="text-center text-sm mb-14" style={{ color: 'var(--text-ghost)' }}>
-            Un orquestador Claude coordina 5 agentes especializados que razonan y actúan con herramientas reales
+            Un orquestador SAP AI Core coordina 5 agentes especializados que razonan y actúan con herramientas reales
           </p>
 
           {/* Orchestrator */}
@@ -321,7 +321,7 @@ export function LandingPage({ onEnter }: Props) {
         </button>
         <div className="mt-14 flex items-center gap-3">
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 14, opacity: 0.25 }} />
-          <span className="text-[11px] font-mono" style={{ color: 'var(--text-ghost)' }}>BTP Cloud Foundry · AI Core · Claude Sonnet 4.6</span>
+          <span className="text-[11px] font-mono" style={{ color: 'var(--text-ghost)' }}>SAP BTP Cloud Foundry · SAP AI Core · SAP Joule</span>
         </div>
       </section>
 
