@@ -307,9 +307,9 @@
 }
 
 @keyframes pulse-ring {
-  0%   { stroke-opacity: 0.7; stroke-width: 2px; }
-  70%  { stroke-opacity: 0;   stroke-width: 12px; }
-  100% { stroke-opacity: 0;   stroke-width: 12px; }
+  0%   { stroke-opacity: 0.7; stroke-width: 2; }
+  70%  { stroke-opacity: 0;   stroke-width: 12; }
+  100% { stroke-opacity: 0;   stroke-width: 12; }
 }
 .node-pulse-ring { animation: pulse-ring 1.6s ease-out infinite; }
 
