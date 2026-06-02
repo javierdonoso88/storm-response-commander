@@ -194,43 +194,26 @@ export function GanttPanel({ agents, conflicts }: Props) {
   const agentMap = new Map(agents.map(a => [a.id, a]));
 
   // ── Connector paths ──────────────────────────────────────────────────────
-  // 1. Orch right → Technician left (col0 row1 → col1 row0, curve up)
+  // 1. Orch → Technician (curve up-right)
   const orch_r  = right(0, 1);
   const tech_l  = left(1, 0);
   const d_orch_tech = `M ${orch_r.x} ${orch_r.y} C ${orch_r.x + 40} ${orch_r.y}, ${tech_l.x - 40} ${tech_l.y}, ${tech_l.x} ${tech_l.y}`;
 
-  // 2. Orch right → Remote SCADA left (col0 row1 → col1 row1, straight)
+  // 2. Orch → Remote SCADA (straight right)
   const scada_l = left(1, 1);
   const d_orch_scada = bezier(orch_r.x, orch_r.y, scada_l.x, scada_l.y, 28);
 
-  // 3. Technician → Orch return arc (top loop, rounded corners)
-  const tech_b  = bottom(1, 0);
-  const orch_t  = top(0, 1);
-  const loopY   = ROW0_Y - 22;
-  const d_tech_orch = roundedPath([[tech_b.x, tech_b.y], [tech_b.x, loopY], [orch_t.x, loopY], [orch_t.x, orch_t.y]]);
-
-  // 4. Remote SCADA → Orch return (rounded corners)
-  const scada_b  = bottom(1, 1);
-  const orch_b   = bottom(0, 1);
-  const scadaRetY = ROW1_Y + NH + 14;
-  const d_scada_orch = roundedPath([[scada_b.x, scada_b.y], [scada_b.x, scadaRetY], [orch_b.x, scadaRetY], [orch_b.x, orch_b.y]]);
-
-  // 5. Orch → Dispatcher: arc over the top (rounded corners, separate lane)
+  // 3. Orch → Dispatcher: over the top in its own lane
   const orch_top = top(0, 1);
   const disp_top = top(2, 1);
-  const dispLaneY = ROW0_Y - 6;
+  const dispLaneY = ROW0_Y - 8;
   const d_orch_disp = roundedPath([[orch_top.x, orch_top.y], [orch_top.x, dispLaneY], [disp_top.x, dispLaneY], [disp_top.x, disp_top.y]]);
 
-  // 6. Dispatcher → Resources (same row)
+  // 4. Dispatcher → Resources
   const d_disp_res = bezier(right(2,1).x, right(2,1).y, left(3,1).x, left(3,1).y);
 
-  // 7. Resources → Comms (same row)
+  // 5. Resources → Comms
   const d_res_comms = bezier(right(3,1).x, right(3,1).y, left(4,1).x, left(4,1).y);
-
-  // 8. Comms → Orch return (bottom arc below all, rounded corners)
-  const comms_b = bottom(4, 1);
-  const retY    = ROW1_Y + NH + 28;
-  const d_comms_orch = roundedPath([[comms_b.x, comms_b.y], [comms_b.x, retY], [orch_b.x, retY], [orch_b.x, orch_b.y]]);
 
   // Phase label positions
   const phase1X = cx(1);
@@ -246,7 +229,7 @@ export function GanttPanel({ agents, conflicts }: Props) {
       <div className="flex-1 flex flex-col overflow-hidden" style={{ minHeight: 0 }}>
         <div className="flex-1 flex items-center justify-center px-3 py-2" style={{ minHeight: 0 }}>
           <svg
-            viewBox={`-4 -36 ${TOTAL_W + 8} ${TOTAL_H + 58}`}
+            viewBox={`-4 -24 ${TOTAL_W + 8} ${TOTAL_H + 32}`}
             style={{ width: '100%', height: '100%', overflow: 'visible' }}
             preserveAspectRatio="xMidYMid meet"
           >
@@ -269,12 +252,9 @@ export function GanttPanel({ agents, conflicts }: Props) {
             {/* Connectors */}
             <Conn d={d_orch_tech} />
             <Conn d={d_orch_scada} />
-            <Conn d={d_tech_orch} />
-            <Conn d={d_scada_orch} />
             <Conn d={d_orch_disp} />
             <Conn d={d_disp_res} />
             <Conn d={d_res_comms} />
-            <Conn d={d_comms_orch} />
 
             {/* Nodes */}
             <N8nNode id="orchestrator"      agent={undefined}                        x={colX(0)} y={ROW1_Y} />
