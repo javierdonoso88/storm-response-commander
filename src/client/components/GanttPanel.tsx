@@ -1,4 +1,5 @@
 import { AgentId, AgentState } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface Props {
   agents: AgentState[];
@@ -16,12 +17,12 @@ const AGENT_COLOR: Record<AgentId | 'orchestrator', string> = {
 };
 
 const AGENT_META: Record<AgentId | 'orchestrator', { label: string; sub: string; icon: string }> = {
-  orchestrator:      { label: 'Asset & Services', sub: 'SAP AI Core',        icon: '⚡' },
-  'triage-priority': { label: 'Technician',        sub: 'S/4HANA Assets',    icon: '🔍' },
-  rerouting:         { label: 'Remote SCADA',      sub: 'Asset Intelligence', icon: '📡' },
-  'crew-dispatch':   { label: 'Dispatcher',        sub: 'Field Service Mgmt', icon: '🚛' },
-  resource:          { label: 'Resources',         sub: 'IBP',               icon: '📦' },
-  comms:             { label: 'Comms',             sub: 'SAP CX',            icon: '📣' },
+  orchestrator:      { label: 'Asset & Services', sub: 'SAP AI Core',         icon: '⚡' },
+  'triage-priority': { label: 'Technician',        sub: 'S/4HANA Assets',     icon: '🔍' },
+  rerouting:         { label: 'Remote SCADA',      sub: 'Asset Intelligence',  icon: '📡' },
+  'crew-dispatch':   { label: 'Dispatcher',        sub: 'Field Service Mgmt',  icon: '🚛' },
+  resource:          { label: 'Resources',         sub: 'IBP',                icon: '📦' },
+  comms:             { label: 'Comms',             sub: 'SAP CX',             icon: '📣' },
 };
 
 const AGENT_TOOLTIP: Record<AgentId | 'orchestrator', string> = {
@@ -34,35 +35,22 @@ const AGENT_TOOLTIP: Record<AgentId | 'orchestrator', string> = {
 };
 
 // ── Layout ───────────────────────────────────────────────────────────────────
-// Col 0: Orchestrator  (x=0)
-// Col 1: Technician    (x=1, row=0)  /  Remote SCADA (x=1, row=1)
-// Col 2: Dispatcher    (x=2, row=1)
-// Col 3: Resources     (x=3, row=1)
-// Col 4: Comms         (x=4, row=1)
-//
-// Row 0 (top):    Technician
-// Row 1 (middle): Orchestrator, Remote SCADA, Dispatcher, Resources, Comms
-
-const NW = 112;  // node width
-const NH = 76;   // node height
-const GX = 36;   // horizontal gap
-const GY = 44;   // vertical gap between row 0 and row 1
+const NW = 112;
+const NH = 76;
+const GX = 36;
+const GY = 44;
 
 const colX = (c: number) => c * (NW + GX);
 const ROW0_Y = 0;
 const ROW1_Y = NH + GY;
 
-const TOTAL_W = colX(4) + NW;           // 4*(112+36)+112 = 704
-const TOTAL_H = ROW1_Y + NH;            // (76+44)+76 = 196
+const TOTAL_W = colX(4) + NW;
+const TOTAL_H = ROW1_Y + NH;
 
-// Node center helpers
 function cx(col: number) { return colX(col) + NW / 2; }
-function cy(row: number) { return (row === 0 ? ROW0_Y : ROW1_Y) + NH / 2; }
 
-// Edge attachment helpers (row: 0=top, 1=mid)
 function right(col: number, row: number)  { return { x: colX(col) + NW, y: (row === 0 ? ROW0_Y : ROW1_Y) + NH / 2 }; }
 function left(col: number, row: number)   { return { x: colX(col),       y: (row === 0 ? ROW0_Y : ROW1_Y) + NH / 2 }; }
-function top(col: number, row: number)    { return { x: cx(col),          y: row === 0 ? ROW0_Y : ROW1_Y }; }
 function bottom(col: number, row: number) { return { x: cx(col),          y: (row === 0 ? ROW0_Y : ROW1_Y) + NH }; }
 
 function bezier(x1: number, y1: number, x2: number, y2: number, dx?: number) {
@@ -70,19 +58,41 @@ function bezier(x1: number, y1: number, x2: number, y2: number, dx?: number) {
   return `M ${x1} ${y1} C ${x1 + d} ${y1}, ${x2 - d} ${y2}, ${x2} ${y2}`;
 }
 
-const ACCENT = '#38bdf8'; // connector color
+function roundedPath(pts: [number, number][], r = 12): string {
+  if (pts.length < 2) return '';
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [x0, y0] = pts[i - 1];
+    const [x1, y1] = pts[i];
+    const [x2, y2] = pts[i + 1];
+    const d0x = x1 - x0, d0y = y1 - y0;
+    const d1x = x2 - x1, d1y = y2 - y1;
+    const len0 = Math.sqrt(d0x * d0x + d0y * d0y);
+    const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
+    const t0 = Math.min(r, len0 / 2) / len0;
+    const t1 = Math.min(r, len1 / 2) / len1;
+    const px = x1 - d0x * t0, py = y1 - d0y * t0;
+    const qx = x1 + d1x * t1, qy = y1 + d1y * t1;
+    d += ` L ${px} ${py} Q ${x1} ${y1} ${qx} ${qy}`;
+  }
+  const last = pts[pts.length - 1];
+  d += ` L ${last[0]} ${last[1]}`;
+  return d;
+}
 
-// ── Node ─────────────────────────────────────────────────────────────────────
+// ── Node — uses CSS vars for theme-aware colors ───────────────────────────────
 function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: AgentState; x: number; y: number }) {
-  const meta   = AGENT_META[id];
-  const color  = AGENT_COLOR[id];
-  const status = (agent as AgentState | undefined)?.status ?? 'pending';
+  const meta    = AGENT_META[id];
+  const color   = AGENT_COLOR[id];
+  const status  = (agent as AgentState | undefined)?.status ?? 'pending';
   const isRunning = status === 'running';
   const isDone    = status === 'done';
 
-  const borderColor = isRunning ? color : isDone ? '#22c55e' : '#1e3a5f';
-  const bgColor     = isRunning ? `${color}18` : isDone ? '#16532411' : '#0d192a';
+  const borderColor = isRunning ? color : isDone ? '#22c55e' : 'var(--border)';
+  const bgColor     = isRunning ? `${color}18` : isDone ? `${color}0a` : 'var(--bg-secondary)';
   const shadow      = isRunning ? `0 0 12px ${color}55` : 'none';
+  const pendingDot  = 'var(--text-ghost)';
+  const pendingText = 'var(--text-ghost)';
 
   return (
     <foreignObject x={x} y={y} width={NW} height={NH} style={{ overflow: 'visible' }}>
@@ -102,7 +112,6 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
           position: 'relative', overflow: 'hidden',
         }}
       >
-        {/* Running pulse ring */}
         {isRunning && (
           <div style={{
             position: 'absolute', inset: -1, borderRadius: 11,
@@ -112,7 +121,6 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
           }} />
         )}
 
-        {/* Icon badge */}
         <div style={{
           width: 30, height: 30, borderRadius: 8,
           background: `${color}28`,
@@ -123,7 +131,6 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
           {meta.icon}
         </div>
 
-        {/* Label */}
         <div style={{
           fontSize: 10.5, fontWeight: 700, textAlign: 'center', lineHeight: 1.2,
           color: 'var(--text-primary)', letterSpacing: '0.01em',
@@ -131,7 +138,6 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
           {meta.label}
         </div>
 
-        {/* Sub */}
         <div style={{
           fontSize: 8.5, textAlign: 'center', lineHeight: 1.1,
           color: 'var(--text-ghost)', whiteSpace: 'nowrap',
@@ -140,14 +146,13 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
           {meta.sub}
         </div>
 
-        {/* Status */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
           <div style={{
             width: 6, height: 6, borderRadius: '50%',
-            background: isRunning ? color : isDone ? '#22c55e' : '#334155',
+            background: isRunning ? color : isDone ? '#22c55e' : pendingDot,
             boxShadow: isRunning ? `0 0 5px ${color}` : 'none',
           }} />
-          <span style={{ fontSize: 9, color: isRunning ? color : isDone ? '#22c55e' : '#475569' }}>
+          <span style={{ fontSize: 9, color: isRunning ? color : isDone ? '#22c55e' : pendingText }}>
             {isRunning ? 'Running' : isDone ? 'Done ✓' : 'Pending'}
           </span>
         </div>
@@ -156,35 +161,9 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
   );
 }
 
-// ── Connector ─────────────────────────────────────────────────────────────────
-
-// Build a path through waypoints with rounded corners (quadratic bezier at each turn)
-function roundedPath(pts: [number, number][], r = 12): string {
-  if (pts.length < 2) return '';
-  let d = `M ${pts[0][0]} ${pts[0][1]}`;
-  for (let i = 1; i < pts.length - 1; i++) {
-    const [x0, y0] = pts[i - 1];
-    const [x1, y1] = pts[i];
-    const [x2, y2] = pts[i + 1];
-    // Direction vectors
-    const d0x = x1 - x0, d0y = y1 - y0;
-    const d1x = x2 - x1, d1y = y2 - y1;
-    const len0 = Math.sqrt(d0x * d0x + d0y * d0y);
-    const len1 = Math.sqrt(d1x * d1x + d1y * d1y);
-    const t0 = Math.min(r, len0 / 2) / len0;
-    const t1 = Math.min(r, len1 / 2) / len1;
-    const px = x1 - d0x * t0, py = y1 - d0y * t0; // point before corner
-    const qx = x1 + d1x * t1, qy = y1 + d1y * t1; // point after corner
-    d += ` L ${px} ${py} Q ${x1} ${y1} ${qx} ${qy}`;
-  }
-  const last = pts[pts.length - 1];
-  d += ` L ${last[0]} ${last[1]}`;
-  return d;
-}
-
-function Conn({ d, color = ACCENT }: { d: string; color?: string }) {
+function Conn({ d, accent }: { d: string; accent: string }) {
   return (
-    <path d={d} fill="none" stroke={color} strokeWidth={1.2}
+    <path d={d} fill="none" stroke={accent} strokeWidth={1.2}
       opacity={0.65} markerEnd="url(#arr)" />
   );
 }
@@ -192,9 +171,13 @@ function Conn({ d, color = ACCENT }: { d: string; color?: string }) {
 // ── Main ──────────────────────────────────────────────────────────────────────
 export function GanttPanel({ agents, conflicts }: Props) {
   const agentMap = new Map(agents.map(a => [a.id, a]));
+  const { theme } = useTheme();
+
+  // Connector color adapts to theme
+  const accent = theme === 'dark' ? '#38bdf8' : theme === 'joule' ? '#6d28d9' : '#00a651';
 
   // ── Connector paths ──────────────────────────────────────────────────────
-  // 1. Orch → Technician (curve up-right)
+  // 1. Orch → Technician (bezier curve up-right)
   const orch_r  = right(0, 1);
   const tech_l  = left(1, 0);
   const d_orch_tech = `M ${orch_r.x} ${orch_r.y} C ${orch_r.x + 40} ${orch_r.y}, ${tech_l.x - 40} ${tech_l.y}, ${tech_l.x} ${tech_l.y}`;
@@ -203,11 +186,11 @@ export function GanttPanel({ agents, conflicts }: Props) {
   const scada_l = left(1, 1);
   const d_orch_scada = bezier(orch_r.x, orch_r.y, scada_l.x, scada_l.y, 28);
 
-  // 3. Orch → Dispatcher: over the top in its own lane
-  const orch_top = top(0, 1);
-  const disp_top = top(2, 1);
-  const dispLaneY = ROW0_Y - 8;
-  const d_orch_disp = roundedPath([[orch_top.x, orch_top.y], [orch_top.x, dispLaneY], [disp_top.x, dispLaneY], [disp_top.x, disp_top.y]]);
+  // 3. Orch → Dispatcher: route under the row (bottom of col0 → below → bottom of col2)
+  const orch_b  = bottom(0, 1);
+  const disp_b  = bottom(2, 1);
+  const underY  = ROW1_Y + NH + 18;
+  const d_orch_disp = roundedPath([[orch_b.x, orch_b.y], [orch_b.x, underY], [disp_b.x, underY], [disp_b.x, disp_b.y]]);
 
   // 4. Dispatcher → Resources
   const d_disp_res = bezier(right(2,1).x, right(2,1).y, left(3,1).x, left(3,1).y);
@@ -215,7 +198,6 @@ export function GanttPanel({ agents, conflicts }: Props) {
   // 5. Resources → Comms
   const d_res_comms = bezier(right(3,1).x, right(3,1).y, left(4,1).x, left(4,1).y);
 
-  // Phase label positions
   const phase1X = cx(1);
   const phase2X = (cx(2) + cx(4)) / 2;
 
@@ -229,18 +211,18 @@ export function GanttPanel({ agents, conflicts }: Props) {
       <div className="flex-1 flex flex-col overflow-hidden" style={{ minHeight: 0 }}>
         <div className="flex-1 flex items-center justify-center px-3 py-2" style={{ minHeight: 0 }}>
           <svg
-            viewBox={`-4 -24 ${TOTAL_W + 8} ${TOTAL_H + 32}`}
+            viewBox={`-4 -24 ${TOTAL_W + 8} ${TOTAL_H + 50}`}
             style={{ width: '100%', height: '100%', overflow: 'visible' }}
             preserveAspectRatio="xMidYMid meet"
           >
             <defs>
               <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L6,3 L0,6 Z" fill={ACCENT} opacity="0.65" />
+                <path d="M0,0 L6,3 L0,6 Z" fill={accent} opacity="0.65" />
               </marker>
             </defs>
 
             {/* Phase labels */}
-            <text x={phase1X} y={ROW0_Y - 24} textAnchor="middle"
+            <text x={phase1X} y={ROW0_Y - 12} textAnchor="middle"
               fontSize={7.5} fontWeight={700} fill="var(--accent)" letterSpacing="0.08em" opacity={0.8}>
               PREPARATION · PARALLEL
             </text>
@@ -250,11 +232,11 @@ export function GanttPanel({ agents, conflicts }: Props) {
             </text>
 
             {/* Connectors */}
-            <Conn d={d_orch_tech} />
-            <Conn d={d_orch_scada} />
-            <Conn d={d_orch_disp} />
-            <Conn d={d_disp_res} />
-            <Conn d={d_res_comms} />
+            <Conn d={d_orch_tech}  accent={accent} />
+            <Conn d={d_orch_scada} accent={accent} />
+            <Conn d={d_orch_disp}  accent={accent} />
+            <Conn d={d_disp_res}   accent={accent} />
+            <Conn d={d_res_comms}  accent={accent} />
 
             {/* Nodes */}
             <N8nNode id="orchestrator"      agent={undefined}                        x={colX(0)} y={ROW1_Y} />
@@ -266,7 +248,6 @@ export function GanttPanel({ agents, conflicts }: Props) {
           </svg>
         </div>
 
-        {/* Conflicts */}
         {conflicts.length > 0 && (
           <div className="px-3 pb-2 flex flex-col gap-1" style={{ borderTop: '1px solid var(--border)' }}>
             <div className="text-[10px] font-bold tracking-widest text-red-400 uppercase pt-1.5">⚡ Conflictos</div>
