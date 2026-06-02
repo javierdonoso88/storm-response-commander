@@ -98,6 +98,7 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
   return (
     <foreignObject x={x} y={y} width={NW} height={NH} style={{ overflow: 'visible' }}>
       <div
+        className={isRunning ? 'n8n-node-running' : undefined}
         title={AGENT_TOOLTIP[id]}
         style={{
           width: NW, height: NH,

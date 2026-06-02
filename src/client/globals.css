@@ -313,6 +313,12 @@
 }
 .node-pulse-ring { animation: pulse-ring 1.6s ease-out infinite; }
 
+@keyframes border-pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.25; }
+}
+.n8n-node-running { animation: border-pulse 1.2s ease-in-out infinite; }
+
 .leaflet-control-zoom a {
   background: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
