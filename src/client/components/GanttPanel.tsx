@@ -5,17 +5,23 @@ interface Props {
   conflicts: { winner: AgentId; loser: AgentId; reason: string }[];
 }
 
-// ── Meta ─────────────────────────────────────────────────────────────────────
+// ── Colors — same as LogPanel ────────────────────────────────────────────────
+const AGENT_COLOR: Record<AgentId | 'orchestrator', string> = {
+  orchestrator:      '#f59e0b',
+  'triage-priority': '#a855f7',
+  rerouting:         '#3b82f6',
+  'crew-dispatch':   '#f97316',
+  resource:          '#eab308',
+  comms:             '#22c55e',
+};
 
-const AGENT_META: Record<AgentId | 'orchestrator', {
-  label: string; sub: string; icon: string; accent: string; border: string;
-}> = {
-  orchestrator:      { label: 'Asset & Services', sub: 'SAP AI Core',             icon: '⚡', accent: '#ea580c', border: '#f97316' },
-  'triage-priority': { label: 'Technician',        sub: 'S/4HANA Assets',          icon: '🔍', accent: '#7c3aed', border: '#a855f7' },
-  rerouting:         { label: 'Remote SCADA',      sub: 'Asset Intelligence',      icon: '📡', accent: '#db2777', border: '#ec4899' },
-  'crew-dispatch':   { label: 'Dispatcher',        sub: 'Field Service Mgmt',      icon: '🚛', accent: '#0369a1', border: '#38bdf8' },
-  resource:          { label: 'Resources',         sub: 'IBP',                     icon: '📦', accent: '#065f46', border: '#34d399' },
-  comms:             { label: 'Comms',             sub: 'SAP CX',                  icon: '📣', accent: '#7e22ce', border: '#c084fc' },
+const AGENT_META: Record<AgentId | 'orchestrator', { label: string; sub: string; icon: string }> = {
+  orchestrator:      { label: 'Asset & Services', sub: 'SAP AI Core',        icon: '⚡' },
+  'triage-priority': { label: 'Technician',        sub: 'S/4HANA Assets',    icon: '🔍' },
+  rerouting:         { label: 'Remote SCADA',      sub: 'Asset Intelligence', icon: '📡' },
+  'crew-dispatch':   { label: 'Dispatcher',        sub: 'Field Service Mgmt', icon: '🚛' },
+  resource:          { label: 'Resources',         sub: 'IBP',               icon: '📦' },
+  comms:             { label: 'Comms',             sub: 'SAP CX',            icon: '📣' },
 };
 
 const AGENT_TOOLTIP: Record<AgentId | 'orchestrator', string> = {
@@ -27,106 +33,80 @@ const AGENT_TOOLTIP: Record<AgentId | 'orchestrator', string> = {
   comms:             'Redacta y envía 3 comunicaciones: SMS a clientes, nota de prensa para medios locales y notificación al regulador.',
 };
 
-// ── Layout constants (px, used for SVG connector math) ────────────────────────
-const NODE_W = 108;
-const NODE_H = 72;
-const GAP_X  = 32;  // horizontal gap between nodes in same row
-const ROW_GAP = 44; // vertical gap between rows
+// ── Layout ───────────────────────────────────────────────────────────────────
+// Col 0: Orchestrator  (x=0)
+// Col 1: Technician    (x=1, row=0)  /  Remote SCADA (x=1, row=1)
+// Col 2: Dispatcher    (x=2, row=1)
+// Col 3: Resources     (x=3, row=1)
+// Col 4: Comms         (x=4, row=1)
+//
+// Row 0 (top):    Technician
+// Row 1 (middle): Orchestrator, Remote SCADA, Dispatcher, Resources, Comms
 
-// Row 1: Orchestrator (col 0) | TP (col 1) | RR (col 2)
-// Row 2:                         CD (col 1) | RE (col 2) | CO (col 3)
-// We'll compute positions relative to a viewBox and let SVG scale.
+const NW = 112;  // node width
+const NH = 76;   // node height
+const GX = 36;   // horizontal gap
+const GY = 44;   // vertical gap between row 0 and row 1
 
-const COLS = 4;
-const colX = (c: number) => c * (NODE_W + GAP_X);
-const rowY = (r: number) => r * (NODE_H + ROW_GAP);
+const colX = (c: number) => c * (NW + GX);
+const ROW0_Y = 0;
+const ROW1_Y = NH + GY;
 
-const TOTAL_W = colX(COLS - 1) + NODE_W;          // 3 * (108+32) + 108 = 528
-const TOTAL_H = rowY(1) + NODE_H;                  // (72+44) + 72 = 188
+const TOTAL_W = colX(4) + NW;           // 4*(112+36)+112 = 704
+const TOTAL_H = ROW1_Y + NH;            // (76+44)+76 = 196
 
-// Node positions [col, row]
-const POS: Record<AgentId | 'orchestrator', [number, number]> = {
-  orchestrator:      [0, 0],
-  'triage-priority': [1, 0],
-  rerouting:         [2, 0],
-  'crew-dispatch':   [1, 1],
-  resource:          [2, 1],
-  comms:             [3, 1],
-};
+// Node center helpers
+function cx(col: number) { return colX(col) + NW / 2; }
+function cy(row: number) { return (row === 0 ? ROW0_Y : ROW1_Y) + NH / 2; }
 
-// ── SVG connector helpers ──────────────────────────────────────────────────────
+// Edge attachment helpers (row: 0=top, 1=mid)
+function right(col: number, row: number)  { return { x: colX(col) + NW, y: (row === 0 ? ROW0_Y : ROW1_Y) + NH / 2 }; }
+function left(col: number, row: number)   { return { x: colX(col),       y: (row === 0 ? ROW0_Y : ROW1_Y) + NH / 2 }; }
+function top(col: number, row: number)    { return { x: cx(col),          y: row === 0 ? ROW0_Y : ROW1_Y }; }
+function bottom(col: number, row: number) { return { x: cx(col),          y: (row === 0 ? ROW0_Y : ROW1_Y) + NH }; }
 
-function cx(col: number) { return colX(col) + NODE_W / 2; }
-function cy(row: number) { return rowY(row) + NODE_H / 2; }
-
-// Right edge center of a node
-function re(col: number, row: number) { return { x: colX(col) + NODE_W, y: rowY(row) + NODE_H / 2 }; }
-// Left edge center
-function le(col: number, row: number) { return { x: colX(col),           y: rowY(row) + NODE_H / 2 }; }
-// Bottom edge center
-function be(col: number, row: number) { return { x: cx(col),              y: rowY(row) + NODE_H }; }
-// Top edge center
-function te(col: number, row: number) { return { x: cx(col),              y: rowY(row) }; }
-
-function bezier(x1: number, y1: number, x2: number, y2: number) {
-  const dx = Math.abs(x2 - x1) * 0.5;
-  return `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+function bezier(x1: number, y1: number, x2: number, y2: number, dx?: number) {
+  const d = dx ?? Math.abs(x2 - x1) * 0.5;
+  return `M ${x1} ${y1} C ${x1 + d} ${y1}, ${x2 - d} ${y2}, ${x2} ${y2}`;
 }
 
-function Connector({ d, color = 'var(--border-accent)', animated = false }: { d: string; color?: string; animated?: boolean }) {
-  return (
-    <path
-      d={d}
-      fill="none"
-      stroke={color}
-      strokeWidth={animated ? 1.5 : 1}
-      strokeDasharray={animated ? '6 3' : undefined}
-      opacity={0.7}
-      markerEnd="url(#arrow)"
-    />
-  );
-}
+const ACCENT = '#38bdf8'; // connector color
 
-// ── Node component ─────────────────────────────────────────────────────────────
-
+// ── Node ─────────────────────────────────────────────────────────────────────
 function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: AgentState; x: number; y: number }) {
-  const meta  = AGENT_META[id];
+  const meta   = AGENT_META[id];
+  const color  = AGENT_COLOR[id];
   const status = (agent as AgentState | undefined)?.status ?? 'pending';
   const isRunning = status === 'running';
   const isDone    = status === 'done';
 
-  const borderColor = isRunning ? meta.border : isDone ? '#22c55e' : 'var(--border)';
-  const shadow      = isRunning ? `0 0 10px ${meta.border}55` : 'none';
-  const bgAlpha     = isRunning ? '22' : isDone ? '11' : '00';
+  const borderColor = isRunning ? color : isDone ? '#22c55e' : '#1e3a5f';
+  const bgColor     = isRunning ? `${color}18` : isDone ? '#16532411' : '#0d192a';
+  const shadow      = isRunning ? `0 0 12px ${color}55` : 'none';
 
   return (
-    <foreignObject x={x} y={y} width={NODE_W} height={NODE_H} style={{ overflow: 'visible' }}>
+    <foreignObject x={x} y={y} width={NW} height={NH} style={{ overflow: 'visible' }}>
       <div
         title={AGENT_TOOLTIP[id]}
         style={{
-          width: NODE_W,
-          height: NODE_H,
+          width: NW, height: NH,
           borderRadius: 10,
           border: `1.5px solid ${borderColor}`,
-          background: `color-mix(in srgb, ${meta.accent}${bgAlpha} 100%, var(--bg-secondary))`,
+          background: bgColor,
           boxShadow: shadow,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 2,
-          padding: '6px 4px',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center',
+          gap: 3, padding: '6px 4px',
           cursor: 'default',
           transition: 'border-color 0.3s, box-shadow 0.3s',
-          position: 'relative',
-          overflow: 'hidden',
+          position: 'relative', overflow: 'hidden',
         }}
       >
         {/* Running pulse ring */}
         {isRunning && (
           <div style={{
             position: 'absolute', inset: -1, borderRadius: 11,
-            border: `1.5px solid ${meta.border}`,
+            border: `1.5px solid ${color}`,
             animation: 'ping 1.4s cubic-bezier(0,0,0.2,1) infinite',
             pointerEvents: 'none',
           }} />
@@ -134,18 +114,18 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
 
         {/* Icon badge */}
         <div style={{
-          width: 28, height: 28, borderRadius: 8,
-          background: `${meta.accent}33`,
-          border: `1px solid ${meta.accent}55`,
+          width: 30, height: 30, borderRadius: 8,
+          background: `${color}28`,
+          border: `1px solid ${color}50`,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 14, lineHeight: 1, flexShrink: 0,
+          fontSize: 15, lineHeight: 1, flexShrink: 0,
         }}>
           {meta.icon}
         </div>
 
         {/* Label */}
         <div style={{
-          fontSize: 10, fontWeight: 700, textAlign: 'center', lineHeight: 1.2,
+          fontSize: 10.5, fontWeight: 700, textAlign: 'center', lineHeight: 1.2,
           color: 'var(--text-primary)', letterSpacing: '0.01em',
         }}>
           {meta.label}
@@ -153,21 +133,21 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
 
         {/* Sub */}
         <div style={{
-          fontSize: 9, textAlign: 'center', lineHeight: 1.1,
-          color: 'var(--text-ghost)', whiteSpace: 'nowrap', overflow: 'hidden',
-          textOverflow: 'ellipsis', maxWidth: NODE_W - 8,
+          fontSize: 8.5, textAlign: 'center', lineHeight: 1.1,
+          color: 'var(--text-ghost)', whiteSpace: 'nowrap',
+          overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: NW - 8,
         }}>
           {meta.sub}
         </div>
 
-        {/* Status dot row */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 3, marginTop: 1 }}>
+        {/* Status */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
           <div style={{
             width: 6, height: 6, borderRadius: '50%',
-            background: isRunning ? meta.border : isDone ? '#22c55e' : 'var(--text-ghost)',
-            boxShadow: isRunning ? `0 0 4px ${meta.border}` : 'none',
+            background: isRunning ? color : isDone ? '#22c55e' : '#334155',
+            boxShadow: isRunning ? `0 0 5px ${color}` : 'none',
           }} />
-          <span style={{ fontSize: 9, color: isRunning ? meta.border : isDone ? '#22c55e' : 'var(--text-ghost)' }}>
+          <span style={{ fontSize: 9, color: isRunning ? color : isDone ? '#22c55e' : '#475569' }}>
             {isRunning ? 'Running' : isDone ? 'Done ✓' : 'Pending'}
           </span>
         </div>
@@ -176,30 +156,55 @@ function N8nNode({ id, agent, x, y }: { id: AgentId | 'orchestrator'; agent?: Ag
   );
 }
 
-// ── Main panel ─────────────────────────────────────────────────────────────────
+// ── Connector ─────────────────────────────────────────────────────────────────
+function Conn({ d, color = ACCENT }: { d: string; color?: string }) {
+  return (
+    <path d={d} fill="none" stroke={color} strokeWidth={1.2}
+      opacity={0.65} markerEnd="url(#arr)" />
+  );
+}
 
+// ── Main ──────────────────────────────────────────────────────────────────────
 export function GanttPanel({ agents, conflicts }: Props) {
   const agentMap = new Map(agents.map(a => [a.id, a]));
 
-  // Connector paths
-  // Orchestrator → TP (row 0, col 0→1)
-  const d_orch_tp  = bezier(...Object.values(re(0,0)) as [number,number,number,number], ...Object.values(le(1,0)) as [number,number,number,number]);
-  // TP → RR (row 0, col 1→2)
-  const d_tp_rr    = bezier(...Object.values(re(1,0)) as [number,number,number,number], ...Object.values(le(2,0)) as [number,number,number,number]);
-  // Orchestrator bottom → CD left (col 0 bottom → col 1 row 1 left)
-  const oBot = be(0, 0);
-  const cdTop = te(1, 1);
-  const d_orch_cd = `M ${oBot.x} ${oBot.y} C ${oBot.x} ${oBot.y + ROW_GAP * 0.6}, ${cdTop.x - (NODE_W / 2 + GAP_X * 0.5)} ${cdTop.y}, ${cdTop.x} ${cdTop.y}`;
-  // RR bottom → CD left via merge
-  const rrBot = be(2, 0);
-  const d_rr_cd = `M ${rrBot.x} ${rrBot.y + 2} C ${rrBot.x} ${rrBot.y + ROW_GAP * 0.55}, ${cdTop.x + 40} ${cdTop.y - 8}, ${cdTop.x} ${cdTop.y}`;
-  // CD → RE → CO (row 1, sequential)
-  const d_cd_re = bezier(...Object.values(re(1,1)) as [number,number,number,number], ...Object.values(le(2,1)) as [number,number,number,number]);
-  const d_re_co = bezier(...Object.values(re(2,1)) as [number,number,number,number], ...Object.values(le(3,1)) as [number,number,number,number]);
+  // ── Connector paths ──────────────────────────────────────────────────────
+  // 1. Orch right → Technician left (col0 mid → col1 row0)
+  const orch_r  = right(0, 1);
+  const tech_l  = left(1, 0);
+  const d_orch_tech = `M ${orch_r.x} ${orch_r.y} C ${orch_r.x + 40} ${orch_r.y}, ${tech_l.x - 40} ${tech_l.y}, ${tech_l.x} ${tech_l.y}`;
+
+  // 2. Orch right → Remote SCADA left (col0 mid → col1 row1, straight)
+  const scada_l = left(1, 1);
+  const d_orch_scada = bezier(orch_r.x, orch_r.y, scada_l.x, scada_l.y, 28);
+
+  // 3. Technician bottom → Orch top (return arc)
+  const tech_b  = bottom(1, 0);
+  const orch_t  = top(0, 1);
+  // Route: tech bottom → down → left → orch top
+  const loopY   = ROW0_Y - 22;
+  const d_tech_orch = `M ${tech_b.x} ${tech_b.y} L ${tech_b.x} ${loopY} L ${orch_t.x} ${loopY} L ${orch_t.x} ${orch_t.y}`;
+
+  // 4. Remote SCADA right → Dispatcher left  (same row)
+  const scada_r = right(1, 1);
+  const disp_l  = left(2, 1);
+  const d_scada_disp = bezier(scada_r.x, scada_r.y, disp_l.x, disp_l.y);
+
+  // 5. Dispatcher → Resources (same row)
+  const d_disp_res = bezier(right(2,1).x, right(2,1).y, left(3,1).x, left(3,1).y);
+
+  // 6. Resources → Comms (same row)
+  const d_res_comms = bezier(right(3,1).x, right(3,1).y, left(4,1).x, left(4,1).y);
+
+  // 7. Comms bottom → Orch bottom (return arc below)
+  const comms_b = bottom(4, 1);
+  const orch_b  = bottom(0, 1);
+  const retY    = ROW1_Y + NH + 22;
+  const d_comms_orch = `M ${comms_b.x} ${comms_b.y} L ${comms_b.x} ${retY} L ${orch_b.x} ${retY} L ${orch_b.x} ${orch_b.y}`;
 
   // Phase label positions
-  const phase1LabelX = colX(1) + (NODE_W * 2 + GAP_X) / 2;
-  const phase2LabelX = colX(1) + (NODE_W * 3 + GAP_X * 2) / 2;
+  const phase1X = cx(1);
+  const phase2X = (cx(2) + cx(4)) / 2;
 
   return (
     <div className="panel-card flex flex-col h-full overflow-hidden">
@@ -209,46 +214,44 @@ export function GanttPanel({ agents, conflicts }: Props) {
       </div>
 
       <div className="flex-1 flex flex-col overflow-hidden" style={{ minHeight: 0 }}>
-        <div className="flex-1 flex items-center justify-center px-2 py-2" style={{ minHeight: 0 }}>
+        <div className="flex-1 flex items-center justify-center px-3 py-2" style={{ minHeight: 0 }}>
           <svg
-            viewBox={`-4 -18 ${TOTAL_W + 8} ${TOTAL_H + 36}`}
+            viewBox={`-4 -36 ${TOTAL_W + 8} ${TOTAL_H + 58}`}
             style={{ width: '100%', height: '100%', overflow: 'visible' }}
             preserveAspectRatio="xMidYMid meet"
           >
             <defs>
-              <marker id="arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-                <path d="M0,0 L6,3 L0,6 Z" fill="var(--border-accent)" opacity="0.7" />
+              <marker id="arr" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <path d="M0,0 L6,3 L0,6 Z" fill={ACCENT} opacity="0.65" />
               </marker>
             </defs>
 
             {/* Phase labels */}
-            <text x={phase1LabelX} y={-6} textAnchor="middle" fontSize={8} fontWeight={700}
-              fill="var(--accent)" letterSpacing="0.08em" opacity={0.8}>
+            <text x={phase1X} y={ROW0_Y - 24} textAnchor="middle"
+              fontSize={7.5} fontWeight={700} fill="var(--accent)" letterSpacing="0.08em" opacity={0.8}>
               PREPARATION · PARALLEL
             </text>
-            <text x={phase2LabelX} y={rowY(1) - 6} textAnchor="middle" fontSize={8} fontWeight={700}
-              fill="#f97316" letterSpacing="0.08em" opacity={0.8}>
+            <text x={phase2X} y={ROW1_Y - 8} textAnchor="middle"
+              fontSize={7.5} fontWeight={700} fill="#f97316" letterSpacing="0.08em" opacity={0.8}>
               EXECUTION · SEQUENTIAL
             </text>
 
             {/* Connectors */}
-            <Connector d={d_orch_tp} />
-            <Connector d={d_tp_rr} />
-            <Connector d={d_orch_cd} animated={false} />
-            <Connector d={d_rr_cd} />
-            <Connector d={d_cd_re} />
-            <Connector d={d_re_co} />
+            <Conn d={d_orch_tech} />
+            <Conn d={d_orch_scada} />
+            <Conn d={d_tech_orch} />
+            <Conn d={d_scada_disp} />
+            <Conn d={d_disp_res} />
+            <Conn d={d_res_comms} />
+            <Conn d={d_comms_orch} />
 
             {/* Nodes */}
-            {(Object.entries(POS) as [AgentId | 'orchestrator', [number, number]][]).map(([id, [col, row]]) => (
-              <N8nNode
-                key={id}
-                id={id}
-                agent={id === 'orchestrator' ? undefined : agentMap.get(id as AgentId)}
-                x={colX(col)}
-                y={rowY(row)}
-              />
-            ))}
+            <N8nNode id="orchestrator"      agent={undefined}                        x={colX(0)} y={ROW1_Y} />
+            <N8nNode id="triage-priority"   agent={agentMap.get('triage-priority')}  x={colX(1)} y={ROW0_Y} />
+            <N8nNode id="rerouting"         agent={agentMap.get('rerouting')}        x={colX(1)} y={ROW1_Y} />
+            <N8nNode id="crew-dispatch"     agent={agentMap.get('crew-dispatch')}    x={colX(2)} y={ROW1_Y} />
+            <N8nNode id="resource"          agent={agentMap.get('resource')}         x={colX(3)} y={ROW1_Y} />
+            <N8nNode id="comms"             agent={agentMap.get('comms')}            x={colX(4)} y={ROW1_Y} />
           </svg>
         </div>
 
