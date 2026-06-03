@@ -246,11 +246,24 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
     const criticals = faults.filter(f => f.criticalSite);
     const criticalsCovered = criticals.filter(f => f.status !== 'fault');
 
+    // language-agnostic KPI counters (same logic as main view)
+    const pdfFsmActions = actionMessages.filter(a => a.system === 'SAP Field Service Management').length;
+    const pdfIbpMaterials = actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && !a.msg.toLowerCase().includes('replen') && !a.msg.toLowerCase().includes('reposición')).length;
+    const pdfDrolius = actionMessages.filter(a => a.system === 'Drolius · Boston Dynamics Scout' && (a.msg.toLowerCase().includes('deployed') || a.msg.toLowerCase().includes('desplegado'))).length;
+
+    const pdfGrade = (v: number) => v >= 80 ? t.results.gradOptimal : v >= 60 ? t.results.gradAcceptable : t.results.gradCritical;
+    const pdfSafetyGrade = (v: number) => v === 100 ? t.results.gradOptimal : v >= 70 ? t.results.gradAcceptable : t.results.gradCritical;
+    const pdfUrgency = { high: t.results.urgencyCritical, medium: t.results.urgencyModerate, low: t.results.urgencyLow };
+
+    const faultTypeLabel = (type: string) =>
+      type === 'transformer' ? (t.map.typeTransformer) : type === 'cable' ? t.map.typeCable : t.map.typeSwitchable;
+    const clientsWord = t.map.tooltipClients.replace(':', '').toLowerCase();
+
     const html = `<!DOCTYPE html>
-<html lang="es">
+<html lang="${t.lang.toggle === 'ES' ? 'en' : 'es'}">
 <head>
 <meta charset="UTF-8"/>
-<title>Resumen Ejecutivo — Storm Response Commander</title>
+<title>${t.results.pdfTitle} — Storm Response Commander</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1e293b; padding: 32px 40px; font-size: 13px; }
@@ -290,94 +303,91 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
 </style>
 </head>
 <body>
-  <h1>Resumen Ejecutivo</h1>
-  <div class="subtitle">Storm Response Commander · Iberdrola Girona · Ciclo completado · ${elapsedLabel}</div>
+  <h1>${t.results.pdfTitle}</h1>
+  <div class="subtitle">Storm Response Commander · Iberdrola Girona · ${t.results.completed} · ${elapsedLabel}</div>
 
-  <div class="section-label">KPIs DE MISIÓN</div>
+  <div class="section-label">${t.results.pdfKpis}</div>
   <div class="kpi-row">
     <div class="kpi-box">
       <div class="kpi-value" style="color:${kpiColor(kpi.sla ?? 0)}">${kpi.sla}%</div>
-      <div class="kpi-grade" style="color:${kpiColor(kpi.sla ?? 0)}">${kpiGrade(kpi.sla ?? 0)}</div>
-      <div class="kpi-label">SLA</div>
+      <div class="kpi-grade" style="color:${kpiColor(kpi.sla ?? 0)}">${pdfGrade(kpi.sla ?? 0)}</div>
+      <div class="kpi-label">${t.results.kpiSla}</div>
     </div>
     <div class="kpi-box">
       <div class="kpi-value" style="color:${safetyColor(kpi.safety ?? 0)}">${kpi.safety}%</div>
-      <div class="kpi-grade" style="color:${safetyColor(kpi.safety ?? 0)}">${safetyGrade(kpi.safety ?? 0)}</div>
-      <div class="kpi-label">SEGURIDAD</div>
+      <div class="kpi-grade" style="color:${safetyColor(kpi.safety ?? 0)}">${pdfSafetyGrade(kpi.safety ?? 0)}</div>
+      <div class="kpi-label">${t.results.kpiSafety}</div>
     </div>
     <div class="kpi-box">
       <div class="kpi-value" style="color:${kpiColor(kpi.efficiency ?? 0)}">${kpi.efficiency}%</div>
-      <div class="kpi-grade" style="color:${kpiColor(kpi.efficiency ?? 0)}">${kpiGrade(kpi.efficiency ?? 0)}</div>
-      <div class="kpi-label">EFICIENCIA OPERATIVA</div>
+      <div class="kpi-grade" style="color:${kpiColor(kpi.efficiency ?? 0)}">${pdfGrade(kpi.efficiency ?? 0)}</div>
+      <div class="kpi-label">${t.results.kpiEfficiency}</div>
     </div>
     <div class="kpi-box">
       <div class="kpi-value" style="color:${kpi.tiepi != null && kpi.tiepi <= 60 ? '#16a34a' : kpi.tiepi != null && kpi.tiepi <= 120 ? '#ea580c' : '#dc2626'}">${kpi.tiepi ?? '—'}<span style="font-size:14px;font-weight:600"> min</span></div>
-      <div class="kpi-grade" style="color:${kpi.tiepi != null && kpi.tiepi <= 60 ? '#16a34a' : kpi.tiepi != null && kpi.tiepi <= 120 ? '#ea580c' : '#dc2626'}">${kpi.tiepi != null ? (kpi.tiepi <= 60 ? 'ÓPTIMO' : kpi.tiepi <= 120 ? 'ACEPTABLE' : 'CRÍTICO') : ''}</div>
-      <div class="kpi-label">TIEPI</div>
+      <div class="kpi-grade" style="color:${kpi.tiepi != null && kpi.tiepi <= 60 ? '#16a34a' : kpi.tiepi != null && kpi.tiepi <= 120 ? '#ea580c' : '#dc2626'}">${kpi.tiepi != null ? pdfGrade(kpi.tiepi <= 60 ? 90 : kpi.tiepi <= 120 ? 70 : 40) : ''}</div>
+      <div class="kpi-label">${t.results.tiepi}</div>
     </div>
     <div class="kpi-box">
       <div class="kpi-value" style="color:${kpi.mttr != null && kpi.mttr <= 60 ? '#16a34a' : kpi.mttr != null && kpi.mttr <= 120 ? '#ea580c' : '#dc2626'}">${kpi.mttr ?? '—'}<span style="font-size:14px;font-weight:600"> min</span></div>
-      <div class="kpi-grade" style="color:${kpi.mttr != null && kpi.mttr <= 60 ? '#16a34a' : kpi.mttr != null && kpi.mttr <= 120 ? '#ea580c' : '#dc2626'}">${kpi.mttr != null ? (kpi.mttr <= 60 ? 'ÓPTIMO' : kpi.mttr <= 120 ? 'ACEPTABLE' : 'CRÍTICO') : ''}</div>
-      <div class="kpi-label">MTTR</div>
+      <div class="kpi-grade" style="color:${kpi.mttr != null && kpi.mttr <= 60 ? '#16a34a' : kpi.mttr != null && kpi.mttr <= 120 ? '#ea580c' : '#dc2626'}">${kpi.mttr != null ? pdfGrade(kpi.mttr <= 60 ? 90 : kpi.mttr <= 120 ? 70 : 40) : ''}</div>
+      <div class="kpi-label">${t.results.mttr}</div>
     </div>
     <div class="duration-box">
       <div class="duration-value">${elapsedLabel}</div>
-      <div class="duration-label">DURACIÓN CICLO</div>
+      <div class="duration-label">${t.results.duration}</div>
     </div>
   </div>
 
-  <div class="section-label">INDICADORES OPERATIVOS</div>
+  <div class="section-label">${t.results.pdfOperational}</div>
   <div class="stat-grid">
     <div class="stat-box">
       <div><span class="stat-value" style="color:#16a34a">${attendedClients.toLocaleString('es-ES')}</span><span class="stat-unit">/ ${totalClients.toLocaleString('es-ES')}</span></div>
-      <div class="stat-label">Clientes atendidos</div>
-      <div class="stat-sub">${Math.round(attendedClients / totalClients * 100)}% del total</div>
+      <div class="stat-label">${t.results.clientsServed}</div>
+      <div class="stat-sub">${Math.round(attendedClients / totalClients * 100)}%</div>
     </div>
     <div class="stat-box">
       <div><span class="stat-value" style="color:#2563eb">${attended}</span><span class="stat-unit">/ ${faults.length}</span></div>
-      <div class="stat-label">Fallos atendidos</div>
-      <div class="stat-sub">${restored.length} telecontrol · ${enRoute.length} brigadas</div>
+      <div class="stat-label">${t.results.faultsHandled}</div>
     </div>
     <div class="stat-box">
       <div><span class="stat-value" style="color:${criticalsCovered.length === criticals.length ? '#16a34a' : '#dc2626'}">${criticalsCovered.length}</span><span class="stat-unit">/ ${criticals.length}</span></div>
-      <div class="stat-label">Sitios críticos cubiertos</div>
-      <div class="stat-sub">${criticalsCovered.length === criticals.length ? 'Cobertura total' : `${criticals.length - criticalsCovered.length} sin cobertura`}</div>
+      <div class="stat-label">${t.results.criticalCovered}</div>
     </div>
     <div class="stat-box">
       <div><span class="stat-value" style="color:${pendingRows.length === 0 ? '#16a34a' : '#ea580c'}">${pendingRows.length}</span></div>
-      <div class="stat-label">Acciones pendientes</div>
-      <div class="stat-sub">${pendingRows.length === 0 ? 'Sin fallos sin atender' : `${pendingRows.filter(f => f.criticalSite).length} críticos · ${pendingRows.filter(f => !f.criticalSite).length} residenciales`}</div>
+      <div class="stat-label">${t.results.pendingActions}</div>
     </div>
   </div>
 
-  <div class="section-label">INTEGRACIÓN SAP</div>
+  <div class="section-label">${t.results.pdfSap}</div>
   <div class="sap-grid">
-    <div class="sap-box"><div class="sap-system">SAP AI Core Orchestration</div><div class="sap-value" style="color:#d97706">${new Set(actionMessages.map(a => a.system)).size}</div><div class="sap-label">Sistemas SAP integrados</div></div>
-    <div class="sap-box"><div class="sap-system">SAP Field Service Management</div><div class="sap-value" style="color:#2563eb">${actionMessages.filter(a => a.system === 'SAP Field Service Management' && a.msg.includes('Orden de trabajo')).length}</div><div class="sap-label">Órdenes de trabajo creadas</div></div>
-    <div class="sap-box"><div class="sap-system">SAP Asset Intelligence Network</div><div class="sap-value" style="color:#16a34a">${restored.length}</div><div class="sap-label">Conmutaciones registradas en AIN</div></div>
-    <div class="sap-box"><div class="sap-system">SAP Integrated Business Planning</div><div class="sap-value" style="color:#9333ea">${actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && a.msg.includes('Material reservado')).length}</div><div class="sap-label">Materiales reservados</div></div>
-    <div class="sap-box"><div class="sap-system">SAP Customer Experience</div><div class="sap-value" style="color:#db2777">${commsMessages.length}</div><div class="sap-label">Mensajes enviados vía SAP CX</div></div>
-    <div class="sap-box"><div class="sap-system">SAP S/4HANA Asset Management</div><div class="sap-value" style="color:#0891b2">${faults.length}</div><div class="sap-label">Activos analizados en S/4HANA</div></div>
-    <div class="sap-box"><div class="sap-system">Drolius · Boston Dynamics Scout</div><div class="sap-value" style="color:#9333ea">${actionMessages.filter(a => a.system === 'Drolius · Boston Dynamics Scout' && a.msg.includes('desplegado')).length}</div><div class="sap-label">Misiones de inspección ejecutadas</div></div>
+    <div class="sap-box"><div class="sap-system">SAP AI Core Orchestration</div><div class="sap-value" style="color:#d97706">${new Set(actionMessages.map(a => a.system)).size}</div><div class="sap-label">${t.results.sapSystems}</div></div>
+    <div class="sap-box"><div class="sap-system">SAP Field Service Management</div><div class="sap-value" style="color:#2563eb">${pdfFsmActions}</div><div class="sap-label">${t.results.sapWorkOrders}</div></div>
+    <div class="sap-box"><div class="sap-system">SAP Asset Intelligence Network</div><div class="sap-value" style="color:#16a34a">${restored.length}</div><div class="sap-label">${t.results.sapSwitches}</div></div>
+    <div class="sap-box"><div class="sap-system">SAP Integrated Business Planning</div><div class="sap-value" style="color:#9333ea">${pdfIbpMaterials}</div><div class="sap-label">${t.results.sapMaterials}</div></div>
+    <div class="sap-box"><div class="sap-system">SAP Customer Experience</div><div class="sap-value" style="color:#db2777">${commsMessages.length}</div><div class="sap-label">${t.results.sapMessages}</div></div>
+    <div class="sap-box"><div class="sap-system">SAP S/4HANA Asset Management</div><div class="sap-value" style="color:#0891b2">${faults.length}</div><div class="sap-label">${t.results.sapAssets}</div></div>
+    <div class="sap-box"><div class="sap-system">Drolius · Boston Dynamics Scout</div><div class="sap-value" style="color:#9333ea">${pdfDrolius}</div><div class="sap-label">${t.results.sapDrolius}</div></div>
   </div>
 
   ${orchPlain ? `
-  <div class="section-label">ANÁLISIS ASSET AND SERVICES ASSISTANT</div>
+  <div class="section-label">${t.results.pdfAnalysis}</div>
   <div class="narrative">${orchPlain.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
   ` : ''}
 
   ${pendingRows.length > 0 ? `
-  <div class="section-label">ACCIONES PENDIENTES (${pendingRows.length})</div>
+  <div class="section-label">${t.results.pdfPending} (${pendingRows.length})</div>
   ${pendingRows.map(fault => {
     const { action, urgency } = getMitigation(fault);
     const bg = urgency === 'high' ? '#fee2e2' : urgency === 'medium' ? '#ffedd5' : '#fef9c3';
     const col = urgency === 'high' ? '#dc2626' : urgency === 'medium' ? '#ea580c' : '#ca8a04';
-    const lbl = URGENCY_LABEL[urgency];
+    const lbl = pdfUrgency[urgency];
     return `<div class="pending-row" style="border-color:${col}33">
       <div class="pending-badge" style="background:${bg};color:${col}">${lbl}</div>
       <div style="flex:1">
-        <div class="pending-id">${fault.id} <span style="font-weight:400;color:#64748b;font-size:11px">${fault.zone} · ${fault.type === 'transformer' ? 'Transformador' : fault.type === 'cable' ? 'Cable' : 'Conmutable'} · ${fault.affectedClients.toLocaleString('es-ES')} clientes${fault.criticalSite ? ` · ${fault.criticalSite}` : ''}</span></div>
-        <div class="pending-action"><strong>Mitigación:</strong> ${action}</div>
+        <div class="pending-id">${fault.id} <span style="font-weight:400;color:#64748b;font-size:11px">${fault.zone} · ${faultTypeLabel(fault.type)} · ${fault.affectedClients.toLocaleString('es-ES')} ${clientsWord}${fault.criticalSite ? ` · ${fault.criticalSite}` : ''}</span></div>
+        <div class="pending-action">${action}</div>
       </div>
     </div>`;
   }).join('')}
@@ -385,7 +395,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
 
   <div class="footer">
     <span>Storm Response Commander · Iberdrola Girona</span>
-    <span>Generado el ${new Date().toLocaleString('es-ES')}</span>
+    <span>${t.results.pdfGenerated} ${new Date().toLocaleString(t.lang.toggle === 'ES' ? 'en-GB' : 'es-ES')}</span>
   </div>
 </body>
 </html>`;
