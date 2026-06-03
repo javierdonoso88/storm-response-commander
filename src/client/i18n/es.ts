@@ -154,7 +154,7 @@ export interface Translations {
       commsLabel: string; commsSub: string; commsTip: string;
     };
   };
-  stats: {
+  panels: {
     sapHeader: string;
     commsHeader: string;
     sapPlaceholder: string;
@@ -321,7 +321,7 @@ export const es: Translations = {
       commsTip: 'Redacta SMS, nota de prensa y notificación regulatoria.',
     },
   },
-  stats: {
+  panels: {
     sapHeader: 'ACCIONES SAP', commsHeader: 'COMUNICACIONES',
     sapPlaceholder: 'Las acciones de integración aparecerán aquí',
     commsPlaceholder: 'Las comunicaciones aparecerán aquí durante la simulación',

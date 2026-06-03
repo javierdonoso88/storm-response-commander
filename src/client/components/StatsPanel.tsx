@@ -58,9 +58,9 @@ export function StatsPanel({ messages, actionMessages }: Props) {
   const isLight = theme !== 'dark';
 
   const CHANNEL_LABEL: Record<string, string> = {
-    sms: t.stats.sms,
-    press: t.stats.press,
-    regulatory: t.stats.regulatory,
+    sms: t.panels.sms,
+    press: t.panels.press,
+    regulatory: t.panels.regulatory,
   };
 
   const actionsBadgeStyle = isLight
@@ -75,7 +75,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
       {/* ── Actions ── */}
       <div className="panel-header">
         <span className="text-emerald-400">⚙</span>
-        {t.stats.sapHeader}
+        {t.panels.sapHeader}
         {actionMessages.length > 0 && (
           <span className="ml-auto text-[12px] px-1.5 py-0.5 rounded font-semibold" style={actionsBadgeStyle}>
             {actionMessages.length}
@@ -85,7 +85,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
       <div className="overflow-y-auto p-2 flex flex-col gap-1.5" style={{ flex: '1 1 0', minHeight: 0 }}>
         {actionMessages.length === 0 && (
           <div className="text-xs text-slate-600 italic text-center mt-4">
-            {t.stats.sapPlaceholder}
+            {t.panels.sapPlaceholder}
           </div>
         )}
         {actionMessages.map((a, i) => (
@@ -111,7 +111,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
       {/* ── Comunicaciones ── */}
       <div className="panel-header">
         <span className="text-cyan-400">◎</span>
-        {t.stats.commsHeader}
+        {t.panels.commsHeader}
         {messages.length > 0 && (
           <span className="ml-auto text-[12px] px-1.5 py-0.5 rounded font-semibold" style={commsBadgeStyle}>
             {messages.length} enviados
@@ -121,7 +121,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
       <div className="overflow-y-auto p-2 flex flex-col gap-2" style={{ flex: '1 1 0', minHeight: 0 }}>
         {messages.length === 0 && (
           <div className="text-xs text-slate-600 italic text-center mt-4">
-            {t.stats.commsPlaceholder}
+            {t.panels.commsPlaceholder}
           </div>
         )}
         {messages.map((msg, i) => (

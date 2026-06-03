@@ -126,7 +126,7 @@ export const en: Translations = {
       commsTip: 'Drafts and sends SMS, press release and regulatory notification.',
     },
   },
-  stats: {
+  panels: {
     sapHeader: 'SAP ACTIONS', commsHeader: 'COMMUNICATIONS',
     sapPlaceholder: 'Integration actions will appear here',
     commsPlaceholder: 'Communications will appear here during simulation',
