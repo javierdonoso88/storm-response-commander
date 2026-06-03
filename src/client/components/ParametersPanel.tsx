@@ -302,6 +302,30 @@ function KPIRow({ label, sub, value, color }: { label: string; sub: string; valu
 }
 
 function IncidentInfoModal({ onClose }: { onClose: () => void }) {
+  const t = useT();
+  const m = t.modal;
+  const urgencyColor = (u: string) =>
+    u === m.urgencyCritical ? '#fca5a5' : u === m.urgencyHigh ? '#fdba74' : u === m.urgencyMedium ? '#fde68a' : 'var(--text-secondary)';
+  const urgencyBg = (u: string) =>
+    u === m.urgencyCritical ? 'rgba(239,68,68,0.15)' : u === m.urgencyHigh ? 'rgba(249,115,22,0.15)' : u === m.urgencyMedium ? 'rgba(250,204,21,0.12)' : 'rgba(148,163,184,0.1)';
+
+  const criticalSites = [
+    { id: 'TRF-002', site: 'CPD Ajuntament de Girona', type: m.siteDataCenter, battery: 30, urgency: m.urgencyCritical },
+    { id: 'TRF-003', site: 'Centro de Diálisis de Girona', type: m.siteHealth, battery: 60, urgency: m.urgencyCritical },
+    { id: 'TRF-004', site: 'EDAR Banyoles', type: m.siteWater, battery: 120, urgency: m.urgencyHigh },
+    { id: 'TRF-006', site: "Comissaria Mossos d'Esquadra Figueres", type: m.siteEmergency, battery: 180, urgency: m.urgencyHigh },
+    { id: 'TRF-001', site: 'Hospital de Figueres', type: m.siteHospital, battery: 240, urgency: m.urgencyMedium },
+    { id: 'TRF-007', site: 'Hospital Universitari de Santa Caterina', type: m.siteHospital, battery: 360, urgency: m.urgencyMedium },
+    { id: 'TRF-005', site: "Punt d'Atenció Continuada Olot", type: m.siteHospital, battery: 480, urgency: m.urgencyLow },
+  ];
+
+  const tensions = [
+    { label: m.tension1Label, desc: m.tension1Desc, color: '#ef4444' },
+    { label: m.tension2Label, desc: m.tension2Desc, color: '#f97316' },
+    { label: m.tension3Label, desc: m.tension3Desc, color: '#facc15' },
+    { label: m.tension4Label, desc: m.tension4Desc, color: '#8b5cf6' },
+  ];
+
   return (
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
@@ -317,45 +341,31 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
         <div className="flex items-center justify-between px-5 py-4 border-b sticky top-0" style={{ background: 'var(--bg-panel)', borderColor: 'var(--border)' }}>
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-[13px] font-bold tracking-widest" style={{ color: '#ef4444' }}>INCIDENTE ACTIVO</span>
-            <span className="text-[11px] font-mono" style={{ color: 'var(--text-ghost)' }}>— Tormenta severa · Comarques de Girona</span>
+            <span className="text-[13px] font-bold tracking-widest" style={{ color: '#ef4444' }}>{m.title}</span>
+            <span className="text-[11px] font-mono" style={{ color: 'var(--text-ghost)' }}>{m.subtitle}</span>
           </div>
-          <button
-            onClick={onClose}
-            className="text-lg leading-none w-6 h-6 flex items-center justify-center rounded transition-colors"
-            style={{ color: 'var(--text-muted)', cursor: 'pointer' }}
-          >×</button>
+          <button onClick={onClose} className="text-lg leading-none w-6 h-6 flex items-center justify-center rounded transition-colors" style={{ color: 'var(--text-muted)', cursor: 'pointer' }}>×</button>
         </div>
 
         <div className="px-5 py-4 flex flex-col gap-6">
 
-          {/* Resumen */}
+          {/* Summary */}
           <div className="rounded-lg p-4 flex flex-col gap-3" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-            <InfoSectionTitle>Resumen del incidente</InfoSectionTitle>
+            <InfoSectionTitle>{m.summaryTitle}</InfoSectionTitle>
             <div className="grid grid-cols-3 gap-3">
-              <StatBox value="127.000" label="clientes sin suministro" color="#ef4444" />
-              <StatBox value="47" label="fallos activos" color="#f97316" />
-              <StatBox value="7" label="sitios críticos" color="#facc15" />
+              <StatBox value="127.000" label={m.summaryClients} color="#ef4444" />
+              <StatBox value="47" label={m.summaryFaults} color="#f97316" />
+              <StatBox value="7" label={m.summaryCritical} color="#facc15" />
             </div>
-            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-              Una tormenta severa ha golpeado simultáneamente múltiples zonas de las Comarques de Girona. Los agentes de IA deben coordinar la restauración priorizando la infraestructura crítica con batería limitada antes de que se agote, mientras gestionan los recursos físicos disponibles.
-            </p>
+            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>{m.summaryBody}</p>
           </div>
 
-          {/* Sitios críticos */}
+          {/* Critical sites */}
           <div className="flex flex-col gap-3">
-            <InfoSectionTitle>Sitios críticos con SAI / batería</InfoSectionTitle>
-            <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>Infraestructuras con suministro de emergencia que se agotará si no se restaura la red a tiempo.</p>
+            <InfoSectionTitle>{m.criticalTitle}</InfoSectionTitle>
+            <p className="text-[11px]" style={{ color: 'var(--text-dim)' }}>{m.criticalSubtitle}</p>
             <div className="flex flex-col gap-1.5">
-              {[
-                { id: 'TRF-002', site: 'CPD Ajuntament de Girona', type: 'Centro de datos', battery: 30, urgency: 'crítica' },
-                { id: 'TRF-003', site: 'Centro de Diálisis de Girona', type: 'Salud', battery: 60, urgency: 'crítica' },
-                { id: 'TRF-004', site: 'EDAR Banyoles', type: 'Agua / saneamiento', battery: 120, urgency: 'alta' },
-                { id: 'TRF-006', site: "Comissaria Mossos d'Esquadra Figueres", type: 'Emergencias', battery: 180, urgency: 'alta' },
-                { id: 'TRF-001', site: 'Hospital de Figueres', type: 'Hospital', battery: 240, urgency: 'media' },
-                { id: 'TRF-007', site: 'Hospital Universitari de Santa Caterina', type: 'Hospital', battery: 360, urgency: 'media' },
-                { id: 'TRF-005', site: "Punt d'Atenció Continuada Olot", type: 'Hospital', battery: 480, urgency: 'baja' },
-              ].map(s => (
+              {criticalSites.map(s => (
                 <div key={s.id} className="flex items-center gap-3 rounded-lg px-3 py-2" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                   <span className="text-[10px] font-mono w-16 flex-shrink-0" style={{ color: 'var(--text-ghost)' }}>{s.id}</span>
                   <div className="flex-1 min-w-0">
@@ -364,80 +374,66 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
                   </div>
                   <div className="flex items-center gap-1.5 flex-shrink-0">
                     <span className="text-[11px] font-mono font-bold" style={{ color: s.battery <= 60 ? '#ef4444' : s.battery <= 180 ? '#f97316' : 'var(--text-muted)' }}>{s.battery} min</span>
-                    <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide" style={{
-                      color: s.urgency === 'crítica' ? '#fca5a5' : s.urgency === 'alta' ? '#fdba74' : s.urgency === 'media' ? '#fde68a' : 'var(--text-secondary)',
-                      background: s.urgency === 'crítica' ? 'rgba(239,68,68,0.15)' : s.urgency === 'alta' ? 'rgba(249,115,22,0.15)' : s.urgency === 'media' ? 'rgba(250,204,21,0.12)' : 'rgba(148,163,184,0.1)',
-                    }}>{s.urgency}</span>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase tracking-wide" style={{ color: urgencyColor(s.urgency), background: urgencyBg(s.urgency) }}>{s.urgency}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Tipos de fallo */}
+          {/* Fault types */}
           <div className="flex flex-col gap-3">
-            <InfoSectionTitle>Tipos de fallo</InfoSectionTitle>
+            <InfoSectionTitle>{m.faultTypesTitle}</InfoSectionTitle>
             <div className="grid grid-cols-3 gap-3">
-              <FaultTypeBox count={22} label="Conmutables" desc="Restauración remota por telecontrol, sin brigada física" color="#3b82f6" />
-              <FaultTypeBox count={7} label="Transformadores" desc="Sustitución física de transformador en campo" color="#f97316" />
-              <FaultTypeBox count={18} label="Cables" desc="Reparación física de línea en campo" color="#8b5cf6" />
+              <FaultTypeBox count={22} label={m.faultSwitchable} desc={m.faultSwitchableDesc} color="#3b82f6" />
+              <FaultTypeBox count={7} label={m.faultTransformer} desc={m.faultTransformerDesc} color="#f97316" />
+              <FaultTypeBox count={18} label={m.faultCable} desc={m.faultCableDesc} color="#8b5cf6" />
             </div>
-            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>
-              El parámetro <strong style={{ color: 'var(--text-muted)' }}>Conmutables</strong> controla cuántos fallos SW puede restaurar el agente Remote Restoration por telecontrol. Los que excedan el límite se degradan a fallo de cable y requieren brigada. Los parámetros <strong style={{ color: 'var(--text-muted)' }}>Brigadas</strong> y <strong style={{ color: 'var(--text-muted)' }}>Piezas limitadas</strong> afectan directamente a cuántos fallos físicos pueden atenderse.
-            </p>
+            <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>{m.faultParamNote}</p>
           </div>
 
-          {/* Recursos */}
+          {/* Resources */}
           <div className="flex flex-col gap-3">
-            <InfoSectionTitle>Recursos disponibles</InfoSectionTitle>
+            <InfoSectionTitle>{m.resourcesTitle}</InfoSectionTitle>
             <div className="grid grid-cols-2 gap-3">
               <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                <span className="text-[10px] font-bold tracking-widest" style={{ color: '#22c55e' }}>BRIGADAS — 6 bases</span>
-                {[
-                  { base: 'Girona', n: 7 },
-                  { base: 'Figueres', n: 4 },
-                  { base: 'Olot', n: 3 },
-                  { base: 'Lloret de Mar', n: 3 },
-                  { base: 'Blanes', n: 3 },
-                  { base: 'Banyoles', n: 2 },
-                ].map(b => (
+                <span className="text-[10px] font-bold tracking-widest" style={{ color: '#22c55e' }}>{m.crewBases}</span>
+                {[{ base: 'Girona', n: 7 }, { base: 'Figueres', n: 4 }, { base: 'Olot', n: 3 }, { base: 'Lloret de Mar', n: 3 }, { base: 'Blanes', n: 3 }, { base: 'Banyoles', n: 2 }].map(b => (
                   <div key={b.base} className="flex items-center justify-between">
                     <span className="text-[11px]" style={{ color: 'var(--text-muted)' }}>{b.base}</span>
                     <span className="text-[11px] font-mono font-bold" style={{ color: 'var(--text-dim)' }}>{b.n}</span>
                   </div>
                 ))}
                 <div className="border-t pt-2 flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
-                  <span className="text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>Total máximo</span>
+                  <span className="text-[11px] font-medium" style={{ color: 'var(--text-muted)' }}>{m.totalMax}</span>
                   <span className="text-[11px] font-mono font-bold" style={{ color: '#22c55e' }}>22</span>
                 </div>
               </div>
               <div className="flex flex-col gap-3">
                 <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                  <span className="text-[10px] font-bold tracking-widest" style={{ color: '#22c55e' }}>MATERIAL EN ALMACÉN</span>
-                  <MaterialRow label="Transformadores" value="2 ud" note="→ 1 ud si piezas limitadas" />
-                  <MaterialRow label="Bobinas de cable" value="40 ud" note="suficiente para todos los fallos" />
-                  <MaterialRow label="Generador móvil" value="1 ud" note="medida temporal" />
+                  <span className="text-[10px] font-bold tracking-widest" style={{ color: '#22c55e' }}>{m.inventory}</span>
+                  <MaterialRow label={m.matTransformers} value="2 ud" note={m.matTransNote} />
+                  <MaterialRow label={m.matCables} value="40 ud" note={m.matCableNote} />
+                  <MaterialRow label={m.matGenerator} value="1 ud" note={m.matGenNote} />
                   <div className="mt-1 rounded p-2 text-[10px] leading-relaxed" style={{ background: 'rgba(249,115,22,0.08)', border: '1px solid rgba(249,115,22,0.2)', color: '#f97316' }}>
-                    Con <strong>piezas limitadas ON</strong>, solo hay 1 transformador para 7 fallos. El agente Resource detecta la escasez y fuerza un conflicto de priorización.
+                    {m.limitedPartsWarning}
                   </div>
                 </div>
                 <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: 'rgba(167,139,250,0.05)', border: '1px solid rgba(167,139,250,0.2)' }}>
                   <div className="flex items-center gap-2">
                     <span className="text-base leading-none">🤖</span>
-                    <span className="text-[10px] font-bold tracking-widest" style={{ color: '#a78bfa' }}>DROLIUS — 1 UNIDAD</span>
+                    <span className="text-[10px] font-bold tracking-widest" style={{ color: '#a78bfa' }}>{m.droliusTitle}</span>
                   </div>
-                  <p className="text-[11px] leading-relaxed" style={{ color: '#6d5acd' }}>
-                    Robot Scout de inspección autónoma. El agente Service Dispatcher puede desplegarlo a zonas peligrosas antes de enviar brigadas.
-                  </p>
+                  <p className="text-[11px] leading-relaxed" style={{ color: '#6d5acd' }}>{m.droliusBody}</p>
                   <div className="flex flex-col gap-1 mt-0.5">
                     {[
                       { icon: '🔋', text: 'battery_check — confirma batería SAI restante' },
                       { icon: '🗺️', text: 'zone_access — evalúa accesibilidad para brigada' },
                       { icon: '🔍', text: 'damage_assessment — documenta daños en el activo' },
-                    ].map(m => (
-                      <div key={m.text} className="flex items-start gap-1.5 text-[10px]" style={{ color: 'var(--text-dim)' }}>
-                        <span className="flex-shrink-0" style={{ fontSize: '10px' }}>{m.icon}</span>
-                        <span>{m.text}</span>
+                    ].map(mi => (
+                      <div key={mi.text} className="flex items-start gap-1.5 text-[10px]" style={{ color: 'var(--text-dim)' }}>
+                        <span className="flex-shrink-0" style={{ fontSize: '10px' }}>{mi.icon}</span>
+                        <span>{mi.text}</span>
                       </div>
                     ))}
                   </div>
@@ -446,21 +442,16 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
             </div>
           </div>
 
-          {/* Tensiones clave */}
+          {/* Tensions */}
           <div className="flex flex-col gap-3">
-            <InfoSectionTitle>Tensiones del escenario</InfoSectionTitle>
+            <InfoSectionTitle>{m.tensionsTitle}</InfoSectionTitle>
             <div className="flex flex-col gap-2">
-              {[
-                { label: 'CPD Girona — 30 min de batería', desc: 'Si el SLA objetivo supera los 30 min, el fallo TRF-002 casi seguro incumplirá. El agente Triage debe asignarlo rango 1.', color: '#ef4444' },
-                { label: 'Escasez de transformadores', desc: 'Con piezas limitadas, el agente Resource entra en conflicto garantizado: 1 transformador para 7 fallos críticos.', color: '#f97316' },
-                { label: 'Ventana tormenta T+4h', desc: 'El agente Service Dispatcher no puede asignar reparaciones con ETA > 210 min. Muchos transformadores quedarán sin brigada asignada.', color: '#facc15' },
-                { label: 'Pocas brigadas disponibles', desc: 'Con < 12 brigadas, zonas costeras con alta carga (Palamós 6.200, Palafrugell 5.800, Sant Feliu 5.500) quedan sin atender.', color: '#8b5cf6' },
-              ].map(t => (
-                <div key={t.label} className="flex gap-3 rounded-lg px-3 py-2.5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
-                  <div className="w-1.5 rounded-full flex-shrink-0 mt-0.5" style={{ background: t.color, minHeight: '16px' }} />
+              {tensions.map(ten => (
+                <div key={ten.label} className="flex gap-3 rounded-lg px-3 py-2.5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
+                  <div className="w-1.5 rounded-full flex-shrink-0 mt-0.5" style={{ background: ten.color, minHeight: '16px' }} />
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>{t.label}</span>
-                    <span className="text-[11px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>{t.desc}</span>
+                    <span className="text-[11px] font-semibold" style={{ color: 'var(--text-secondary)' }}>{ten.label}</span>
+                    <span className="text-[11px] leading-relaxed" style={{ color: 'var(--text-dim)' }}>{ten.desc}</span>
                   </div>
                 </div>
               ))}

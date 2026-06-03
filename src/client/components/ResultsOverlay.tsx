@@ -433,6 +433,10 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
     ? '0 2px 32px rgba(0,0,0,0.12), 0 8px 24px rgba(0,0,0,0.06)'
     : '0 0 100px rgba(34,211,238,0.07), 0 40px 80px rgba(0,0,0,0.8)';
 
+  const tKpiGrade = (v: number) => v >= 80 ? t.results.gradOptimal : v >= 60 ? t.results.gradAcceptable : t.results.gradCritical;
+  const tSafetyGrade = (v: number) => v === 100 ? t.results.gradOptimal : v >= 70 ? t.results.gradAcceptable : t.results.gradCritical;
+  const tUrgency = { high: t.results.urgencyCritical, medium: t.results.urgencyModerate, low: t.results.urgencyLow };
+
   return (
     <div
       className="fixed inset-0 flex items-center justify-center p-4"
@@ -469,11 +473,11 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
           {/* ── KPIs ── */}
           <div className="rounded-2xl px-8 py-6 flex flex-col gap-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
             <div className="flex items-center gap-8">
-              <KpiBlock value={kpi.sla ?? 0} label="SLA" />
+              <KpiBlock value={kpi.sla ?? 0} label={t.results.kpiSla} gradeFn={tKpiGrade} />
               <div style={{ width: 1, height: 100, background: 'var(--border)', flexShrink: 0 }} />
-              <KpiBlock value={kpi.safety ?? 0} label="SEGURIDAD" colorFn={safetyColor} gradeFn={safetyGrade} />
+              <KpiBlock value={kpi.safety ?? 0} label={t.results.kpiSafety} colorFn={safetyColor} gradeFn={tSafetyGrade} />
               <div style={{ width: 1, height: 100, background: 'var(--border)', flexShrink: 0 }} />
-              <KpiBlock value={kpi.efficiency ?? 0} label="EFICIENCIA OPERATIVA" />
+              <KpiBlock value={kpi.efficiency ?? 0} label={t.results.kpiEfficiency} gradeFn={tKpiGrade} />
               <div style={{ width: 1, height: 100, background: 'var(--border)', flexShrink: 0 }} />
               <div className="flex flex-col items-center gap-1 flex-shrink-0">
                 <div className="text-4xl font-black font-mono" style={{ color: 'var(--accent)' }}>{elapsedLabel}</div>
@@ -511,13 +515,13 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
           <div>
             <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: 'var(--text-ghost)' }}>{t.results.sapIntegration}</div>
             <div className="grid grid-cols-3 gap-3">
-              <SapKpiCard system="SAP AI Core Orchestration" value={uniqueSystems} label="Sistemas SAP integrados" color="#f59e0b" />
-              <SapKpiCard system="SAP Field Service Management" value={fsmActions} label="Órdenes de trabajo creadas" color="#60a5fa" />
-              <SapKpiCard system="SAP Asset Intelligence Network" value={ainSwitches} label="Conmutaciones registradas en AIN" color="#4ade80" />
-              <SapKpiCard system="SAP Integrated Business Planning" value={ibpMaterials} label={`Materiales reservados${ibpReplenish > 0 ? ` · ${ibpReplenish} reposición solicitada` : ''}`} color="#c084fc" />
-              <SapKpiCard system="SAP Customer Experience" value={cxMessages} label="Mensajes enviados vía SAP CX" color="#f472b6" />
-              <SapKpiCard system="SAP S/4HANA Asset Management" value={s4Assets} label="Activos analizados en S/4HANA" color="#22d3ee" />
-              <SapKpiCard system="Drolius · Boston Dynamics Scout" value={droliusMissions} label="Misiones de inspección ejecutadas" color="#a78bfa" />
+              <SapKpiCard system="SAP AI Core Orchestration" value={uniqueSystems} label={t.results.sapSystems} color="#f59e0b" />
+              <SapKpiCard system="SAP Field Service Management" value={fsmActions} label={t.results.sapWorkOrders} color="#60a5fa" />
+              <SapKpiCard system="SAP Asset Intelligence Network" value={ainSwitches} label={t.results.sapSwitches} color="#4ade80" />
+              <SapKpiCard system="SAP Integrated Business Planning" value={ibpMaterials} label={`${t.results.sapMaterials}${ibpReplenish > 0 ? ` · ${ibpReplenish} ${t.results.sapReplenish}` : ''}`} color="#c084fc" />
+              <SapKpiCard system="SAP Customer Experience" value={cxMessages} label={t.results.sapMessages} color="#f472b6" />
+              <SapKpiCard system="SAP S/4HANA Asset Management" value={s4Assets} label={t.results.sapAssets} color="#22d3ee" />
+              <SapKpiCard system="Drolius · Boston Dynamics Scout" value={droliusMissions} label={t.results.sapDrolius} color="#a78bfa" />
             </div>
           </div>
 
@@ -528,7 +532,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
               {orchRaw ? (
                 <div>{renderMarkdown(orchRaw)}</div>
               ) : (
-                <p className="text-sm italic" style={{ color: 'var(--text-ghost)' }}>Resumen del orquestador no disponible.</p>
+                <p className="text-sm italic" style={{ color: 'var(--text-ghost)' }}>{t.results.analysisEmpty}</p>
               )}
             </div>
           </div>
@@ -550,7 +554,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
                     <div key={fault.id} className="rounded-xl p-4 flex gap-4" style={{ background: 'var(--bg-secondary)', border: `1px solid rgba(${hexToRgb(uColor)},0.25)` }}>
                       <div className="flex-shrink-0 mt-0.5">
                         <span className="text-[10px] font-black px-2 py-1 rounded" style={{ background: `rgba(${hexToRgb(uColor)},0.12)`, color: uColor, border: `1px solid rgba(${hexToRgb(uColor)},0.3)` }}>
-                          {URGENCY_LABEL[urgency]}
+                          {tUrgency[urgency]}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">

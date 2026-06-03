@@ -164,34 +164,45 @@ export interface Translations {
     regulatory: string;
   };
   results: {
-    title: string;
-    completed: string;
-    mission: string;
-    download: string;
-    close: string;
-    duration: string;
-    tiepi: string; tiepiLong: string;
-    mttr: string; mttrLong: string;
-    clientsServed: string;
-    faultsHandled: string;
-    criticalCovered: string;
-    pendingActions: string;
+    title: string; completed: string; mission: string;
+    download: string; close: string; duration: string;
+    kpiSla: string; kpiSafety: string; kpiEfficiency: string;
+    tiepi: string; tiepiLong: string; mttr: string; mttrLong: string;
+    clientsServed: string; faultsHandled: string; criticalCovered: string; pendingActions: string;
     sapIntegration: string;
-    analysisTitle: string;
+    sapSystems: string; sapWorkOrders: string; sapSwitches: string;
+    sapMaterials: string; sapReplenish: string; sapMessages: string;
+    sapAssets: string; sapDrolius: string;
+    analysisTitle: string; analysisEmpty: string;
     pendingTitle: string;
-    urgencyCritical: string;
-    urgencyModerate: string;
-    urgencyLow: string;
-    gradOptimal: string;
-    gradAcceptable: string;
-    gradCritical: string;
-    pdfTitle: string;
-    pdfKpis: string;
-    pdfOperational: string;
-    pdfSap: string;
-    pdfAnalysis: string;
-    pdfPending: string;
-    pdfGenerated: string;
+    urgencyCritical: string; urgencyModerate: string; urgencyLow: string;
+    gradOptimal: string; gradAcceptable: string; gradCritical: string;
+    pdfTitle: string; pdfKpis: string; pdfOperational: string;
+    pdfSap: string; pdfAnalysis: string; pdfPending: string; pdfGenerated: string;
+  };
+  modal: {
+    title: string; subtitle: string;
+    summaryTitle: string; summaryClients: string; summaryFaults: string; summaryCritical: string; summaryBody: string;
+    criticalTitle: string; criticalSubtitle: string;
+    faultTypesTitle: string;
+    faultSwitchable: string; faultSwitchableDesc: string;
+    faultTransformer: string; faultTransformerDesc: string;
+    faultCable: string; faultCableDesc: string;
+    faultParamNote: string;
+    resourcesTitle: string; crewBases: string; totalMax: string;
+    inventory: string;
+    matTransformers: string; matCables: string; matGenerator: string;
+    matTransNote: string; matCableNote: string; matGenNote: string;
+    limitedPartsWarning: string;
+    droliusTitle: string; droliusBody: string;
+    tensionsTitle: string;
+    tension1Label: string; tension1Desc: string;
+    tension2Label: string; tension2Desc: string;
+    tension3Label: string; tension3Desc: string;
+    tension4Label: string; tension4Desc: string;
+    urgencyCritical: string; urgencyHigh: string; urgencyMedium: string; urgencyLow: string;
+    siteDataCenter: string; siteHealth: string; siteWater: string;
+    siteEmergency: string; siteHospital: string;
   };
 }
 
@@ -331,12 +342,22 @@ export const es: Translations = {
     title: 'RESUMEN EJECUTIVO', completed: 'Ciclo completado', mission: '✓ MISIÓN COMPLETADA',
     download: 'Descargar PDF', close: 'Cerrar y volver al simulador',
     duration: 'DURACIÓN CICLO',
+    kpiSla: 'SLA', kpiSafety: 'SEGURIDAD', kpiEfficiency: 'EFICIENCIA OPERATIVA',
     tiepi: 'TIEPI', tiepiLong: 'Tiempo de Interrupción Equiv. Potencia Instalada',
     mttr: 'MTTR', mttrLong: 'Mean Time To Repair — Tiempo medio de reposición',
     clientsServed: 'Clientes atendidos', faultsHandled: 'Fallos atendidos',
     criticalCovered: 'Sitios críticos cubiertos', pendingActions: 'Acciones pendientes',
     sapIntegration: 'INTEGRACIÓN SAP',
+    sapSystems: 'Sistemas SAP integrados',
+    sapWorkOrders: 'Órdenes de trabajo creadas',
+    sapSwitches: 'Conmutaciones registradas en AIN',
+    sapMaterials: 'Materiales reservados',
+    sapReplenish: 'reposición solicitada',
+    sapMessages: 'Mensajes enviados vía SAP CX',
+    sapAssets: 'Activos analizados en S/4HANA',
+    sapDrolius: 'Misiones de inspección ejecutadas',
     analysisTitle: 'ANÁLISIS ASSET AND SERVICES ASSISTANT',
+    analysisEmpty: 'Resumen del orquestador no disponible.',
     pendingTitle: 'ACCIONES PENDIENTES',
     urgencyCritical: 'CRÍTICO', urgencyModerate: 'MODERADO', urgencyLow: 'BAJO',
     gradOptimal: 'ÓPTIMO', gradAcceptable: 'ACEPTABLE', gradCritical: 'CRÍTICO',
@@ -344,5 +365,37 @@ export const es: Translations = {
     pdfOperational: 'INDICADORES OPERATIVOS', pdfSap: 'INTEGRACIÓN SAP',
     pdfAnalysis: 'ANÁLISIS ASSET AND SERVICES ASSISTANT',
     pdfPending: 'ACCIONES PENDIENTES', pdfGenerated: 'Generado el',
+  },
+  modal: {
+    title: 'INCIDENTE ACTIVO',
+    subtitle: '— Tormenta severa · Comarques de Girona',
+    summaryTitle: 'Resumen del incidente',
+    summaryClients: 'clientes sin suministro',
+    summaryFaults: 'fallos activos',
+    summaryCritical: 'sitios críticos',
+    summaryBody: 'Una tormenta severa ha golpeado simultáneamente múltiples zonas de las Comarques de Girona. Los agentes de IA deben coordinar la restauración priorizando la infraestructura crítica con batería limitada antes de que se agote, mientras gestionan los recursos físicos disponibles.',
+    criticalTitle: 'Sitios críticos con SAI / batería',
+    criticalSubtitle: 'Infraestructuras con suministro de emergencia que se agotará si no se restaura la red a tiempo.',
+    faultTypesTitle: 'Tipos de fallo',
+    faultSwitchable: 'Conmutables', faultSwitchableDesc: 'Restauración remota por telecontrol, sin brigada física',
+    faultTransformer: 'Transformadores', faultTransformerDesc: 'Sustitución física de transformador en campo',
+    faultCable: 'Cables', faultCableDesc: 'Reparación física de línea en campo',
+    faultParamNote: 'El parámetro Conmutables controla cuántos fallos SW puede restaurar el agente Remote Restoration por telecontrol. Los que excedan el límite se degradan a fallo de cable y requieren brigada. Los parámetros Brigadas y Piezas limitadas afectan directamente a cuántos fallos físicos pueden atenderse.',
+    resourcesTitle: 'Recursos disponibles',
+    crewBases: 'BRIGADAS — 6 bases', totalMax: 'Total máximo',
+    inventory: 'MATERIAL EN ALMACÉN',
+    matTransformers: 'Transformadores', matCables: 'Bobinas de cable', matGenerator: 'Generador móvil',
+    matTransNote: '→ 1 ud si piezas limitadas', matCableNote: 'suficiente para todos los fallos', matGenNote: 'medida temporal',
+    limitedPartsWarning: 'Con piezas limitadas ON, solo hay 1 transformador para 7 fallos. El agente Resource detecta la escasez y fuerza un conflicto de priorización.',
+    droliusTitle: 'DROLIUS — 1 UNIDAD',
+    droliusBody: 'Robot Scout de inspección autónoma. El agente Service Dispatcher puede desplegarlo a zonas peligrosas antes de enviar brigadas.',
+    tensionsTitle: 'Tensiones del escenario',
+    tension1Label: 'CPD Girona — 30 min de batería', tension1Desc: 'Si el SLA objetivo supera los 30 min, el fallo TRF-002 casi seguro incumplirá. El agente Triage debe asignarlo rango 1.',
+    tension2Label: 'Escasez de transformadores', tension2Desc: 'Con piezas limitadas, el agente Resource entra en conflicto garantizado: 1 transformador para 7 fallos críticos.',
+    tension3Label: 'Ventana tormenta T+4h', tension3Desc: 'El agente Service Dispatcher no puede asignar reparaciones con ETA > 210 min. Muchos transformadores quedarán sin brigada asignada.',
+    tension4Label: 'Pocas brigadas disponibles', tension4Desc: 'Con < 12 brigadas, zonas costeras con alta carga (Palamós 6.200, Palafrugell 5.800, Sant Feliu 5.500) quedan sin atender.',
+    urgencyCritical: 'crítica', urgencyHigh: 'alta', urgencyMedium: 'media', urgencyLow: 'baja',
+    siteDataCenter: 'Centro de datos', siteHealth: 'Salud', siteWater: 'Agua / saneamiento',
+    siteEmergency: 'Emergencias', siteHospital: 'Hospital',
   },
 };
