@@ -272,3 +272,35 @@ cf push
   → heroku-postbuild → tsc + vite build
   → node dist/server/index.js
 ```
+
+---
+
+## Sistema de internacionalización (ES / EN)
+
+El selector de idioma (🌐 ES/EN) está disponible en la nav de la landing y en el header del simulador. Cambia el idioma de la UI y de todo el contenido generado por los agentes IA.
+
+### Arquitectura
+
+- `LanguageContext.tsx` — React Context que expone `{ lang, setLang }`. Tipo `Lang = 'es' | 'en'`. Persiste en `localStorage('src-lang')`.
+- `src/client/i18n/es.ts` y `en.ts` — objetos tipados con ~270 strings organizados por sección (`nav`, `hero`, `params`, `map`, `gantt`, `log`, `panels`, `results`…).
+- `src/client/i18n/index.ts` — exporta el hook `useT()` que devuelve el objeto de traducciones del idioma activo.
+- Todos los componentes importan `useT()` y referencian strings como `t.params.simulate`, `t.map.header`, etc.
+
+### Idioma en los agentes IA
+
+El idioma se envía en el campo `language` de `SimParams` con cada petición `POST /api/simulate`. El `agentRunner.ts` inyecta automáticamente una instrucción de idioma al principio de **todos** los system prompts:
+
+```
+// language === 'en'
+IMPORTANT: You must respond entirely in English. All your reasoning,
+tool calls, summaries and messages must be written in English.
+
+// language === 'es' (default)
+IMPORTANTE: Debes responder completamente en español.
+```
+
+Esto garantiza que los logs CoT, acciones SAP, comunicaciones (SMS, prensa, regulatorio) y el resumen ejecutivo del orquestador se generan en el idioma seleccionado.
+
+### Panel de orquestación (GanttPanel)
+
+Rediseñado con layout HTML puro + SVG superpuesto para las flechas. Elimina el uso de `<foreignObject>` en SVG (incompatible con Safari). Los nodos son `div` absolutos con `ResizeObserver` para escalar el diagrama al espacio disponible. Los colores de los conectores se adaptan al tema activo (cyan/púrpura/verde).

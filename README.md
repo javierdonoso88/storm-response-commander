@@ -12,7 +12,9 @@ Al abrir la aplicación se muestra una **pantalla de presentación** con el caso
 
 El header incluye un **desplegable de tema** con tres opciones: **Oscuro** (navy/cyan), **SAP Joule** (blanco-gris, acento púrpura `#6d28d9`) e **Iberdrola** (verde-claro, acento verde `#00a651`). La preferencia se persiste en `localStorage`.
 
-Al iniciar una simulación, un orquestador Claude coordina 5 agentes especializados que razonan sobre el escenario en tiempo real:
+Un **selector de idioma** (🌐 ES / EN) permite cambiar entre español e inglés en tiempo real. El idioma afecta a toda la UI estática y también al contenido generado por los agentes IA (logs CoT, acciones SAP, comunicaciones), que responden en el idioma seleccionado. La preferencia se persiste en `localStorage`.
+
+Al iniciar una simulación, un orquestador SAP AI Core coordina 5 agentes especializados que razonan sobre el escenario en tiempo real:
 
 | Fase | Agentes | Modo |
 |------|---------|------|
@@ -92,9 +94,10 @@ Ver [docs/architecture.md](docs/architecture.md) para el detalle técnico comple
 |------|-------|
 | Frontend | React 18, TypeScript, Vite, Tailwind CSS, React-Leaflet, CSS custom properties |
 | Backend | Node.js, Express, SSE |
-| IA | Anthropic Claude Sonnet 4.6 (orchestrator) · Haiku 4.5 (sub-agentes) vía SAP AI Core |
+| IA | SAP AI Core — Claude Sonnet 4.6 (orchestrator) · Haiku 4.5 (sub-agentes) |
 | SDK | `@anthropic-ai/sdk` con adaptador custom para AI Core |
 | Modelos | Sonnet 4.6 (orchestrator) · Haiku 4.5 (sub-agentes) |
+| i18n | Español / Inglés — UI + contenido IA, selector persistido en localStorage |
 | Deploy | SAP BTP Cloud Foundry (`nodejs_buildpack`) |
 
 ---
@@ -166,16 +169,21 @@ cf restage storm-response-commander
 ```
 src/
 ├── client/
-│   ├── App.tsx                  # Layout principal, navegación landing↔simulador, control de overlay
+│   ├── App.tsx                  # Layout principal, navegación landing↔simulador, selector idioma/tema
 │   ├── contexts/
-│   │   └── ThemeContext.tsx      # Tema oscuro / Joule — CSS vars + localStorage
+│   │   ├── ThemeContext.tsx      # Tema oscuro / Joule / Iberdrola — CSS vars + localStorage
+│   │   └── LanguageContext.tsx   # Idioma ES/EN — localStorage
+│   ├── i18n/
+│   │   ├── es.ts                # ~270 strings en español
+│   │   ├── en.ts                # ~270 strings en inglés
+│   │   └── index.ts             # Hook useT() — devuelve traducciones del idioma activo
 │   ├── hooks/useSimulation.ts   # Gestión de SSE y estado de simulación
 │   ├── components/
 │   │   ├── LandingPage.tsx      # Pantalla inicial: caso de uso + arquitectura multi-agente
 │   │   ├── MapPanel.tsx         # Mapa de Girona con nodos de fallo
 │   │   ├── LogPanel.tsx         # Logs CoT en tiempo real por agente
 │   │   ├── ParametersPanel.tsx  # Controles + KPIs (muestra — hasta completar simulación)
-│   │   ├── GanttPanel.tsx       # Timeline de ejecución de agentes
+│   │   ├── GanttPanel.tsx       # Diagrama N8N de orquestación (HTML+SVG, compatible Safari)
 │   │   ├── StatsPanel.tsx       # Acciones SAP (arriba) + Comunicaciones (abajo)
 │   │   └── ResultsOverlay.tsx   # Resumen ejecutivo final: KPIs, SAP, análisis orquestador, acciones pendientes
 │   └── data/mapData.ts          # Posiciones geográficas
@@ -183,10 +191,10 @@ src/
     ├── index.ts                 # Express server
     ├── routes/simulation.ts     # Endpoint SSE /api/simulate
     └── engine/
-        ├── types.ts             # Tipos: Fault, Crew, SimEvent, SimParams…
+        ├── types.ts             # Tipos: Fault, Crew, SimEvent, SimParams (incluye language)…
         ├── scenario.ts          # Escenario base y buildScenario()
         ├── anthropicClient.ts   # Adaptador SAP AI Core + SSE transformer
-        ├── agentRunner.ts       # Bucle genérico de tool-use con streaming
+        ├── agentRunner.ts       # Bucle genérico de tool-use con streaming + inyección de idioma
         ├── orchestrator.ts      # Agente orquestador + ejecución paralela Fase 1
         └── agents/
             ├── triage-priority.ts  # Clasificación de fallos + rankeado por urgencia
