@@ -50,8 +50,12 @@ export async function runResource(
         if (rt === 'transformer') state.inventory.transformers--;
         else if (rt === 'cable') state.inventory.cables--;
         else if (rt === 'mobile_generator') state.inventory.mobileGenerators--;
-        const RESOURCE_LABEL: Record<string, string> = { transformer: 'transformador', cable: 'cable', mobile_generator: 'generador móvil' };
-        emit({ type: 'action', agent: 'resource', system: 'SAP Integrated Business Planning', msg: `Material reservado en IBP: 1 ${RESOURCE_LABEL[rt] ?? rt} → ${input.faultId}` });
+        const RESOURCE_LABEL_ES: Record<string, string> = { transformer: 'transformador', cable: 'cable', mobile_generator: 'generador móvil' };
+        const RESOURCE_LABEL_EN: Record<string, string> = { transformer: 'transformer', cable: 'cable', mobile_generator: 'mobile generator' };
+        const rl = params.language === 'en' ? (RESOURCE_LABEL_EN[rt] ?? rt) : (RESOURCE_LABEL_ES[rt] ?? rt);
+        emit({ type: 'action', agent: 'resource', system: 'SAP Integrated Business Planning', msg: params.language === 'en'
+          ? `Material reserved in IBP: 1 ${rl} → ${input.faultId}`
+          : `Material reservado en IBP: 1 ${rl} → ${input.faultId}` });
         return `OK: ${rt} asignado a ${input.faultId}`;
       },
     },
@@ -74,7 +78,9 @@ export async function runResource(
           loser: 'resource',
           reason: input.reason as string,
         });
-        emit({ type: 'action', agent: 'resource', system: 'SAP Integrated Business Planning', msg: `Solicitud de reposición de material registrada en IBP: ${input.reason}` });
+        emit({ type: 'action', agent: 'resource', system: 'SAP Integrated Business Planning', msg: params.language === 'en'
+          ? `Material replenishment request registered in IBP: ${input.reason}`
+          : `Solicitud de reposición de material registrada en IBP: ${input.reason}` });
         return `Conflicto registrado: ${input.faultId} — ${input.reason}`;
       },
     },

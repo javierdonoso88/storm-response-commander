@@ -33,7 +33,9 @@ export async function runComms(
         const msg = input.text as string;
         commsMessages.push({ channel: 'sms', msg });
         emit({ type: 'comms', channel: 'sms', msg });
-        emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: `SMS masivo enviado vía SAP CX — ${msg.slice(0, 60)}${msg.length > 60 ? '…' : ''}` });
+        emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: params.language === 'en'
+          ? `Mass SMS sent via SAP CX — ${msg.slice(0, 60)}${msg.length > 60 ? '…' : ''}`
+          : `SMS masivo enviado vía SAP CX — ${msg.slice(0, 60)}${msg.length > 60 ? '…' : ''}` });
         return 'SMS enviado.';
       },
     },
@@ -51,7 +53,9 @@ export async function runComms(
         const msg = input.text as string;
         commsMessages.push({ channel: 'press', msg });
         emit({ type: 'comms', channel: 'press', msg });
-        emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: `Nota de prensa publicada vía SAP CX → medios locales Girona (El Punt Avui, Diari de Girona)` });
+        emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: params.language === 'en'
+          ? `Press release published via SAP CX → local Girona media (El Punt Avui, Diari de Girona)`
+          : `Nota de prensa publicada vía SAP CX → medios locales Girona (El Punt Avui, Diari de Girona)` });
         return 'Nota de prensa enviada.';
       },
     },
@@ -69,7 +73,9 @@ export async function runComms(
         const msg = input.text as string;
         commsMessages.push({ channel: 'regulatory', msg });
         emit({ type: 'comms', channel: 'regulatory', msg });
-        emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: `Notificación regulatoria enviada vía SAP CX → CTEPC/CNMC` });
+        emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: params.language === 'en'
+          ? `Regulatory notification sent via SAP CX → CTEPC/CNMC`
+          : `Notificación regulatoria enviada vía SAP CX → CTEPC/CNMC` });
         return 'Notificación regulatoria enviada.';
       },
     },

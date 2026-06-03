@@ -54,7 +54,9 @@ export async function runCrewDispatch(
         fault.status = 'crew-en-route';
         dispatches.push({ crewId: crew.id, faultId: fault.id });
         emit({ type: 'asset_update', id: fault.id, status: 'crew-en-route' });
-        emit({ type: 'action', agent: 'crew-dispatch', system: 'SAP Field Service Management', msg: `Orden de trabajo creada: ${crew.id} → ${fault.id} (${fault.zone}) — ETA ${input.eta} min` });
+        emit({ type: 'action', agent: 'crew-dispatch', system: 'SAP Field Service Management', msg: params.language === 'en'
+          ? `Work order created: ${crew.id} → ${fault.id} (${fault.zone}) — ETA ${input.eta} min`
+          : `Orden de trabajo creada: ${crew.id} → ${fault.id} (${fault.zone}) — ETA ${input.eta} min` });
         return `OK: ${crew.id} despachado a ${fault.id} — ETA ${input.eta}min. ${fault.affectedClients.toLocaleString()} clientes afectados.`;
       },
     },
@@ -84,11 +86,15 @@ export async function runCrewDispatch(
         state.drolius.currentTask = input.faultId as string;
 
         emit({ type: 'drolius_update', status: 'deployed', task: input.faultId as string });
-        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: `Drolius asignado en campo → ${fault.zone} (${input.faultId}) — misión: ${input.mission}` });
+        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: params.language === 'en'
+          ? `Drolius deployed → ${fault.zone} (${input.faultId}) — mission: ${input.mission}`
+          : `Drolius asignado en campo → ${fault.zone} (${input.faultId}) — misión: ${input.mission}` });
 
         const report = buildDroliusReport(fault, input.mission as string);
 
-        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: `Drolius transmite informe: ${report.slice(0, 100)}…` });
+        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: params.language === 'en'
+          ? `Drolius transmits report: ${report.slice(0, 100)}…`
+          : `Drolius transmite informe: ${report.slice(0, 100)}…` });
 
         return report;
       },

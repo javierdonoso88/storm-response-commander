@@ -76,7 +76,9 @@ export async function runTriagePriority(
       },
       handler: async (input) => {
         summary = input.summary as string;
-        emit({ type: 'action', agent: 'triage-priority', system: 'SAP S/4HANA Asset Management + Event Mesh', msg: `${state.faults.length} activos analizados — ${criticalFaultIds.length} sitios críticos, ${orderedIds.length} fallos físicos rankeados` });
+        emit({ type: 'action', agent: 'triage-priority', system: 'SAP S/4HANA Asset Management + Event Mesh', msg: params.language === 'en'
+          ? `${state.faults.length} assets analysed — ${criticalFaultIds.length} critical sites, ${orderedIds.length} physical faults ranked`
+          : `${state.faults.length} activos analizados — ${criticalFaultIds.length} sitios críticos, ${orderedIds.length} fallos físicos rankeados` });
         return 'Análisis completado.';
       },
     },

@@ -43,7 +43,9 @@ export async function runRerouting(
         fault.status = 'restored';
         emit({ type: 'asset_update', id: fault.id, status: 'restored' });
         restoredFaultIds.push(fault.id);
-        emit({ type: 'action', agent: 'rerouting', system: 'SAP Asset Intelligence Network', msg: `Conmutación remota ejecutada: ${fault.id} — ${fault.zone} (${fault.affectedClients.toLocaleString()} clientes reconectados)` });
+        emit({ type: 'action', agent: 'rerouting', system: 'SAP Asset Intelligence Network', msg: params.language === 'en'
+          ? `Remote switch executed: ${fault.id} — ${fault.zone} (${fault.affectedClients.toLocaleString()} customers reconnected)`
+          : `Conmutación remota ejecutada: ${fault.id} — ${fault.zone} (${fault.affectedClients.toLocaleString()} clientes reconectados)` });
         return `Conmutación exitosa: ${fault.id} (${fault.zone}) restaurado — ${fault.affectedClients.toLocaleString()} clientes reconectados`;
       },
     },
