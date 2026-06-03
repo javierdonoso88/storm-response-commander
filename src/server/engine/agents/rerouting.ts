@@ -84,6 +84,7 @@ Ejecuta las conmutaciones usando attempt_remote_switch, luego llama a complete_r
     maxTokens: 8192,
     haiku: true,
     instructions: params.instructions,
+    language: params.language,
   });
 
   return {

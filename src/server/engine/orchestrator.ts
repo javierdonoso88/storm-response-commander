@@ -192,7 +192,9 @@ CIERRE: Llama finalize.
 IMPORTANTE: Tras recibir los resultados de cada fase, llama INMEDIATAMENTE a la siguiente herramienta.
 No escribas análisis extensos entre fases — una frase de transición es suficiente.
 Nunca omitas invoke_crew_dispatch, invoke_resource ni invoke_comms.
-Responde en español.`;
+${params.language === 'en'
+  ? 'IMPORTANT: You must respond entirely in English. All reasoning, transitions and summaries must be in English.'
+  : 'Responde en español.'}`;
 
   const userMessage = `INCIDENTE ACTIVO — Comarques de Girona — T+00:00
 

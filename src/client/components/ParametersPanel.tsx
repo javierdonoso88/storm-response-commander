@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SimParams, DroliusStatus } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { useT } from '../i18n';
 
 interface Props {
   params: SimParams;
@@ -44,6 +45,7 @@ function TooltipLabel({ label, tip }: { label: string; tip: string }) {
 export function ParametersPanel({ params, onChange, onSimulate, running, kpi, drolius }: Props) {
   const [showInfo, setShowInfo] = useState(false);
   const { theme } = useTheme();
+  const t = useT();
   const isLight = theme !== 'dark';
 
   const droliusColor = drolius.status === 'available' ? '#22c55e' : '#f97316';
@@ -55,7 +57,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
 
       {/* Section header */}
       <div className="px-3 py-2 border-b" style={{ background: 'var(--bg-base)', borderColor: 'var(--border)' }}>
-        <span className="text-[13px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>Parámetros</span>
+        <span className="text-[13px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>{t.params.header}</span>
       </div>
 
       {/* Context block */}
@@ -63,7 +65,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse flex-shrink-0" />
-            <span className="text-[10px] font-bold tracking-widest" style={{ color: '#ef4444' }}>INCIDENTE ACTIVO</span>
+            <span className="text-[10px] font-bold tracking-widest" style={{ color: '#ef4444' }}>{t.params.incident}</span>
           </div>
           <button
             onClick={() => setShowInfo(true)}
@@ -72,11 +74,11 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
             onMouseEnter={e => { e.currentTarget.style.color = 'var(--text-secondary)'; e.currentTarget.style.borderColor = '#3b82f6'; }}
             onMouseLeave={e => { e.currentTarget.style.color = 'var(--text-muted)'; e.currentTarget.style.borderColor = 'var(--border-accent)'; }}
           >
-            más info
+            {t.params.moreInfo}
           </button>
         </div>
         <p className="text-[11px] leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-          Tormenta severa en <strong style={{ color: 'var(--text-secondary)' }}>Comarques de Girona</strong>. 127K clientes sin suministro, 7 sitios críticos con batería limitada. Configura los parámetros y ejecuta la simulación multi-agente.
+          {t.params.incidentBody}
         </p>
       </div>
 
@@ -97,7 +99,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
             </span>
           </div>
           <span className="text-[10px]" style={{ color: 'var(--text-ghost)' }}>
-            {drolius.status === 'available' ? 'Robot de inspección en standby' : 'Inspección en curso…'}
+            {drolius.status === 'available' ? t.params.droluisAvailable : t.params.droluisRunning}
           </span>
         </div>
       </div>
@@ -106,8 +108,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
 
         {/* SLA */}
         <SliderField
-          label="SLA Objetivo"
-          tip="Tiempo máximo para restaurar el suministro. Valores bajos (< 45 min) generan más conflictos de priorización entre agentes."
+          label={t.params.sla}
+          tip={t.params.slaTip}
           value={`${params.minuteSLA} min`}
           valueColor={params.minuteSLA < 45 ? '#ef4444' : '#3b82f6'}
           min={30} max={120} step={5}
@@ -118,8 +120,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
 
         {/* Switchable faults */}
         <SliderField
-          label="Conmutables"
-          tip="Fallos que pueden restaurarse por telecontrol remoto de forma inmediata, sin brigada física. El resto requiere desplazamiento en campo."
+          label={t.params.switchable}
+          tip={t.params.switchableTip}
           value={String(params.switchableFaults)}
           valueColor={params.switchableFaults < 15 ? '#f97316' : '#3b82f6'}
           min={5} max={22} step={1}
@@ -132,8 +134,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between gap-2">
             <TooltipLabel
-              label="Piezas limitadas"
-              tip="OFF: 2 transformadores disponibles. ON: solo 1 unidad — el agente Resource detecta escasez, prioriza el fallo más crítico y solicita reposición urgente a SAP IBP."
+              label={t.params.limitedParts}
+              tip={t.params.limitedPartsTip}
             />
             <button
               onClick={() => onChange({ limitedParts: params.limitedParts === 1 ? 0 : 1 })}
@@ -151,15 +153,15 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
           </div>
           {params.limitedParts === 1 && (
             <div className="text-[12px] rounded px-2 py-1 border" style={{ color: 'var(--status-running-color)', background: 'var(--status-running-bg)', borderColor: isLight ? 'rgba(194,65,12,0.25)' : '#7c2d12' }}>
-              Solo 1 transformador disponible
+              {t.params.limitedPartsOn}
             </div>
           )}
         </div>
 
         {/* Crews */}
         <SliderField
-          label="Brigadas"
-          tip="Equipos de campo disponibles en 6 bases: Girona, Figueres, Olot, Banyoles, Lloret y Blanes. Cada brigada atiende un fallo a la vez."
+          label={t.params.crews}
+          tip={t.params.crewsTip}
           value={String(params.availableCrews)}
           valueColor="#22c55e"
           min={8} max={22} step={1}
@@ -171,8 +173,8 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
         {/* Storm window */}
         <div className="flex flex-col gap-1.5">
           <TooltipLabel
-            label="Ventana tormenta 2"
-            tip="Tiempo disponible antes de la segunda tormenta. El agente Service Dispatcher descarta reparaciones que superen este límite para proteger a las brigadas."
+            label={t.params.storm2}
+            tip="Tiempo disponible antes de la segunda tormenta."
           />
           <div className="grid grid-cols-2 gap-1">
             {storm2Options.map(opt => (
@@ -186,7 +188,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
                     : { background: 'var(--border)', color: 'var(--text-muted)', borderColor: 'var(--text-ghost)', cursor: 'pointer' }
                 }
               >
-                {opt === 'none' ? 'Sin tormenta' : opt}
+                {opt === 'none' ? t.params.noStorm : opt}
               </button>
             ))}
           </div>
@@ -194,11 +196,11 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
 
         {/* Operator instructions */}
         <div className="flex flex-col gap-1.5">
-          <span className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-dim)' }}>INSTRUCCIONES AL ORQUESTADOR</span>
+          <span className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-dim)' }}>{t.params.operatorInstructions}</span>
           <textarea
             value={params.instructions ?? ''}
             onChange={e => onChange({ instructions: e.target.value })}
-            placeholder="Ej: Prioriza el hospital sobre cualquier otra incidencia. No despachar brigadas a zonas inundadas."
+            placeholder={t.params.operatorPlaceholder}
             rows={4}
             className="w-full rounded-lg text-[11px] leading-relaxed resize-none outline-none p-2.5"
             style={{
@@ -211,7 +213,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
             onBlur={e => { e.currentTarget.style.borderColor = 'var(--border)'; }}
           />
           <span className="text-[10px]" style={{ color: 'var(--text-ghost)' }}>
-            Se inyecta como contexto prioritario en el prompt del orquestador.
+            {t.params.operatorHint}
           </span>
         </div>
 
@@ -220,19 +222,19 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
           {running ? (
             <>
               <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Simulando…
+              {t.params.simulating}
             </>
-          ) : '▶ Simular'}
+          ) : t.params.simulate}
         </button>
 
         {/* KPIs */}
         <div className="border-t pt-3 flex flex-col gap-2.5" style={{ borderColor: 'var(--border)' }}>
-          <span className="text-[13px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>KPIs</span>
-          <KPIRow label="SLA" sub="clientes cubiertos" value={kpi.sla} color={kpi.sla === null ? 'var(--text-ghost)' : kpi.sla >= 80 ? '#22c55e' : kpi.sla >= 60 ? '#f97316' : '#ef4444'} />
-          <KPIRow label="Seguridad" sub="sitios críticos" value={kpi.safety} color={kpi.safety === null ? 'var(--text-ghost)' : kpi.safety === 100 ? '#22c55e' : kpi.safety >= 70 ? '#f97316' : '#ef4444'} />
-          <KPIRow label="Eficiencia" sub="fallos gestionados" value={kpi.efficiency} color={kpi.efficiency === null ? 'var(--text-ghost)' : kpi.efficiency >= 80 ? '#22c55e' : kpi.efficiency >= 60 ? '#f97316' : '#ef4444'} />
-          <KPIMinuteRow label="TIEPI" sub="interrupción media" value={kpi.tiepi} color={kpi.tiepi === null ? 'var(--text-ghost)' : kpi.tiepi <= 60 ? '#22c55e' : kpi.tiepi <= 120 ? '#f97316' : '#ef4444'} />
-          <KPIMinuteRow label="MTTR" sub="tiempo medio reposición" value={kpi.mttr} color={kpi.mttr === null ? 'var(--text-ghost)' : kpi.mttr <= 60 ? '#22c55e' : kpi.mttr <= 120 ? '#f97316' : '#ef4444'} />
+          <span className="text-[13px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>{t.params.kpis}</span>
+          <KPIRow label={t.params.slaKpi} sub={t.params.slaSub} value={kpi.sla} color={kpi.sla === null ? 'var(--text-ghost)' : kpi.sla >= 80 ? '#22c55e' : kpi.sla >= 60 ? '#f97316' : '#ef4444'} />
+          <KPIRow label={t.params.safety} sub={t.params.safetySub} value={kpi.safety} color={kpi.safety === null ? 'var(--text-ghost)' : kpi.safety === 100 ? '#22c55e' : kpi.safety >= 70 ? '#f97316' : '#ef4444'} />
+          <KPIRow label={t.params.efficiency} sub={t.params.efficiencySub} value={kpi.efficiency} color={kpi.efficiency === null ? 'var(--text-ghost)' : kpi.efficiency >= 80 ? '#22c55e' : kpi.efficiency >= 60 ? '#f97316' : '#ef4444'} />
+          <KPIMinuteRow label={t.params.tiepi} sub={t.params.tiepiSub} value={kpi.tiepi} color={kpi.tiepi === null ? 'var(--text-ghost)' : kpi.tiepi <= 60 ? '#22c55e' : kpi.tiepi <= 120 ? '#f97316' : '#ef4444'} />
+          <KPIMinuteRow label={t.params.mttr} sub={t.params.mttrSub} value={kpi.mttr} color={kpi.mttr === null ? 'var(--text-ghost)' : kpi.mttr <= 60 ? '#22c55e' : kpi.mttr <= 120 ? '#f97316' : '#ef4444'} />
         </div>
 
       </div>

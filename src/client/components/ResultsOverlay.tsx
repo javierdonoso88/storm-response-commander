@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ActionMessage, AgentLog, CommsMessage, ConflictEvent, Fault, KPIState } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { useT } from '../i18n';
 
 interface Props {
   faults: Fault[];
@@ -155,9 +156,10 @@ function getMitigation(fault: Fault): { action: string; urgency: 'high' | 'mediu
 const URGENCY_COLOR = { high: '#ef4444', medium: '#f97316', low: '#f59e0b' };
 const URGENCY_LABEL = { high: 'CRÍTICO', medium: 'MODERADO', low: 'BAJO' };
 
-function MinuteKpiCard({ label, sublabel, value, thresholds }: { label: string; sublabel: string; value: number | null; thresholds: [number, number] }) {
+function MinuteKpiCard({ label, sublabel, value, thresholds, gradLabels }: { label: string; sublabel: string; value: number | null; thresholds: [number, number]; gradLabels?: [string, string, string] }) {
   const color = value === null ? 'var(--text-ghost)' : value <= thresholds[0] ? '#22c55e' : value <= thresholds[1] ? '#f97316' : '#ef4444';
-  const grade = value === null ? '' : value <= thresholds[0] ? 'ÓPTIMO' : value <= thresholds[1] ? 'ACEPTABLE' : 'CRÍTICO';
+  const [g0, g1, g2] = gradLabels ?? ['ÓPTIMO', 'ACEPTABLE', 'CRÍTICO'];
+  const grade = value === null ? '' : value <= thresholds[0] ? g0 : value <= thresholds[1] ? g1 : g2;
   return (
     <div className="flex items-center gap-4 flex-1">
       <div>
@@ -214,6 +216,7 @@ function SapKpiCard({ system, value, label, color }: { system: string; value: st
 export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMessages, conflicts, elapsedLabel, onClose }: Props) {
   const [vis, setVis] = useState(false);
   const { theme } = useTheme();
+  const t = useT();
   useEffect(() => { const t = setTimeout(() => setVis(true), 50); return () => clearTimeout(t); }, []);
 
   function downloadReport() {
@@ -448,11 +451,11 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
         {/* ── Header ── */}
         <div className="flex items-center gap-3 px-6 py-4 flex-shrink-0" style={{ borderBottom: '1px solid var(--border)' }}>
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-xs font-black tracking-widest" style={{ color: 'var(--accent)' }}>RESUMEN EJECUTIVO</span>
+          <span className="text-xs font-black tracking-widest" style={{ color: 'var(--accent)' }}>{t.results.title}</span>
           <span className="text-xs font-mono" style={{ color: 'var(--text-ghost)' }}>·</span>
-          <span className="text-xs font-mono" style={{ color: 'var(--text-ghost)' }}>Ciclo completado · {elapsedLabel}</span>
+          <span className="text-xs font-mono" style={{ color: 'var(--text-ghost)' }}>{t.results.completed} · {elapsedLabel}</span>
           <span className="ml-auto text-[11px] font-bold px-3 py-1 rounded-full" style={{ background: '#052e16', color: '#22c55e', border: '1px solid #14532d' }}>
-            ✓ MISIÓN COMPLETADA
+            {t.results.mission}
           </span>
           <button
             onClick={onClose}
@@ -474,24 +477,24 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
               <div style={{ width: 1, height: 100, background: 'var(--border)', flexShrink: 0 }} />
               <div className="flex flex-col items-center gap-1 flex-shrink-0">
                 <div className="text-4xl font-black font-mono" style={{ color: 'var(--accent)' }}>{elapsedLabel}</div>
-                <div className="text-[10px] font-bold tracking-widest mt-1" style={{ color: 'var(--text-dim)' }}>DURACIÓN CICLO</div>
+                <div className="text-[10px] font-bold tracking-widest mt-1" style={{ color: 'var(--text-dim)' }}>{t.results.duration}</div>
               </div>
             </div>
             <div style={{ height: 1, background: 'var(--border)' }} />
             <div className="flex items-center gap-10">
-              <MinuteKpiCard label="TIEPI" sublabel="Tiempo de Interrupción Equiv. Potencia Instalada" value={kpi.tiepi} thresholds={[60, 120]} />
+              <MinuteKpiCard label={t.results.tiepi} sublabel={t.results.tiepiLong} value={kpi.tiepi} thresholds={[60, 120]} gradLabels={[t.results.gradOptimal, t.results.gradAcceptable, t.results.gradCritical]} />
               <div style={{ width: 1, height: 48, background: 'var(--border)', flexShrink: 0 }} />
-              <MinuteKpiCard label="MTTR" sublabel="Mean Time To Repair — Tiempo medio de reposición" value={kpi.mttr} thresholds={[60, 120]} />
+              <MinuteKpiCard label={t.results.mttr} sublabel={t.results.mttrLong} value={kpi.mttr} thresholds={[60, 120]} gradLabels={[t.results.gradOptimal, t.results.gradAcceptable, t.results.gradCritical]} />
             </div>
           </div>
 
           {/* ── Operational stats ── */}
           <div className="grid grid-cols-4 gap-3">
             {[
-              { value: attendedClients.toLocaleString('es-ES'), unit: `/ ${totalClients.toLocaleString('es-ES')}`, label: 'Clientes atendidos', sub: `${Math.round(attendedClients / totalClients * 100)}% del total`, color: '#22c55e' },
-              { value: `${attended}`, unit: `/ ${faults.length}`, label: 'Fallos atendidos', sub: `${restored.length} telecontrol · ${enRoute.length} brigadas`, color: '#3b82f6' },
-              { value: `${criticalsCovered.length}`, unit: `/ ${criticals.length}`, label: 'Sitios críticos cubiertos', sub: criticalsCovered.length === criticals.length ? 'Cobertura total' : `${criticalsPending.length} sin cobertura`, color: criticalsCovered.length === criticals.length ? '#22c55e' : '#ef4444' },
-              { value: `${pending.length}`, unit: '', label: 'Acciones pendientes', sub: pending.length === 0 ? 'Sin fallos sin atender' : `${pending.filter(f => f.criticalSite).length} críticos · ${pending.filter(f => !f.criticalSite).length} residenciales`, color: pending.length === 0 ? '#22c55e' : '#f97316' },
+              { value: attendedClients.toLocaleString('es-ES'), unit: `/ ${totalClients.toLocaleString('es-ES')}`, label: t.results.clientsServed, sub: `${Math.round(attendedClients / totalClients * 100)}%`, color: '#22c55e' },
+              { value: `${attended}`, unit: `/ ${faults.length}`, label: t.results.faultsHandled, sub: `${restored.length} · ${enRoute.length}`, color: '#3b82f6' },
+              { value: `${criticalsCovered.length}`, unit: `/ ${criticals.length}`, label: t.results.criticalCovered, sub: '', color: criticalsCovered.length === criticals.length ? '#22c55e' : '#ef4444' },
+              { value: `${pending.length}`, unit: '', label: t.results.pendingActions, sub: '', color: pending.length === 0 ? '#22c55e' : '#f97316' },
             ].map(s => (
               <div key={s.label} className="rounded-xl p-4" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
                 <div className="flex items-baseline gap-1 mb-1">
@@ -506,7 +509,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
 
           {/* ── SAP Integration KPIs ── */}
           <div>
-            <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: 'var(--text-ghost)' }}>INTEGRACIÓN SAP</div>
+            <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: 'var(--text-ghost)' }}>{t.results.sapIntegration}</div>
             <div className="grid grid-cols-3 gap-3">
               <SapKpiCard system="SAP AI Core Orchestration" value={uniqueSystems} label="Sistemas SAP integrados" color="#f59e0b" />
               <SapKpiCard system="SAP Field Service Management" value={fsmActions} label="Órdenes de trabajo creadas" color="#60a5fa" />
@@ -520,7 +523,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
 
           {/* ── Asset and Services Assistant executive summary ── */}
           <div>
-            <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: 'var(--text-ghost)' }}>ANÁLISIS ASSET AND SERVICES ASSISTANT</div>
+            <div className="text-[10px] font-bold tracking-widest mb-3" style={{ color: 'var(--text-ghost)' }}>{t.results.analysisTitle}</div>
             <div className="rounded-xl px-6 py-5" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)' }}>
               {orchRaw ? (
                 <div>{renderMarkdown(orchRaw)}</div>
@@ -534,7 +537,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
           {pendingSorted.length > 0 && (
             <div>
               <div className="flex items-center gap-3 mb-3">
-                <div className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-ghost)' }}>ACCIONES PENDIENTES</div>
+                <div className="text-[10px] font-bold tracking-widest" style={{ color: 'var(--text-ghost)' }}>{t.results.pendingTitle}</div>
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded" style={{ background: 'rgba(249,115,22,0.12)', color: '#f97316', border: '1px solid rgba(249,115,22,0.25)' }}>
                   {pendingSorted.length} fallo{pendingSorted.length > 1 ? 's' : ''} sin resolver
                 </span>
@@ -591,14 +594,14 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              Descargar PDF
+              {t.results.download}
             </button>
             <button
               onClick={onClose}
               className="px-5 py-2 rounded-lg text-xs font-bold"
               style={{ background: 'var(--accent-subtle)', color: 'var(--accent)', border: '1px solid color-mix(in srgb, var(--accent) 30%, transparent)', cursor: 'pointer' }}
             >
-              Cerrar y volver al simulador
+              {t.results.close}
             </button>
           </div>
         </div>

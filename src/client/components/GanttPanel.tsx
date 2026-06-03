@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { AgentId, AgentState, AgentStatus } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { useT } from '../i18n';
 
 interface Props {
   agents: AgentState[];
@@ -17,24 +18,6 @@ const AGENT_COLOR: Record<AgentId | 'orchestrator', string> = {
   comms:             '#22c55e',
 };
 
-const AGENT_META: Record<AgentId | 'orchestrator', { label: string; sub: string; icon: string }> = {
-  orchestrator:      { label: 'Asset & Services', sub: 'SAP AI Core',        icon: '⚡' },
-  'triage-priority': { label: 'Technician',        sub: 'S/4HANA Assets',    icon: '🔍' },
-  rerouting:         { label: 'Remote SCADA',      sub: 'Asset Intelligence', icon: '📡' },
-  'crew-dispatch':   { label: 'Dispatcher',        sub: 'Field Service Mgmt', icon: '🚛' },
-  resource:          { label: 'Resources',         sub: 'IBP',               icon: '📦' },
-  comms:             { label: 'Comms',             sub: 'SAP CX',            icon: '📣' },
-};
-
-const AGENT_TOOLTIP: Record<AgentId | 'orchestrator', string> = {
-  orchestrator:      'Coordina todos los agentes. Ejecuta la Fase 1 en paralelo y la Fase 2 en secuencial, y calcula los KPIs finales.',
-  'triage-priority': 'Clasifica los 47 fallos por severidad. Rankea los fallos físicos por urgencia.',
-  rerouting:         'Restaura suministro por telecontrol remoto hasta el límite de operaciones autorizadas.',
-  'crew-dispatch':   'Asigna brigadas a fallos físicos respetando skills y ventana de tormenta.',
-  resource:          'Verifica inventario para brigadas despachadas. Registra conflictos si hay déficit.',
-  comms:             'Redacta SMS, nota de prensa y notificación regulatoria.',
-};
-
 // ── Node component (pure HTML — no foreignObject) ─────────────────────────────
 function N8nNode({
   id, agent, style, nodeRef,
@@ -44,6 +27,24 @@ function N8nNode({
   style?: React.CSSProperties;
   nodeRef?: React.Ref<HTMLDivElement>;
 }) {
+  const t = useT();
+  const ga = t.gantt.agents;
+  const AGENT_META: Record<AgentId | 'orchestrator', { label: string; sub: string; icon: string }> = {
+    orchestrator:      { label: ga.orchestratorLabel, sub: ga.orchestratorSub, icon: '⚡' },
+    'triage-priority': { label: ga.triageLabel,       sub: ga.triageSub,       icon: '🔍' },
+    rerouting:         { label: ga.reroutingLabel,    sub: ga.reroutingSub,    icon: '📡' },
+    'crew-dispatch':   { label: ga.dispatchLabel,     sub: ga.dispatchSub,     icon: '🚛' },
+    resource:          { label: ga.resourceLabel,     sub: ga.resourceSub,     icon: '📦' },
+    comms:             { label: ga.commsLabel,        sub: ga.commsSub,        icon: '📣' },
+  };
+  const AGENT_TOOLTIP: Record<AgentId | 'orchestrator', string> = {
+    orchestrator:      ga.orchestratorTip,
+    'triage-priority': ga.triageTip,
+    rerouting:         ga.reroutingTip,
+    'crew-dispatch':   ga.dispatchTip,
+    resource:          ga.resourceTip,
+    comms:             ga.commsTip,
+  };
   const meta      = AGENT_META[id];
   const color     = AGENT_COLOR[id];
   const status    = agent?.status ?? 'pending';
@@ -123,7 +124,7 @@ function N8nNode({
           boxShadow: isRunning ? `0 0 5px ${color}` : 'none',
         }} />
         <span style={{ fontSize: 9, color: isRunning ? color : isDone ? '#22c55e' : 'var(--text-ghost)' }}>
-          {isRunning ? 'Running' : isDone ? 'Done ✓' : 'Pending'}
+          {isRunning ? t.gantt.running : isDone ? t.gantt.done : t.gantt.pending}
         </span>
       </div>
     </div>
@@ -167,6 +168,7 @@ const totalH = row1Y + NH + 22;
 export function GanttPanel({ agents, conflicts, orchestratorStatus = 'pending' }: Props) {
   const agentMap = new Map(agents.map(a => [a.id, a]));
   const { theme } = useTheme();
+  const t = useT();
   const accent = theme === 'dark' ? '#38bdf8' : theme === 'joule' ? '#6d28d9' : '#00a651';
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
@@ -227,7 +229,7 @@ export function GanttPanel({ agents, conflicts, orchestratorStatus = 'pending' }
     <div className="panel-card flex flex-col h-full overflow-hidden">
       <div className="panel-header">
         <span style={{ color: 'var(--accent)' }}>◈</span>
-        AGENT ORCHESTRATION FLOW
+        {t.gantt.header}
       </div>
 
       <div ref={containerRef} className="flex-1 overflow-hidden"
@@ -257,11 +259,11 @@ export function GanttPanel({ agents, conflicts, orchestratorStatus = 'pending' }
               </defs>
               <text x={phase1X} y={row0Y - 6} textAnchor="middle"
                 fontSize={7} fontWeight="700" fill="var(--accent)" letterSpacing="0.08em" opacity="0.8">
-                PREPARATION · PARALLEL
+                {t.gantt.phase1}
               </text>
               <text x={phase2X} y={row1Y - 6} textAnchor="middle"
                 fontSize={7} fontWeight="700" fill="#f97316" letterSpacing="0.08em" opacity="0.8">
-                EXECUTION · SEQUENTIAL
+                {t.gantt.phase2}
               </text>
               {[d1, d2, d3, d4, d5].map((d, i) => (
                 <path key={i} d={d} fill="none" stroke={accent} strokeWidth={1.2}
@@ -283,7 +285,7 @@ export function GanttPanel({ agents, conflicts, orchestratorStatus = 'pending' }
         {conflicts.length > 0 && (
           <div className="absolute bottom-0 left-0 right-0 px-3 pb-2 flex flex-col gap-1"
             style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-panel)' }}>
-            <div className="text-[10px] font-bold tracking-widest text-red-400 uppercase pt-1.5">⚡ Conflictos</div>
+            <div className="text-[10px] font-bold tracking-widest text-red-400 uppercase pt-1.5">⚡ {t.gantt.conflicts}</div>
             {conflicts.slice(0, 2).map((c, i) => (
               <div key={i} title={c.reason}
                 className="text-[10px] rounded px-2 py-1 leading-snug cursor-help"

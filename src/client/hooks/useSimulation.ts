@@ -3,6 +3,7 @@ import {
   AgentId, AgentLog, AgentState, AgentStatus, ActionMessage, CommsMessage, ConflictEvent,
   Fault, KPIState, SimEvent, SimParams, DroliusStatus
 } from '../types';
+import { Lang } from '../contexts/LanguageContext';
 
 const AGENT_LABELS: Record<AgentId | 'orchestrator', string> = {
   orchestrator: 'Asset and Services Assistant',
@@ -56,7 +57,7 @@ export function useSimulation(initialFaults: Fault[]) {
     drolius: { status: 'available' },
   });
 
-  const startSimulation = useCallback((params: SimParams) => {
+  const startSimulation = useCallback((params: SimParams, lang: Lang = 'es') => {
     setState(prev => ({
       ...prev,
       running: true,
@@ -73,15 +74,15 @@ export function useSimulation(initialFaults: Fault[]) {
       drolius: { status: 'available' },
     }));
 
-    simulateWithFetch(params);
+    simulateWithFetch(params, lang);
   }, [initialFaults]);
 
-  const simulateWithFetch = useCallback(async (params: SimParams) => {
+  const simulateWithFetch = useCallback(async (params: SimParams, lang: Lang = 'es') => {
     try {
       const response = await fetch('/api/simulate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params),
+        body: JSON.stringify({ ...params, language: lang }),
       });
       if (!response.body) return;
 

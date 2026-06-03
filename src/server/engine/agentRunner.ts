@@ -19,13 +19,18 @@ export async function runAgent(opts: {
   maxTurns?: number;
   haiku?: boolean;
   instructions?: string;
+  language?: string;
 }): Promise<void> {
-  const { systemPrompt, userMessage, tools, emit, agentId, maxTokens = 4096, maxTurns = 15, haiku = false, instructions } = opts;
+  const { systemPrompt, userMessage, tools, emit, agentId, maxTokens = 4096, maxTurns = 15, haiku = false, instructions, language } = opts;
   const modelName = haiku ? MODEL_HAIKU : MODEL_SONNET;
 
+  const langInstruction = language === 'en'
+    ? 'IMPORTANT: You must respond entirely in English. All your reasoning, tool calls, summaries and messages must be written in English.'
+    : 'IMPORTANTE: Debes responder completamente en español. Todo tu razonamiento, llamadas a herramientas, resúmenes y mensajes deben estar en español.';
+
   const effectiveSystem = instructions?.trim()
-    ? `INSTRUCCIONES OBLIGATORIAS DEL OPERADOR (máxima prioridad — aplícalas en todas tus decisiones):\n${instructions.trim()}\n\n---\n\n${systemPrompt}`
-    : systemPrompt;
+    ? `INSTRUCCIONES OBLIGATORIAS DEL OPERADOR (máxima prioridad — aplícalas en todas tus decisiones):\n${instructions.trim()}\n\n---\n\n${langInstruction}\n\n---\n\n${systemPrompt}`
+    : `${langInstruction}\n\n---\n\n${systemPrompt}`;
 
   const sdkTools: Anthropic.Tool[] = tools.map(t => ({
     name: t.name,

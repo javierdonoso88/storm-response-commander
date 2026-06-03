@@ -117,6 +117,7 @@ Redacta y envía las 3 comunicaciones con send_sms, send_press_release, send_reg
     maxTokens: 8192,
     haiku: true,
     instructions: params.instructions,
+    language: params.language,
   });
 
   return {

@@ -1,0 +1,348 @@
+export interface Translations {
+  lang: {
+    toggle: string;
+  };
+  themes: {
+    dark: string;
+    joule: string;
+    iberdrola: string;
+  };
+  nav: {
+    openSimulator: string;
+    back: string;
+  };
+  hero: {
+    badge: string;
+    subtitle: string;
+    location: string;
+    cta: string;
+    scroll: string;
+  };
+  stats: {
+    clients: string; clientsSub: string;
+    faults: string;  faultsSub: string;
+    crews: string;   crewsSub: string;
+    critical: string; criticalSub: string;
+  };
+  challenge: {
+    eyebrow: string;
+    title: string; titleHighlight: string;
+    body: string;
+    card1: string; card1Sub: string;
+    card2: string; card2Sub: string;
+    card3: string; card3Sub: string;
+    card4: string; card4Sub: string;
+    drolius: string; droluisSub: string;
+  };
+  arch: {
+    eyebrow: string;
+    title: string;
+    subtitle: string;
+    supervisor: string;
+    sapSystem: string;
+    phase1: string;
+    phase2: string;
+    agents: {
+      techLabel: string; techDesc: string;
+      scadaLabel: string; scadaDesc: string;
+      dispLabel: string; dispDesc: string;
+      resLabel: string; resDesc: string;
+      commsLabel: string; commsDesc: string;
+    };
+  };
+  cta: {
+    eyebrow: string;
+    title: string;
+    body: string;
+    button: string;
+    footer: string;
+  };
+  app: {
+    title: string;
+    standby: string;
+    running: string;
+    done: string;
+    report: string;
+    window: string;
+  };
+  params: {
+    header: string;
+    incident: string;
+    moreInfo: string;
+    incidentBody: string;
+    droluisAvailable: string;
+    droluisRunning: string;
+    sla: string; slaTip: string;
+    switchable: string; switchableTip: string;
+    limitedParts: string; limitedPartsTip: string;
+    limitedPartsOn: string;
+    crews: string; crewsTip: string;
+    storm2: string;
+    noStorm: string;
+    operatorInstructions: string;
+    operatorPlaceholder: string;
+    operatorHint: string;
+    simulate: string;
+    simulating: string;
+    kpis: string;
+    slaKpi: string; slaSub: string;
+    safety: string; safetySub: string;
+    efficiency: string; efficiencySub: string;
+    tiepi: string; tiepiSub: string;
+    mttr: string; mttrSub: string;
+    infoTitle: string;
+    infoSummary: string;
+    infoFaults: string; infoFaultsLabel: string;
+    infoCritical: string; infoCriticalLabel: string;
+    infoFaultTypes: string;
+    infoResources: string;
+    infoChallenges: string;
+    infoClose: string;
+    infoCrewBases: string;
+    infoInventory: string;
+    infoDrolius: string;
+  };
+  map: {
+    header: string;
+    fault: string;
+    switching: string;
+    restored: string;
+    crewEnRoute: string;
+    repairing: string;
+    repaired: string;
+    typeSwitchable: string;
+    typeTransformer: string;
+    typeCable: string;
+    tooltipType: string;
+    tooltipClients: string;
+    tooltipBattery: string;
+    droluisScout: string;
+    droluisAssigned: string;
+    legendFault: string;
+    legendActive: string;
+    legendOk: string;
+  };
+  log: {
+    header: string;
+    live: string;
+    placeholder: string;
+    supervisor: string;
+    phase1: string;
+    phase2: string;
+    pending: string;
+    agentOrchestrator: string;
+    agentTriage: string;
+    agentRerouting: string;
+    agentDispatch: string;
+    agentResource: string;
+    agentComms: string;
+  };
+  gantt: {
+    header: string;
+    phase1: string;
+    phase2: string;
+    running: string;
+    done: string;
+    pending: string;
+    conflicts: string;
+    agents: {
+      orchestratorLabel: string; orchestratorSub: string; orchestratorTip: string;
+      triageLabel: string; triageSub: string; triageTip: string;
+      reroutingLabel: string; reroutingSub: string; reroutingTip: string;
+      dispatchLabel: string; dispatchSub: string; dispatchTip: string;
+      resourceLabel: string; resourceSub: string; resourceTip: string;
+      commsLabel: string; commsSub: string; commsTip: string;
+    };
+  };
+  stats: {
+    sapHeader: string;
+    commsHeader: string;
+    sapPlaceholder: string;
+    commsPlaceholder: string;
+    sms: string;
+    press: string;
+    regulatory: string;
+  };
+  results: {
+    title: string;
+    completed: string;
+    mission: string;
+    download: string;
+    close: string;
+    duration: string;
+    tiepi: string; tiepiLong: string;
+    mttr: string; mttrLong: string;
+    clientsServed: string;
+    faultsHandled: string;
+    criticalCovered: string;
+    pendingActions: string;
+    sapIntegration: string;
+    analysisTitle: string;
+    pendingTitle: string;
+    urgencyCritical: string;
+    urgencyModerate: string;
+    urgencyLow: string;
+    gradOptimal: string;
+    gradAcceptable: string;
+    gradCritical: string;
+    pdfTitle: string;
+    pdfKpis: string;
+    pdfOperational: string;
+    pdfSap: string;
+    pdfAnalysis: string;
+    pdfPending: string;
+    pdfGenerated: string;
+  };
+}
+
+export const es: Translations = {
+  lang: { toggle: 'EN' },
+  themes: { dark: 'Oscuro', joule: 'SAP Joule', iberdrola: 'Iberdrola' },
+  nav: { openSimulator: 'Abrir Simulador →', back: 'Inicio' },
+  hero: {
+    badge: 'SAP AI CORE × SAP JOULE MULTI-AGENT',
+    subtitle: 'Sistema multi-agente de inteligencia artificial para la gestión de incidentes eléctricos en tiempo real. Orquestación autónoma, decisiones razonadas e integraciones SAP en vivo.',
+    location: 'IBERDROLA · COMARQUES DE GIRONA · ESCENARIO DE TORMENTA',
+    cta: 'Acceder al Simulador →',
+    scroll: 'SCROLL',
+  },
+  stats: {
+    clients: 'Clientes afectados', clientsSub: 'Comarques de Girona',
+    faults: 'Fallos activos', faultsSub: 'Transformadores · Cables · Conmutables',
+    crews: 'Brigadas', crewsSub: 'En 6 bases operativas',
+    critical: 'Sitios críticos', criticalSub: 'Hospitales · CPDs · Diálisis',
+  },
+  challenge: {
+    eyebrow: 'EL RETO OPERATIVO',
+    title: '47 fallos simultáneos.', titleHighlight: 'Decisiones en minutos.',
+    body: 'Una tormenta severa golpea las Comarques de Girona dejando a 127.000 clientes sin suministro. Hospitales y centros de diálisis funcionan con baterías. El equipo de operaciones dispone de una ventana limitada antes de la segunda tormenta para restaurar el máximo de suministro con los recursos disponibles. Cada minuto cuenta.',
+    card1: 'Sitios críticos', card1Sub: 'Hospitales, diálisis y CPDs — batería limitada, prioridad máxima',
+    card2: 'Fallos de transformador', card2Sub: '7 activos — brigada especializada · 90–180 min reparación',
+    card3: 'Fallos de cable MT/BT', card3Sub: '18 activos — reparación manual · 60–120 min',
+    card4: 'Red conmutable', card4Sub: '22 activos — restauración por telecontrol remoto · inmediato',
+    drolius: 'Drolius — Robot de Inspección',
+    droluisSub: 'Boston Dynamics Scout desplegado en campo. El agente Service Dispatcher Agent puede enviarlo a zonas peligrosas para confirmar batería SAI, evaluar accesibilidad o documentar daños antes de arriesgar a una brigada.',
+  },
+  arch: {
+    eyebrow: 'ARQUITECTURA MULTI-AGENTE',
+    title: 'Orquestación autónoma con SAP',
+    subtitle: 'Un orquestador SAP AI Core coordina 5 agentes especializados que razonan y actúan con herramientas reales',
+    supervisor: 'SUPERVISOR',
+    sapSystem: 'SAP AI Core Orchestration',
+    phase1: 'FASE 1 — PARALELO',
+    phase2: 'FASE 2 — SECUENCIAL',
+    agents: {
+      techLabel: 'TECHNICIAN BRIEFING AGENT', techDesc: 'Clasifica 47 fallos por severidad y rankea los físicos por urgencia para el despacho',
+      scadaLabel: 'REMOTE RESTORATION SCADA AGENT', scadaDesc: 'Ejecuta conmutaciones remotas de telecontrol hasta el límite autorizado',
+      dispLabel: 'SERVICE DISPATCHER AGENT', dispDesc: 'Asigna brigadas respetando skills y ventana de tormenta',
+      resLabel: 'RESOURCE CAPACITY SHORTAGE AGENT', resDesc: 'Gestiona inventario y registra conflictos de material',
+      commsLabel: 'COMMUNICATIONS INSIGHT AGENT', commsDesc: 'Redacta SMS, notas de prensa y notificaciones regulatorias',
+    },
+  },
+  cta: {
+    eyebrow: 'LISTO PARA SIMULAR',
+    title: 'Inicia el incidente',
+    body: 'Configura los parámetros operativos y observa cómo los agentes razonan, deciden y actúan en tiempo real.',
+    button: 'Acceder al Simulador →',
+    footer: 'SAP BTP Cloud Foundry · SAP AI Core · SAP Joule',
+  },
+  app: {
+    title: 'Storm Response Commander',
+    standby: 'Standby', running: 'En ejecución', done: '✓ Completado',
+    report: 'Ver Informe', window: 'VENTANA',
+  },
+  params: {
+    header: 'PARÁMETROS',
+    incident: 'INCIDENTE ACTIVO', moreInfo: 'más info',
+    incidentBody: 'Tormenta severa en Comarques de Girona. 127K clientes sin suministro, 7 sitios críticos con batería limitada. Configura los parámetros y ejecuta la simulación multi-agente.',
+    droluisAvailable: 'Robot de inspección en standby',
+    droluisRunning: 'Inspección en curso…',
+    sla: 'SLA Objetivo', slaTip: 'Tiempo máximo comprometido para restaurar el suministro. Afecta la priorización de sitios críticos y la urgencia del despacho.',
+    switchable: 'Conmutables', switchableTip: 'Fallos que pueden restaurarse por telecontrol remoto sin enviar brigadas. Límite de operaciones autorizadas para la jornada.',
+    limitedParts: 'Piezas limitadas', limitedPartsTip: 'OFF: 2 transformadores en almacén (inventario completo). ON: solo 1 transformador disponible — fuerza conflictos de material.',
+    limitedPartsOn: 'Solo 1 transformador disponible',
+    crews: 'Brigadas', crewsTip: 'Equipos de campo disponibles para la jornada. Subconjunto de las 22 brigadas base.',
+    storm2: 'Ventana tormenta 2', noStorm: 'Sin tormenta',
+    operatorInstructions: 'INSTRUCCIONES AL ORQUESTADOR',
+    operatorPlaceholder: 'Ej: Prioriza el hospital sobre cualquier otra incidencia. No despachar brigadas a zonas inundadas.',
+    operatorHint: 'Se inyecta como contexto prioritario en el prompt del orquestador.',
+    simulate: '▶ Simular', simulating: 'Simulando…',
+    kpis: 'KPIS',
+    slaKpi: 'SLA', slaSub: 'clientes cubiertos',
+    safety: 'Seguridad', safetySub: 'sitios críticos',
+    efficiency: 'Eficiencia', efficiencySub: 'fallos gestionados',
+    tiepi: 'TIEPI', tiepiSub: 'interrupción media',
+    mttr: 'MTTR', mttrSub: 'tiempo medio reposición',
+    infoTitle: 'Resumen del incidente',
+    infoSummary: 'Resumen del incidente', infoFaults: 'fallos activos', infoFaultsLabel: 'INCIDENTE ACTIVO',
+    infoCritical: 'sitios críticos', infoCriticalLabel: 'Sitios críticos con SAI / batería',
+    infoFaultTypes: 'Tipos de fallo', infoResources: 'Recursos disponibles',
+    infoChallenges: 'Tensiones del escenario', infoClose: '×',
+    infoCrewBases: 'BRIGADAS — 6 bases', infoInventory: 'MATERIAL EN ALMACÉN', infoDrolius: 'DROLIUS — 1 UNIDAD',
+  },
+  map: {
+    header: 'RED ELÉCTRICA — GIRONA',
+    fault: 'Avería', switching: 'Conmutando…', restored: 'Restaurado',
+    crewEnRoute: 'Brigada en ruta', repairing: 'Reparando', repaired: 'Reparado',
+    typeSwitchable: 'Conmutable', typeTransformer: 'Transformador', typeCable: 'Cable',
+    tooltipType: 'Tipo:', tooltipClients: 'Clientes:', tooltipBattery: 'batería:',
+    droluisScout: 'Drolius Scout', droluisAssigned: 'Asignado en campo',
+    legendFault: 'Avería', legendActive: 'Activo', legendOk: 'OK',
+  },
+  log: {
+    header: 'LOG DE AGENTES', live: 'LIVE',
+    placeholder: 'Pulsa SIMULAR para ver el razonamiento de los agentes…',
+    supervisor: 'SUPERVISOR', phase1: 'PREPARATION PHASE (PARALLEL)', phase2: 'EXECUTION PHASE',
+    pending: '— pending —',
+    agentOrchestrator: 'Asset and Services Assistant',
+    agentTriage: 'Technician Briefing Agent',
+    agentRerouting: 'Remote Restoration Scada Agent',
+    agentDispatch: 'Service Dispatcher Agent',
+    agentResource: 'Resource Capacity Shortage Agent',
+    agentComms: 'Communications Insight Agent',
+  },
+  gantt: {
+    header: 'AGENT ORCHESTRATION FLOW',
+    phase1: 'PREPARATION · PARALLEL', phase2: 'EXECUTION · SEQUENTIAL',
+    running: 'Running', done: 'Done ✓', pending: 'Pending',
+    conflicts: 'Conflictos',
+    agents: {
+      orchestratorLabel: 'Asset & Services', orchestratorSub: 'SAP AI Core',
+      orchestratorTip: 'Coordina todos los agentes. Ejecuta la Fase 1 en paralelo y la Fase 2 en secuencial, y calcula los KPIs finales.',
+      triageLabel: 'Technician', triageSub: 'S/4HANA Assets',
+      triageTip: 'Clasifica los 47 fallos por severidad e identifica sitios críticos con batería en riesgo. Rankea los fallos físicos por urgencia.',
+      reroutingLabel: 'Remote SCADA', reroutingSub: 'Asset Intelligence',
+      reroutingTip: 'Restaura suministro por telecontrol remoto hasta el límite de operaciones autorizadas.',
+      dispatchLabel: 'Dispatcher', dispatchSub: 'Field Service Mgmt',
+      dispatchTip: 'Asigna brigadas a fallos físicos respetando skills y ventana de tormenta.',
+      resourceLabel: 'Resources', resourceSub: 'IBP',
+      resourceTip: 'Verifica inventario para brigadas despachadas. Registra conflictos si hay déficit.',
+      commsLabel: 'Comms', commsSub: 'SAP CX',
+      commsTip: 'Redacta SMS, nota de prensa y notificación regulatoria.',
+    },
+  },
+  stats: {
+    sapHeader: 'ACCIONES SAP', commsHeader: 'COMUNICACIONES',
+    sapPlaceholder: 'Las acciones de integración aparecerán aquí',
+    commsPlaceholder: 'Las comunicaciones aparecerán aquí durante la simulación',
+    sms: 'SMS', press: 'PRENSA', regulatory: 'REGULATORIO',
+  },
+  results: {
+    title: 'RESUMEN EJECUTIVO', completed: 'Ciclo completado', mission: '✓ MISIÓN COMPLETADA',
+    download: 'Descargar PDF', close: 'Cerrar y volver al simulador',
+    duration: 'DURACIÓN CICLO',
+    tiepi: 'TIEPI', tiepiLong: 'Tiempo de Interrupción Equiv. Potencia Instalada',
+    mttr: 'MTTR', mttrLong: 'Mean Time To Repair — Tiempo medio de reposición',
+    clientsServed: 'Clientes atendidos', faultsHandled: 'Fallos atendidos',
+    criticalCovered: 'Sitios críticos cubiertos', pendingActions: 'Acciones pendientes',
+    sapIntegration: 'INTEGRACIÓN SAP',
+    analysisTitle: 'ANÁLISIS ASSET AND SERVICES ASSISTANT',
+    pendingTitle: 'ACCIONES PENDIENTES',
+    urgencyCritical: 'CRÍTICO', urgencyModerate: 'MODERADO', urgencyLow: 'BAJO',
+    gradOptimal: 'ÓPTIMO', gradAcceptable: 'ACEPTABLE', gradCritical: 'CRÍTICO',
+    pdfTitle: 'Resumen Ejecutivo', pdfKpis: 'KPIs DE MISIÓN',
+    pdfOperational: 'INDICADORES OPERATIVOS', pdfSap: 'INTEGRACIÓN SAP',
+    pdfAnalysis: 'ANÁLISIS ASSET AND SERVICES ASSISTANT',
+    pdfPending: 'ACCIONES PENDIENTES', pdfGenerated: 'Generado el',
+  },
+};

@@ -3,6 +3,8 @@ import { Fault, SimParams } from './types';
 import { useSimulation } from './hooks/useSimulation';
 import { useTheme } from './contexts/ThemeContext';
 import { Theme } from './contexts/ThemeContext';
+import { useLanguage } from './contexts/LanguageContext';
+import { useT } from './i18n';
 import { ParametersPanel } from './components/ParametersPanel';
 import { LogPanel } from './components/LogPanel';
 import { GanttPanel } from './components/GanttPanel';
@@ -28,6 +30,8 @@ export default function App() {
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const themePickerRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
+  const { lang, setLang } = useLanguage();
+  const t = useT();
 
   const { state, startSimulation, tickAgentProgress } = useSimulation(initialFaults);
 
@@ -73,23 +77,23 @@ export default function App() {
         style={{ background: 'var(--bg-header)', borderColor: 'var(--border)' }}>
         <span className="font-bold text-sm tracking-wide flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 18, width: 'auto' }} />
-          Storm Response Commander
+          {t.app.title}
         </span>
 
         {/* Status chip */}
         <div className="ml-2">
           {state.running ? (
             <span className="sap-tag" style={{ background: 'var(--status-running-bg)', color: 'var(--status-running-color)' }}>
-              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" /> En ejecución
+              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" /> {t.app.running}
             </span>
           ) : state.done ? (
-            <span className="sap-tag" style={{ background: 'var(--status-done-bg)', color: 'var(--status-done-color)' }}>✓ Completado</span>
+            <span className="sap-tag" style={{ background: 'var(--status-done-bg)', color: 'var(--status-done-color)' }}>{t.app.done}</span>
           ) : (
-            <span className="sap-tag" style={{ background: 'var(--border)', color: 'var(--text-muted)' }}>Standby</span>
+            <span className="sap-tag" style={{ background: 'var(--border)', color: 'var(--text-muted)' }}>{t.app.standby}</span>
           )}
         </div>
 
-        {/* Ver informe button */}
+        {/* View report button */}
         {state.done && !state.running && (
           <button
             onClick={() => setShowResults(v => !v)}
@@ -104,13 +108,13 @@ export default function App() {
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Ver Informe
+            {t.app.report}
           </button>
         )}
 
         {/* Safety window bar */}
         <div className="ml-auto flex items-center gap-2" style={{ minWidth: 240 }}>
-          <span className="text-xs font-mono whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>VENTANA {params.storm2Window}</span>
+          <span className="text-xs font-mono whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>{t.app.window} {params.storm2Window}</span>
           <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
             <div className="h-full rounded-full transition-all duration-500"
               style={{
@@ -121,6 +125,15 @@ export default function App() {
           <span className="text-xs font-mono whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>{state.elapsedLabel}</span>
         </div>
 
+        {/* Language toggle */}
+        <button
+          onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
+          className="flex items-center gap-1 px-2.5 h-7 rounded-lg text-xs font-bold"
+          style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--accent)', cursor: 'pointer' }}
+        >
+          🌐 {t.lang.toggle}
+        </button>
+
         {/* Theme picker dropdown */}
         <div className="relative flex-shrink-0" ref={themePickerRef}>
           <button
@@ -129,7 +142,7 @@ export default function App() {
             style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer' }}
           >
             <span>{theme === 'dark' ? '🌙' : theme === 'joule' ? '☀' : '⚡'}</span>
-            <span>{theme === 'dark' ? 'Oscuro' : theme === 'joule' ? 'Joule' : 'Iberdrola'}</span>
+            <span>{theme === 'dark' ? t.themes.dark : theme === 'joule' ? t.themes.joule : t.themes.iberdrola}</span>
             <svg width="8" height="5" viewBox="0 0 8 5" fill="currentColor"><path d="M0 0l4 5 4-5z"/></svg>
           </button>
           {showThemePicker && (
@@ -138,9 +151,9 @@ export default function App() {
               style={{ background: 'var(--bg-panel)', border: '1px solid var(--border-accent)', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', minWidth: 140 }}
             >
               {([
-                { value: 'dark', icon: '🌙', label: 'Oscuro' },
-                { value: 'joule', icon: '☀', label: 'SAP Joule' },
-                { value: 'iberdrola', icon: '⚡', label: 'Iberdrola' },
+                { value: 'dark', icon: '🌙', label: t.themes.dark },
+                { value: 'joule', icon: '☀', label: t.themes.joule },
+                { value: 'iberdrola', icon: '⚡', label: t.themes.iberdrola },
               ] as { value: Theme; icon: string; label: string }[]).map(opt => (
                 <button
                   key={opt.value}
@@ -170,7 +183,7 @@ export default function App() {
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
-          Inicio
+          {t.nav.back}
         </button>
       </header>
 
@@ -182,7 +195,7 @@ export default function App() {
           <ParametersPanel
             params={params}
             onChange={p => setParams(prev => ({ ...prev, ...p }))}
-            onSimulate={() => { setShowResults(false); startSimulation(params); }}
+            onSimulate={() => { setShowResults(false); startSimulation(params, lang); }}
             running={state.running}
             kpi={state.kpi}
             drolius={state.drolius}

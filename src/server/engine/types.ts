@@ -11,6 +11,7 @@ export interface SimParams {
   storm2Window: 'T+4h' | 'T+6h' | 'T+8h' | 'none';
   availableCrews: number;     // 8–22
   instructions?: string;      // free-text operator instructions injected into orchestrator prompt
+  language?: 'es' | 'en';    // response language for all agents
 }
 
 export interface Fault {

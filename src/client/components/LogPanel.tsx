@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { AgentId, AgentLog } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { useT } from '../i18n';
 
 interface Props {
   logs: AgentLog[];
@@ -16,21 +17,22 @@ const AGENT_COLORS: Record<AgentId | 'orchestrator', string> = {
   comms:             '#22c55e',
 };
 
-const AGENT_LABELS: Record<AgentId | 'orchestrator', string> = {
-  orchestrator:      'Asset and Services Assistant',
-  'triage-priority': 'Technician Briefing Agent',
-  rerouting:         'Remote Restoration Scada Agent',
-  'crew-dispatch':   'Service Dispatcher Agent',
-  resource:          'Resource Capacity Shortage Agent',
-  comms:             'Communications Insight Agent',
-};
-
 const PHASE1: (AgentId | 'orchestrator')[] = ['triage-priority', 'rerouting'];
 const PHASE2: (AgentId | 'orchestrator')[] = ['crew-dispatch', 'resource', 'comms'];
 
 export function LogPanel({ logs, running }: Props) {
+  const t = useT();
   const logMap = new Map<string, AgentLog>();
   for (const l of logs) logMap.set(l.agent, l);
+
+  const AGENT_LABELS: Record<AgentId | 'orchestrator', string> = {
+    orchestrator:      t.log.agentOrchestrator,
+    'triage-priority': t.log.agentTriage,
+    rerouting:         t.log.agentRerouting,
+    'crew-dispatch':   t.log.agentDispatch,
+    resource:          t.log.agentResource,
+    comms:             t.log.agentComms,
+  };
 
   const orchestratorLog = logMap.get('orchestrator');
   const phase1Logs = PHASE1.map(id => logMap.get(id));
@@ -43,10 +45,10 @@ export function LogPanel({ logs, running }: Props) {
     <div className="panel-card flex flex-col h-full overflow-hidden">
       <div className="panel-header">
         <span className="text-purple-400">◈</span>
-        LOG DE AGENTES
+        {t.log.header}
         {running && (
           <span className="ml-auto flex items-center gap-1 text-purple-400 text-[12px]">
-            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" /> LIVE
+            <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" /> {t.log.live}
           </span>
         )}
       </div>
@@ -54,52 +56,51 @@ export function LogPanel({ logs, running }: Props) {
       <div className="flex-1 flex flex-col overflow-hidden p-2 gap-2" style={{ minHeight: 0 }}>
         {!hasAny && (
           <span className="text-xs text-slate-600 italic m-auto">
-            Pulsa SIMULAR para ver el razonamiento de los agentes...
+            {t.log.placeholder}
           </span>
         )}
 
-        {/* Orchestrator — same height as other sections */}
         {orchestratorLog && (
           <div className="flex flex-col min-h-0" style={{ flex: '1 1 0' }}>
             <div className="text-[13px] text-amber-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
-              ── SUPERVISOR ──────────────────────────────
+              ── {t.log.supervisor} ──────────────────────────────
             </div>
             <div className="flex-1 min-h-0">
-              <LogBlock log={orchestratorLog} />
+              <LogBlock log={orchestratorLog} agentLabels={AGENT_LABELS} />
             </div>
           </div>
         )}
 
-        {/* Phase 1 — fills remaining space */}
         {phase1Logs.some(Boolean) && (
           <div className="flex flex-col min-h-0" style={{ flex: hasPhases && phase2Logs.some(Boolean) ? '1 1 0' : '1 1 0' }}>
             <div className="text-[13px] text-blue-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
-              ── PREPARATION PHASE (PARALLEL) ─────────────
+              ── {t.log.phase1} ─────────────
             </div>
             <div className="grid grid-cols-2 gap-2 flex-1 min-h-0">
               {PHASE1.map((id, i) => (
                 <LogBlock
                   key={id}
-                  log={phase1Logs[i] ?? placeholderLog(id)}
+                  log={phase1Logs[i] ?? placeholderLog(id, AGENT_LABELS)}
                   placeholder={!phase1Logs[i]}
+                  agentLabels={AGENT_LABELS}
                 />
               ))}
             </div>
           </div>
         )}
 
-        {/* Phase 2 — fills remaining space */}
         {phase2Logs.some(Boolean) && (
           <div className="flex flex-col min-h-0" style={{ flex: '1 1 0' }}>
             <div className="text-[13px] text-blue-400 font-bold uppercase tracking-widest mb-1 px-1 flex-shrink-0">
-              ── EXECUTION PHASE ────────────────────────────
+              ── {t.log.phase2} ────────────────────────────
             </div>
             <div className="grid grid-cols-3 gap-2 flex-1 min-h-0">
               {PHASE2.map((id, i) => (
                 <LogBlock
                   key={id}
-                  log={phase2Logs[i] ?? placeholderLog(id)}
+                  log={phase2Logs[i] ?? placeholderLog(id, AGENT_LABELS)}
                   placeholder={!phase2Logs[i]}
+                  agentLabels={AGENT_LABELS}
                 />
               ))}
             </div>
@@ -110,13 +111,14 @@ export function LogPanel({ logs, running }: Props) {
   );
 }
 
-function placeholderLog(agent: AgentId | 'orchestrator'): AgentLog {
-  return { agent, label: AGENT_LABELS[agent] ?? agent.toUpperCase(), text: '', complete: false };
+function placeholderLog(agent: AgentId | 'orchestrator', labels: Record<string, string>): AgentLog {
+  return { agent, label: labels[agent] ?? agent.toUpperCase(), text: '', complete: false };
 }
 
-function LogBlock({ log, placeholder = false }: {
+function LogBlock({ log, placeholder = false, agentLabels }: {
   log: AgentLog;
   placeholder?: boolean;
+  agentLabels: Record<string, string>;
 }) {
   const textRef = useRef<HTMLPreElement>(null);
   const { theme } = useTheme();

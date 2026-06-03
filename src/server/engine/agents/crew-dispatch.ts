@@ -154,6 +154,7 @@ DROLIUS disponible: ${state.drolius.status === 'available' ? 'SÍ — puedes des
     maxTokens: 8192,
     haiku: true,
     instructions: params.instructions,
+    language: params.language,
   });
 
   return {

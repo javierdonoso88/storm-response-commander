@@ -1,5 +1,6 @@
 import { ActionMessage, CommsMessage } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
+import { useT } from '../i18n';
 
 interface Props {
   messages: CommsMessage[];
@@ -16,12 +17,6 @@ const CHANNEL_COLOR: Record<string, string> = {
   sms: 'text-blue-400',
   press: 'text-purple-400',
   regulatory: 'text-amber-400',
-};
-
-const CHANNEL_LABEL: Record<string, string> = {
-  sms: 'SMS',
-  press: 'PRENSA',
-  regulatory: 'REGULATORIO',
 };
 
 const AGENT_LABEL: Record<string, string> = {
@@ -59,7 +54,14 @@ function timeAgo(ts: number): string {
 
 export function StatsPanel({ messages, actionMessages }: Props) {
   const { theme } = useTheme();
+  const t = useT();
   const isLight = theme !== 'dark';
+
+  const CHANNEL_LABEL: Record<string, string> = {
+    sms: t.stats.sms,
+    press: t.stats.press,
+    regulatory: t.stats.regulatory,
+  };
 
   const actionsBadgeStyle = isLight
     ? { background: 'rgba(209,250,229,0.9)', color: '#047857' }
@@ -73,7 +75,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
       {/* ── Actions ── */}
       <div className="panel-header">
         <span className="text-emerald-400">⚙</span>
-        ACCIONES SAP
+        {t.stats.sapHeader}
         {actionMessages.length > 0 && (
           <span className="ml-auto text-[12px] px-1.5 py-0.5 rounded font-semibold" style={actionsBadgeStyle}>
             {actionMessages.length}
@@ -83,7 +85,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
       <div className="overflow-y-auto p-2 flex flex-col gap-1.5" style={{ flex: '1 1 0', minHeight: 0 }}>
         {actionMessages.length === 0 && (
           <div className="text-xs text-slate-600 italic text-center mt-4">
-            Las acciones de integración aparecerán aquí
+            {t.stats.sapPlaceholder}
           </div>
         )}
         {actionMessages.map((a, i) => (
@@ -109,7 +111,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
       {/* ── Comunicaciones ── */}
       <div className="panel-header">
         <span className="text-cyan-400">◎</span>
-        COMUNICACIONES
+        {t.stats.commsHeader}
         {messages.length > 0 && (
           <span className="ml-auto text-[12px] px-1.5 py-0.5 rounded font-semibold" style={commsBadgeStyle}>
             {messages.length} enviados
@@ -119,7 +121,7 @@ export function StatsPanel({ messages, actionMessages }: Props) {
       <div className="overflow-y-auto p-2 flex flex-col gap-2" style={{ flex: '1 1 0', minHeight: 0 }}>
         {messages.length === 0 && (
           <div className="text-xs text-slate-600 italic text-center mt-4">
-            Las comunicaciones aparecerán aquí durante la simulación
+            {t.stats.commsPlaceholder}
           </div>
         )}
         {messages.map((msg, i) => (

@@ -126,6 +126,7 @@ Asigna recursos con allocate_resource, registra conflictos con flag_conflict si 
     maxTokens: 4096,
     haiku: true,
     instructions: params.instructions,
+    language: params.language,
   });
 
   return {
