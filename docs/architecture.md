@@ -277,29 +277,42 @@ cf push
 
 ## Sistema de internacionalización (ES / EN)
 
-El selector de idioma (🌐 ES/EN) está disponible en la nav de la landing y en el header del simulador. Cambia el idioma de la UI y de todo el contenido generado por los agentes IA.
+El selector de idioma (🌐 ES/EN) está disponible en la nav de la landing y en el header del simulador. Cambia el idioma de la UI **y** de todo el contenido generado por los agentes IA.
+
+### Cobertura completa
+
+| Área | Cobertura |
+|------|-----------|
+| UI estática | Landing, simulador, modal de incidente ("más info"), informe ejecutivo |
+| Agentes IA | Logs CoT, razonamiento interno, resumen del orquestador |
+| Acciones SAP | Los 10 mensajes hardcodeados de los 5 agentes + orquestador |
+| Comunicaciones | SMS, nota de prensa, notificación regulatoria |
 
 ### Arquitectura
 
 - `LanguageContext.tsx` — React Context que expone `{ lang, setLang }`. Tipo `Lang = 'es' | 'en'`. Persiste en `localStorage('src-lang')`.
-- `src/client/i18n/es.ts` y `en.ts` — objetos tipados con ~270 strings organizados por sección (`nav`, `hero`, `params`, `map`, `gantt`, `log`, `panels`, `results`…).
+- `src/client/i18n/es.ts` y `en.ts` — objetos tipados con ~320 strings en secciones: `nav`, `hero`, `stats`, `challenge`, `arch`, `cta`, `app`, `params`, `map`, `gantt`, `log`, `panels`, `results`, `modal`.
 - `src/client/i18n/index.ts` — exporta el hook `useT()` que devuelve el objeto de traducciones del idioma activo.
-- Todos los componentes importan `useT()` y referencian strings como `t.params.simulate`, `t.map.header`, etc.
+- Todos los componentes importan `useT()` y referencian strings como `t.params.simulate`, `t.map.header`, `t.modal.summaryTitle`, etc.
 
 ### Idioma en los agentes IA
 
-El idioma se envía en el campo `language` de `SimParams` con cada petición `POST /api/simulate`. El `agentRunner.ts` inyecta automáticamente una instrucción de idioma al principio de **todos** los system prompts:
+El idioma se envía en el campo `language` de `SimParams` con cada petición `POST /api/simulate`.
+
+**`agentRunner.ts`** inyecta la instrucción al inicio **y al final** del system prompt, y como prefijo del user message (para reforzar frente al español dominante en los prompts de los agentes):
 
 ```
-// language === 'en'
-IMPORTANT: You must respond entirely in English. All your reasoning,
-tool calls, summaries and messages must be written in English.
+// system prompt (inicio y final):
+CRITICAL LANGUAGE RULE: You MUST write ALL your output in English —
+reasoning, tool calls, summaries and any narrative. No Spanish allowed.
 
-// language === 'es' (default)
-IMPORTANTE: Debes responder completamente en español.
+// user message (prefijo):
+[RESPOND IN ENGLISH ONLY]
 ```
 
-Esto garantiza que los logs CoT, acciones SAP, comunicaciones (SMS, prensa, regulatorio) y el resumen ejecutivo del orquestador se generan en el idioma seleccionado.
+**`orchestrator.ts`** incluye la misma regla en su system prompt directo.
+
+**Mensajes de acción hardcodeados** — los 10 strings de acción SAP (conmutaciones, órdenes de trabajo, reservas de material, comunicaciones, etc.) están duplicados en ES/EN en cada agente y el orquestador, seleccionados con `params.language === 'en'`.
 
 ### Panel de orquestación (GanttPanel)
 
