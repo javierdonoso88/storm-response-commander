@@ -414,13 +414,13 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
 
   // SAP KPIs
   const uniqueSystems = new Set(actionMessages.map(a => a.system)).size;
-  const fsmActions = actionMessages.filter(a => a.system === 'SAP Field Service Management' && a.msg.includes('Orden de trabajo')).length;
-  const ibpMaterials = actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && a.msg.includes('Material reservado')).length;
-  const ibpReplenish = actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && a.msg.includes('reposición')).length;
+  const fsmActions = actionMessages.filter(a => a.system === 'SAP Field Service Management').length;
+  const ibpMaterials = actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && !a.msg.toLowerCase().includes('replen') && !a.msg.toLowerCase().includes('reposición')).length;
+  const ibpReplenish = actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && (a.msg.toLowerCase().includes('replen') || a.msg.toLowerCase().includes('reposición'))).length;
   const cxMessages = commsMessages.length;
   const ainSwitches = restored.length;
   const s4Assets = faults.length;
-  const droliusMissions = actionMessages.filter(a => a.system === 'Drolius · Boston Dynamics Scout' && a.msg.includes('desplegado')).length;
+  const droliusMissions = actionMessages.filter(a => a.system === 'Drolius · Boston Dynamics Scout' && (a.msg.toLowerCase().includes('deployed') || a.msg.toLowerCase().includes('desplegado'))).length;
 
   // Pending actions sorted: critical first, then by clients desc
   const pendingSorted = [...pending].sort((a, b) => {
