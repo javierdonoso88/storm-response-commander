@@ -283,10 +283,11 @@ El selector de idioma (🌐 ES/EN) está disponible en la nav de la landing y en
 
 | Área | Cobertura |
 |------|-----------|
-| UI estática | Landing, simulador, modal de incidente ("más info"), informe ejecutivo |
+| UI estática | Landing, simulador, modal de incidente ("más info"), informe ejecutivo (pantalla + PDF descargable) |
 | Agentes IA | Logs CoT, razonamiento interno, resumen del orquestador |
 | Acciones SAP | Los 10 mensajes hardcodeados de los 5 agentes + orquestador |
 | Comunicaciones | SMS, nota de prensa, notificación regulatoria |
+| Informe PDF | Todos los labels, secciones, grades KPI, badges de urgencia, tipos de fallo y footer |
 
 ### Arquitectura
 

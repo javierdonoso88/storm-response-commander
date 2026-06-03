@@ -13,9 +13,10 @@ Al abrir la aplicación se muestra una **pantalla de presentación** con el caso
 El header incluye un **desplegable de tema** con tres opciones: **Oscuro** (navy/cyan), **SAP Joule** (blanco-gris, acento púrpura `#6d28d9`) e **Iberdrola** (verde-claro, acento verde `#00a651`). La preferencia se persiste en `localStorage`.
 
 Un **selector de idioma** (🌐 ES / EN) permite cambiar entre español e inglés en tiempo real. El idioma afecta a:
-- Toda la UI estática (landing, simulador, modal de incidente, informe ejecutivo)
+- Toda la UI estática (landing, simulador, modal de incidente, informe ejecutivo y PDF descargable)
 - El contenido generado por los agentes IA (logs CoT, acciones SAP, comunicaciones)
 - Los mensajes de acción de cada sistema SAP integrado
+- Los KPIs del informe (labels, grades, badges de urgencia)
 
 La preferencia se persiste en `localStorage`.
 
