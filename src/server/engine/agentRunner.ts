@@ -25,12 +25,17 @@ export async function runAgent(opts: {
   const modelName = haiku ? MODEL_HAIKU : MODEL_SONNET;
 
   const langInstruction = language === 'en'
-    ? 'IMPORTANT: You must respond entirely in English. All your reasoning, tool calls, summaries and messages must be written in English.'
-    : 'IMPORTANTE: Debes responder completamente en español. Todo tu razonamiento, llamadas a herramientas, resúmenes y mensajes deben estar en español.';
+    ? 'CRITICAL LANGUAGE RULE: You MUST write ALL your output in English — reasoning, analysis, tool call text fields, summaries, and any narrative. Do NOT use Spanish under any circumstances.'
+    : 'REGLA DE IDIOMA: Responde completamente en español.';
 
   const effectiveSystem = instructions?.trim()
-    ? `INSTRUCCIONES OBLIGATORIAS DEL OPERADOR (máxima prioridad — aplícalas en todas tus decisiones):\n${instructions.trim()}\n\n---\n\n${langInstruction}\n\n---\n\n${systemPrompt}`
-    : `${langInstruction}\n\n---\n\n${systemPrompt}`;
+    ? `INSTRUCCIONES OBLIGATORIAS DEL OPERADOR (máxima prioridad — aplícalas en todas tus decisiones):\n${instructions.trim()}\n\n---\n\n${langInstruction}\n\n---\n\n${systemPrompt}\n\n---\n\n${langInstruction}`
+    : `${langInstruction}\n\n---\n\n${systemPrompt}\n\n---\n\n${langInstruction}`;
+
+  // Also prepend language instruction to userMessage so it appears in both system and user turn
+  const effectiveUserMessage = language === 'en'
+    ? `[RESPOND IN ENGLISH ONLY]\n\n${userMessage}`
+    : userMessage;
 
   const sdkTools: Anthropic.Tool[] = tools.map(t => ({
     name: t.name,
@@ -41,7 +46,7 @@ export async function runAgent(opts: {
   const handlerMap = new Map(tools.map(t => [t.name, t.handler]));
 
   const messages: Anthropic.MessageParam[] = [
-    { role: 'user', content: userMessage },
+    { role: 'user', content: effectiveUserMessage },
   ];
 
   for (let turn = 0; turn < maxTurns; turn++) {

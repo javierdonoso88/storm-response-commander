@@ -193,10 +193,10 @@ IMPORTANTE: Tras recibir los resultados de cada fase, llama INMEDIATAMENTE a la 
 No escribas análisis extensos entre fases — una frase de transición es suficiente.
 Nunca omitas invoke_crew_dispatch, invoke_resource ni invoke_comms.
 ${params.language === 'en'
-  ? 'IMPORTANT: You must respond entirely in English. All reasoning, transitions and summaries must be in English.'
+  ? 'CRITICAL LANGUAGE RULE: You MUST write ALL output in English — every transition phrase, every summary, every reasoning step. No Spanish allowed.'
   : 'Responde en español.'}`;
 
-  const userMessage = `INCIDENTE ACTIVO — Comarques de Girona — T+00:00
+  const userMessage = `${params.language === 'en' ? '[RESPOND IN ENGLISH ONLY]\n\n' : ''}INCIDENTE ACTIVO — Comarques de Girona — T+00:00
 
 PARÁMETROS:
   SLA objetivo        : ${params.minuteSLA} minutos
