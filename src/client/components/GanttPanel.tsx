@@ -313,7 +313,7 @@ function ConflictsPanel({ conflicts, label }: { conflicts: { winner: AgentId; lo
       </button>
       {open && (
         <div className="px-3 pb-2 flex flex-col gap-1">
-          {conflicts.slice(0, 3).map((c, i) => (
+          {conflicts.map((c, i) => (
             <div key={i} title={c.reason}
               className="text-[10px] rounded px-2 py-1 leading-snug cursor-help"
               style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: 'var(--text-muted)' }}>
