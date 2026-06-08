@@ -233,7 +233,7 @@ export function LandingPage({ onEnter }: Props) {
                 </div>
               ))}
               <div className="col-span-2 rounded-lg p-4 flex items-center gap-4" style={{ background: 'rgba(167,139,250,0.06)', border: '1px solid rgba(167,139,250,0.25)', borderLeft: '3px solid #a78bfa' }}>
-                <span className="text-2xl flex-shrink-0" style={{ lineHeight: 1 }}>🤖</span>
+                <img src="/anybotics.png" alt="Drolius" className="flex-shrink-0" style={{ width: 36, height: 36, objectFit: 'contain' }} />
                 <div>
                   <div className="text-sm font-bold mb-0.5" style={{ color: 'var(--text-primary)' }}>{t.challenge.drolius}</div>
                   <div className="text-xs leading-relaxed" style={{ color: '#6d5acd' }}>{t.challenge.droluisSub}</div>

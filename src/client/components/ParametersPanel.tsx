@@ -90,7 +90,7 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
         className="mx-3 mt-2 rounded-lg px-3 py-2 flex items-center gap-2"
         style={{ background: 'var(--bg-secondary)', border: `1px solid rgba(${droliusColor === '#22c55e' ? '34,197,94' : '249,115,22'},0.2)` }}
       >
-        <span className="text-sm flex-shrink-0" style={{ lineHeight: 1 }} title="Drolius — robot de inspección">🤖</span>
+        <img src="/anybotics.png" alt="Drolius" style={{ width: 22, height: 22, objectFit: 'contain', flexShrink: 0 }} title="Drolius — robot de inspección" />
         <div className="flex flex-col min-w-0">
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: droliusColor, animation: drolius.status !== 'available' ? 'pulse 1s infinite' : 'none' }} />
@@ -421,7 +421,7 @@ function IncidentInfoModal({ onClose }: { onClose: () => void }) {
                 </div>
                 <div className="rounded-lg p-3 flex flex-col gap-2" style={{ background: 'rgba(167,139,250,0.05)', border: '1px solid rgba(167,139,250,0.2)' }}>
                   <div className="flex items-center gap-2">
-                    <span className="text-base leading-none">🤖</span>
+                    <img src="/anybotics.png" alt="Drolius" style={{ width: 20, height: 20, objectFit: 'contain' }} />
                     <span className="text-[10px] font-bold tracking-widest" style={{ color: '#a78bfa' }}>{m.droliusTitle}</span>
                   </div>
                   <p className="text-[11px] leading-relaxed" style={{ color: '#6d5acd' }}>{m.droliusBody}</p>

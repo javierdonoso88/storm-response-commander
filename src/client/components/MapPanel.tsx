@@ -33,10 +33,10 @@ function edgeStyle(f1: Fault | undefined, f2: Fault | undefined) {
 }
 
 const droliusIcon = L.divIcon({
-  html: `<div style="font-size:22px;line-height:1;filter:drop-shadow(0 0 6px #a78bfa)">🤖</div>`,
+  html: `<img src="/anybotics.png" style="width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 0 6px #a78bfa)" />`,
   className: '',
-  iconSize: [24, 24],
-  iconAnchor: [12, 12],
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
 });
 
 export function MapPanel({ faults, drolius }: Props) {
