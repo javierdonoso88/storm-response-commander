@@ -32,47 +32,46 @@ function edgeStyle(f1: Fault | undefined, f2: Fault | undefined) {
   return { color: '#1e3a5f', weight: 1.5, opacity: 0.8 };
 }
 
-const droliusIcon = L.divIcon({
-  html: `
-    <div style="
-      position:relative;
-      width:48px;height:54px;
-      display:flex;flex-direction:column;align-items:center;
-    ">
-      <div style="
-        width:48px;height:48px;border-radius:50%;
-        background:#0d1520;
-        border:2.5px solid #a78bfa;
-        box-shadow:0 0 12px #a78bfa88, 0 2px 8px rgba(0,0,0,0.9);
-        display:flex;align-items:center;justify-content:center;
-        overflow:hidden;
-      ">
-        <img src="/anybotics.png" style="
-          width:36px;height:36px;object-fit:contain;
-        " />
-      </div>
-      <div style="
-        width:0;height:0;
-        border-left:6px solid transparent;
-        border-right:6px solid transparent;
-        border-top:7px solid #a78bfa;
-        margin-top:-1px;
-        filter:drop-shadow(0 2px 3px rgba(0,0,0,0.8));
-      "></div>
-    </div>
-  `,
-  className: '',
-  iconSize: [48, 54],
-  iconAnchor: [24, 54],
-});
-
 export function MapPanel({ faults, drolius }: Props) {
   const { theme } = useTheme();
   const t = useT();
+  const isLight = theme !== 'dark';
   const tileUrl = theme === 'dark'
     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
     : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-  const nodeBorder = theme === 'dark' ? '#0d1520' : '#ffffff';
+  const nodeBorder = isLight ? '#ffffff' : '#0d1520';
+
+  // Drolius icon adapts to theme
+  const droliusBg    = isLight ? '#ffffff' : '#0d1520';
+  const droliusGlow  = theme === 'iberdrola' ? '#00a651' : '#a78bfa';
+  const droliusIcon = useMemo(() => L.divIcon({
+    html: `
+      <div style="position:relative;width:48px;height:54px;display:flex;flex-direction:column;align-items:center">
+        <div style="
+          width:48px;height:48px;border-radius:50%;
+          background:${droliusBg};
+          border:2.5px solid ${droliusGlow};
+          box-shadow:0 0 12px ${droliusGlow}88, 0 2px 8px rgba(0,0,0,0.7);
+          display:flex;align-items:center;justify-content:center;
+          overflow:hidden;
+        ">
+          <img src="/anybotics.png" style="width:36px;height:36px;object-fit:contain;" />
+        </div>
+        <div style="
+          width:0;height:0;
+          border-left:6px solid transparent;
+          border-right:6px solid transparent;
+          border-top:7px solid ${droliusGlow};
+          margin-top:-1px;
+          filter:drop-shadow(0 2px 3px rgba(0,0,0,0.6));
+        "></div>
+      </div>
+    `,
+    className: '',
+    iconSize: [48, 54],
+    iconAnchor: [24, 54],
+  }), [droliusBg, droliusGlow]);
+
   const faultMap = useMemo(() => {
     const m = new Map<string, Fault>();
     faults.forEach(f => m.set(f.id, f));
