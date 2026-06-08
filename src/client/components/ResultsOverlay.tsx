@@ -249,7 +249,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
     // language-agnostic KPI counters (same logic as main view)
     const pdfFsmActions = actionMessages.filter(a => a.system === 'SAP Field Service Management').length;
     const pdfIbpMaterials = actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && !a.msg.toLowerCase().includes('replen') && !a.msg.toLowerCase().includes('reposición')).length;
-    const pdfDrolius = actionMessages.filter(a => a.system === 'Drolius · Boston Dynamics Scout' && (a.msg.toLowerCase().includes('deployed') || a.msg.toLowerCase().includes('desplegado'))).length;
+    const pdfDrolius = actionMessages.filter(a => a.system === 'Drolius · ANYbotics' && (a.msg.toLowerCase().includes('deployed') || a.msg.toLowerCase().includes('desplegado'))).length;
 
     const pdfGrade = (v: number) => v >= 80 ? t.results.gradOptimal : v >= 60 ? t.results.gradAcceptable : t.results.gradCritical;
     const pdfSafetyGrade = (v: number) => v === 100 ? t.results.gradOptimal : v >= 70 ? t.results.gradAcceptable : t.results.gradCritical;
@@ -368,7 +368,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
     <div class="sap-box"><div class="sap-system">SAP Integrated Business Planning</div><div class="sap-value" style="color:#9333ea">${pdfIbpMaterials}</div><div class="sap-label">${t.results.sapMaterials}</div></div>
     <div class="sap-box"><div class="sap-system">SAP Customer Experience</div><div class="sap-value" style="color:#db2777">${commsMessages.length}</div><div class="sap-label">${t.results.sapMessages}</div></div>
     <div class="sap-box"><div class="sap-system">SAP S/4HANA Asset Management</div><div class="sap-value" style="color:#0891b2">${faults.length}</div><div class="sap-label">${t.results.sapAssets}</div></div>
-    <div class="sap-box"><div class="sap-system">Drolius · Boston Dynamics Scout</div><div class="sap-value" style="color:#9333ea">${pdfDrolius}</div><div class="sap-label">${t.results.sapDrolius}</div></div>
+    <div class="sap-box"><div class="sap-system">Drolius · ANYbotics</div><div class="sap-value" style="color:#9333ea">${pdfDrolius}</div><div class="sap-label">${t.results.sapDrolius}</div></div>
   </div>
 
   ${orchPlain ? `
@@ -430,7 +430,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
   const cxMessages = commsMessages.length;
   const ainSwitches = restored.length;
   const s4Assets = faults.length;
-  const droliusMissions = actionMessages.filter(a => a.system === 'Drolius · Boston Dynamics Scout' && (a.msg.toLowerCase().includes('deployed') || a.msg.toLowerCase().includes('desplegado'))).length;
+  const droliusMissions = actionMessages.filter(a => a.system === 'Drolius · ANYbotics' && (a.msg.toLowerCase().includes('deployed') || a.msg.toLowerCase().includes('desplegado'))).length;
 
   // Pending actions sorted: critical first, then by clients desc
   const pendingSorted = [...pending].sort((a, b) => {
@@ -531,7 +531,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
               <SapKpiCard system="SAP Integrated Business Planning" value={ibpMaterials} label={`${t.results.sapMaterials}${ibpReplenish > 0 ? ` · ${ibpReplenish} ${t.results.sapReplenish}` : ''}`} color="#c084fc" />
               <SapKpiCard system="SAP Customer Experience" value={cxMessages} label={t.results.sapMessages} color="#f472b6" />
               <SapKpiCard system="SAP S/4HANA Asset Management" value={s4Assets} label={t.results.sapAssets} color="#22d3ee" />
-              <SapKpiCard system="Drolius · Boston Dynamics Scout" value={droliusMissions} label={t.results.sapDrolius} color="#a78bfa" />
+              <SapKpiCard system="Drolius · ANYbotics" value={droliusMissions} label={t.results.sapDrolius} color="#a78bfa" />
             </div>
           </div>
 

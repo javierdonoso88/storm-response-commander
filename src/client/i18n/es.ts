@@ -232,7 +232,7 @@ export const es: Translations = {
     card3: 'Fallos de cable MT/BT', card3Sub: '18 activos — reparación manual · 60–120 min',
     card4: 'Red conmutable', card4Sub: '22 activos — restauración por telecontrol remoto · inmediato',
     drolius: 'Drolius — Robot de Inspección',
-    droluisSub: 'Boston Dynamics Scout desplegado en campo. El agente Service Dispatcher Agent puede enviarlo a zonas peligrosas para confirmar batería SAI, evaluar accesibilidad o documentar daños antes de arriesgar a una brigada.',
+    droluisSub: 'ANYbotics desplegado en campo. El agente Service Dispatcher Agent puede enviarlo a zonas peligrosas para confirmar batería SAI, evaluar accesibilidad o documentar daños antes de arriesgar a una brigada.',
   },
   arch: {
     eyebrow: 'ARQUITECTURA MULTI-AGENTE',

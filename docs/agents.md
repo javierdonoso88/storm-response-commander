@@ -9,7 +9,7 @@ Cada agente emite eventos `action` vinculados a su sistema SAP de integración. 
 | Asset and Services Assistant | `orchestrator` | SAP AI Core Orchestration |
 | Technician Briefing Agent | `triage-priority` | SAP S/4HANA Asset Management + Event Mesh |
 | Remote Restoration Scada Agent | `rerouting` | SAP Asset Intelligence Network |
-| Service Dispatcher Agent | `crew-dispatch` | SAP Field Service Management · Drolius · Boston Dynamics Scout |
+| Service Dispatcher Agent | `crew-dispatch` | SAP Field Service Management · Drolius · ANYbotics |
 | Resource Capacity Shortage Agent | `resource` | SAP Integrated Business Planning |
 | Communications Insight Agent | `comms` | SAP Customer Experience |
 
@@ -125,7 +125,7 @@ Cierre             : finalize
 **Eventos `action` emitidos** (`SAP Field Service Management`):
 - Por cada `dispatch_crew` exitoso: orden de trabajo creada con brigada, fallo, zona y ETA
 
-**Eventos emitidos** (`Drolius · Boston Dynamics Scout`):
+**Eventos emitidos** (`Drolius · ANYbotics`):
 - Despliegue: `Drolius desplegado → <zona> (<faultId>) — misión: <tipo>`
 
 **Misiones Drolius** (`mission`):

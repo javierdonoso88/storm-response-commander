@@ -86,13 +86,13 @@ export async function runCrewDispatch(
         state.drolius.currentTask = input.faultId as string;
 
         emit({ type: 'drolius_update', status: 'deployed', task: input.faultId as string });
-        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: params.language === 'en'
+        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · ANYbotics', msg: params.language === 'en'
           ? `Drolius deployed → ${fault.zone} (${input.faultId}) — mission: ${input.mission}`
           : `Drolius asignado en campo → ${fault.zone} (${input.faultId}) — misión: ${input.mission}` });
 
         const report = buildDroliusReport(fault, input.mission as string);
 
-        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · Boston Dynamics Scout', msg: params.language === 'en'
+        emit({ type: 'action', agent: 'crew-dispatch', system: 'Drolius · ANYbotics', msg: params.language === 'en'
           ? `Drolius transmits report: ${report.slice(0, 100)}…`
           : `Drolius transmite informe: ${report.slice(0, 100)}…` });
 

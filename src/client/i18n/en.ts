@@ -26,7 +26,7 @@ export const en: Translations = {
     card3: 'MV/LV cable faults', card3Sub: '18 active — manual repair · 60–120 min',
     card4: 'Switchable network', card4Sub: '22 active — remote switching · immediate',
     drolius: 'Drolius — Inspection Robot',
-    droluisSub: 'Boston Dynamics Scout deployed in the field. The Service Dispatcher Agent can send it to dangerous areas to confirm UPS battery levels, assess accessibility or document damage before risking a field crew.',
+    droluisSub: 'ANYbotics deployed in the field. The Service Dispatcher Agent can send it to dangerous areas to confirm UPS battery levels, assess accessibility or document damage before risking a field crew.',
   },
   arch: {
     eyebrow: 'MULTI-AGENT ARCHITECTURE',

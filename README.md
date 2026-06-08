@@ -89,7 +89,7 @@ Ver [docs/architecture.md](docs/architecture.md) para el detalle técnico comple
 - **47 fallos activos**: 22 conmutables (telecontrol), 7 transformadores, 18 cables
 - **7 sitios críticos**: hospitales, CPDs, diálisis, depuradoras, comisarías — con batería limitada
 - **22 brigadas** en 6 bases: Girona, Figueres, Olot, Banyoles, Lloret, Blanes
-- **Drolius** — robot de inspección Boston Dynamics Scout, desplegable desde Service Dispatcher Agent para reconocimiento previo
+- **Drolius** — robot de inspección ANYbotics, desplegable desde Service Dispatcher Agent para reconocimiento previo
 - **Parámetros configurables**: SLA, brigadas disponibles, inventario limitado, ventana de segunda tormenta
 
 ---
