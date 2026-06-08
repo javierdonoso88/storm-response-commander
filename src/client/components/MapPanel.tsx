@@ -34,28 +34,36 @@ function edgeStyle(f1: Fault | undefined, f2: Fault | undefined) {
 
 const droliusIcon = L.divIcon({
   html: `
-    <div style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center">
+    <div style="
+      position:relative;
+      width:48px;height:54px;
+      display:flex;flex-direction:column;align-items:center;
+    ">
       <div style="
-        position:absolute;inset:0;border-radius:50%;
-        background:rgba(167,139,250,0.18);
-        border:2px solid #a78bfa;
-        animation:drolius-pulse 1.6s ease-in-out infinite;
+        width:48px;height:48px;border-radius:50%;
+        background:#0d1520;
+        border:2.5px solid #a78bfa;
+        box-shadow:0 0 12px #a78bfa88, 0 2px 8px rgba(0,0,0,0.9);
+        display:flex;align-items:center;justify-content:center;
+        overflow:hidden;
+      ">
+        <img src="/anybotics.png" style="
+          width:36px;height:36px;object-fit:contain;
+        " />
+      </div>
+      <div style="
+        width:0;height:0;
+        border-left:6px solid transparent;
+        border-right:6px solid transparent;
+        border-top:7px solid #a78bfa;
+        margin-top:-1px;
+        filter:drop-shadow(0 2px 3px rgba(0,0,0,0.8));
       "></div>
-      <img src="/anybotics.png" style="
-        width:36px;height:36px;object-fit:contain;position:relative;z-index:1;
-        filter:drop-shadow(0 0 8px #a78bfa) drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-      " />
     </div>
-    <style>
-      @keyframes drolius-pulse {
-        0%,100% { transform:scale(1); opacity:0.7; }
-        50% { transform:scale(1.25); opacity:0.3; }
-      }
-    </style>
   `,
   className: '',
-  iconSize: [44, 44],
-  iconAnchor: [22, 22],
+  iconSize: [48, 54],
+  iconAnchor: [24, 54],
 });
 
 export function MapPanel({ faults, drolius }: Props) {
