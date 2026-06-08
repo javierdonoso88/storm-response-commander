@@ -27,6 +27,7 @@ export default function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [showResults, setShowResults] = useState(false);
   const [showThemePicker, setShowThemePicker] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const themePickerRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
@@ -191,15 +192,48 @@ export default function App() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* Sidebar */}
-        <aside className="w-52 flex-shrink-0 border-r overflow-y-auto" style={{ background: 'var(--bg-card)', borderColor: 'var(--border)' }}>
-          <ParametersPanel
-            params={params}
-            onChange={p => setParams(prev => ({ ...prev, ...p }))}
-            onSimulate={() => { setShowResults(false); startSimulation(params, lang); }}
-            running={state.running}
-            kpi={state.kpi}
-            drolius={state.drolius}
-          />
+        <aside
+          className="flex-shrink-0 border-r overflow-y-auto transition-all duration-300"
+          style={{
+            width: sidebarOpen ? '13rem' : '2rem',
+            background: 'var(--bg-card)',
+            borderColor: 'var(--border)',
+            overflow: sidebarOpen ? 'auto' : 'hidden',
+          }}
+        >
+          {/* Collapse toggle in the PARÁMETROS header */}
+          <div
+            className="flex items-center justify-between px-3 py-2 border-b sticky top-0 z-10"
+            style={{ background: 'var(--bg-base)', borderColor: 'var(--border)' }}
+          >
+            {sidebarOpen && (
+              <span className="text-[13px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                {t.params.header}
+              </span>
+            )}
+            <button
+              onClick={() => setSidebarOpen(v => !v)}
+              className="flex items-center justify-center w-5 h-5 rounded transition-colors flex-shrink-0"
+              style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--text-muted)', cursor: 'pointer', marginLeft: sidebarOpen ? 'auto' : '0' }}
+              title={sidebarOpen ? 'Hide parameters' : 'Show parameters'}
+            >
+              <svg width="9" height="9" viewBox="0 0 9 9" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round">
+                {sidebarOpen
+                  ? <path d="M6 1L2 4.5L6 8" />
+                  : <path d="M3 1L7 4.5L3 8" />}
+              </svg>
+            </button>
+          </div>
+          {sidebarOpen && (
+            <ParametersPanel
+              params={params}
+              onChange={p => setParams(prev => ({ ...prev, ...p }))}
+              onSimulate={() => { setShowResults(false); startSimulation(params, lang); }}
+              running={state.running}
+              kpi={state.kpi}
+              drolius={state.drolius}
+            />
+          )}
         </aside>
 
         {/* Content */}

@@ -55,11 +55,6 @@ export function ParametersPanel({ params, onChange, onSimulate, running, kpi, dr
   return (
     <div className="flex flex-col h-full">
 
-      {/* Section header */}
-      <div className="px-3 py-2 border-b" style={{ background: 'var(--bg-base)', borderColor: 'var(--border)' }}>
-        <span className="text-[13px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>{t.params.header}</span>
-      </div>
-
       {/* Context block */}
       <div className="mx-3 mt-3 rounded-lg p-3 flex flex-col gap-2" style={{ background: 'rgba(239,68,68,0.06)', border: '1px solid rgba(239,68,68,0.18)' }}>
         <div className="flex items-center justify-between gap-2">
