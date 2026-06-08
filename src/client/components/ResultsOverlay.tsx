@@ -249,7 +249,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
     // language-agnostic KPI counters (same logic as main view)
     const pdfFsmActions = actionMessages.filter(a => a.system === 'SAP Field Service Management').length;
     const pdfIbpMaterials = actionMessages.filter(a => a.system === 'SAP Integrated Business Planning' && !a.msg.toLowerCase().includes('replen') && !a.msg.toLowerCase().includes('reposición')).length;
-    const pdfDrolius = actionMessages.filter(a => a.system === 'Drolius · ANYbotics' && (a.msg.toLowerCase().includes('deployed') || a.msg.toLowerCase().includes('desplegado'))).length;
+    const pdfDrolius = actionMessages.filter(a => a.system === 'Drolius · ANYbotics' && (a.msg.toLowerCase().includes('deployed') || a.msg.toLowerCase().includes('asignado'))).length;
 
     const pdfGrade = (v: number) => v >= 80 ? t.results.gradOptimal : v >= 60 ? t.results.gradAcceptable : t.results.gradCritical;
     const pdfSafetyGrade = (v: number) => v === 100 ? t.results.gradOptimal : v >= 70 ? t.results.gradAcceptable : t.results.gradCritical;
@@ -430,7 +430,7 @@ export function ResultsOverlay({ faults, kpi, agentLogs, commsMessages, actionMe
   const cxMessages = commsMessages.length;
   const ainSwitches = restored.length;
   const s4Assets = faults.length;
-  const droliusMissions = actionMessages.filter(a => a.system === 'Drolius · ANYbotics' && (a.msg.toLowerCase().includes('deployed') || a.msg.toLowerCase().includes('desplegado'))).length;
+  const droliusMissions = actionMessages.filter(a => a.system === 'Drolius · ANYbotics' && (a.msg.toLowerCase().includes('deployed') || a.msg.toLowerCase().includes('asignado'))).length;
 
   // Pending actions sorted: critical first, then by clients desc
   const pendingSorted = [...pending].sort((a, b) => {
