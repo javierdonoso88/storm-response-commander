@@ -1,5 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
-import { AgentId, AgentState, AgentStatus } from '../types';
+import { useRef, useEffect, useState } from 'react';import { AgentId, AgentState, AgentStatus } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 import { useT } from '../i18n';
 
@@ -283,21 +282,48 @@ export function GanttPanel({ agents, conflicts, orchestratorStatus = 'pending' }
 
         {/* Conflicts */}
         {conflicts.length > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 px-3 pb-2 flex flex-col gap-1"
-            style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-panel)' }}>
-            <div className="text-[10px] font-bold tracking-widest text-red-400 uppercase pt-1.5">⚡ {t.gantt.conflicts}</div>
-            {conflicts.slice(0, 2).map((c, i) => (
-              <div key={i} title={c.reason}
-                className="text-[10px] rounded px-2 py-1 leading-snug cursor-help"
-                style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: 'var(--text-muted)' }}>
-                <span className="text-red-400 font-bold">{c.winner.toUpperCase()}</span>
-                <span className="mx-1" style={{ color: 'var(--text-ghost)' }}>›</span>
-                {c.loser.toUpperCase()}
-              </div>
-            ))}
-          </div>
+          <ConflictsPanel conflicts={conflicts} label={t.gantt.conflicts} />
         )}
       </div>
+    </div>
+  );
+}
+
+function ConflictsPanel({ conflicts, label }: { conflicts: { winner: AgentId; loser: AgentId; reason: string }[]; label: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="absolute bottom-0 left-0 right-0"
+      style={{ borderTop: '1px solid rgba(239,68,68,0.3)', background: 'var(--bg-panel)' }}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        className="w-full flex items-center justify-between px-3 py-1.5"
+        style={{ background: 'transparent', border: 'none', cursor: 'pointer' }}
+      >
+        <span className="flex items-center gap-1.5 text-[10px] font-bold tracking-widest text-red-400 uppercase">
+          ⚡ {label}
+          <span className="text-[10px] font-mono px-1 py-0.5 rounded"
+            style={{ background: 'rgba(239,68,68,0.12)', color: '#f87171' }}>
+            {conflicts.length}
+          </span>
+        </span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
+          style={{ color: '#f87171', transition: 'transform 0.2s', transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+          <path d="M1 3l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      {open && (
+        <div className="px-3 pb-2 flex flex-col gap-1">
+          {conflicts.slice(0, 3).map((c, i) => (
+            <div key={i} title={c.reason}
+              className="text-[10px] rounded px-2 py-1 leading-snug cursor-help"
+              style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: 'var(--text-muted)' }}>
+              <span className="text-red-400 font-bold">{c.winner.toUpperCase()}</span>
+              <span className="mx-1" style={{ color: 'var(--text-ghost)' }}>›</span>
+              {c.loser.toUpperCase()}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
