@@ -33,10 +33,29 @@ function edgeStyle(f1: Fault | undefined, f2: Fault | undefined) {
 }
 
 const droliusIcon = L.divIcon({
-  html: `<img src="/anybotics.png" style="width:28px;height:28px;object-fit:contain;filter:drop-shadow(0 0 6px #a78bfa)" />`,
+  html: `
+    <div style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center">
+      <div style="
+        position:absolute;inset:0;border-radius:50%;
+        background:rgba(167,139,250,0.18);
+        border:2px solid #a78bfa;
+        animation:drolius-pulse 1.6s ease-in-out infinite;
+      "></div>
+      <img src="/anybotics.png" style="
+        width:36px;height:36px;object-fit:contain;position:relative;z-index:1;
+        filter:drop-shadow(0 0 8px #a78bfa) drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+      " />
+    </div>
+    <style>
+      @keyframes drolius-pulse {
+        0%,100% { transform:scale(1); opacity:0.7; }
+        50% { transform:scale(1.25); opacity:0.3; }
+      }
+    </style>
+  `,
   className: '',
-  iconSize: [28, 28],
-  iconAnchor: [14, 14],
+  iconSize: [44, 44],
+  iconAnchor: [22, 22],
 });
 
 export function MapPanel({ faults, drolius }: Props) {
