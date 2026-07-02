@@ -3,6 +3,7 @@ import { Fault, SimParams } from './types';
 import { useSimulation } from './hooks/useSimulation';
 import { useTheme } from './contexts/ThemeContext';
 import { Theme } from './contexts/ThemeContext';
+import { LangPicker } from './components/LangPicker';
 import { useLanguage } from './contexts/LanguageContext';
 import { useT } from './i18n';
 import { ParametersPanel } from './components/ParametersPanel';
@@ -125,14 +126,8 @@ export default function App() {
           <span className="text-xs font-mono whitespace-nowrap" style={{ color: 'var(--text-muted)' }}>{state.elapsedLabel}</span>
         </div>
 
-        {/* Language toggle */}
-        <button
-          onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
-          className="flex items-center gap-1 px-2.5 h-7 rounded-lg text-xs font-bold"
-          style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--accent)', cursor: 'pointer' }}
-        >
-          🌐 {t.lang.toggle}
-        </button>
+        {/* Language picker */}
+        <LangPicker />
 
         {/* Theme picker dropdown */}
         <div className="relative flex-shrink-0" ref={themePickerRef}>

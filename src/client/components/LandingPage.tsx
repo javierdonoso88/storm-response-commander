@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTheme, Theme } from '../contexts/ThemeContext';
-import { useLanguage } from '../contexts/LanguageContext';
 import { useT } from '../i18n';
+import { LangPicker } from './LangPicker';
 
 interface Props {
   onEnter: () => void;
@@ -43,7 +43,6 @@ export function LandingPage({ onEnter }: Props) {
   const [showThemePicker, setShowThemePicker] = useState(false);
   const themePickerRef = useRef<HTMLDivElement>(null);
   const { theme, setTheme } = useTheme();
-  const { lang, setLang } = useLanguage();
   const t = useT();
 
   useEffect(() => {
@@ -89,14 +88,10 @@ export function LandingPage({ onEnter }: Props) {
         <span className="text-sm font-semibold" style={{ color: 'var(--text-ghost)', margin: '0 2px' }}>|</span>
         <span className="text-sm font-semibold tracking-wide" style={{ color: 'var(--text-muted)' }}>Storm Response Commander</span>
 
-        {/* Language toggle */}
-        <button
-          onClick={() => setLang(lang === 'es' ? 'en' : 'es')}
-          className="ml-auto flex items-center gap-1 px-2.5 h-7 rounded-lg text-xs font-bold"
-          style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border)', color: 'var(--accent)', cursor: 'pointer' }}
-        >
-          🌐 {t.lang.toggle}
-        </button>
+        {/* Language picker */}
+        <div className="ml-auto">
+          <LangPicker />
+        </div>
 
         {/* Theme picker */}
         <div className="relative flex-shrink-0" ref={themePickerRef}>

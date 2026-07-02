@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 
-export type Lang = 'es' | 'en';
+export type Lang = 'es' | 'en' | 'pt';
 
 interface LangCtx {
   lang: Lang;
@@ -12,7 +12,7 @@ export const LanguageContext = createContext<LangCtx>({ lang: 'es', setLang: () 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => {
     const saved = localStorage.getItem('src-lang') as Lang;
-    return saved === 'en' ? 'en' : 'es';
+    return (saved === 'en' || saved === 'pt') ? saved : 'es';
   });
 
   function setLang(l: Lang) {

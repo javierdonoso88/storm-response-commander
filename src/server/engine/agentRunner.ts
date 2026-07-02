@@ -26,6 +26,8 @@ export async function runAgent(opts: {
 
   const langInstruction = language === 'en'
     ? 'CRITICAL LANGUAGE RULE: You MUST write ALL your output in English — reasoning, analysis, tool call text fields, summaries, and any narrative. Do NOT use Spanish under any circumstances.'
+    : language === 'pt'
+    ? 'REGRA DE IDIOMA CRÍTICA: Deves escrever TODO o teu output em Português Europeu — raciocínio, análise, campos de texto de ferramentas, resumos e qualquer narrativa. NÃO uses Espanhol ou Inglês em nenhuma circunstância.'
     : 'REGLA DE IDIOMA: Responde completamente en español.';
 
   const effectiveSystem = instructions?.trim()
@@ -35,6 +37,8 @@ export async function runAgent(opts: {
   // Also prepend language instruction to userMessage so it appears in both system and user turn
   const effectiveUserMessage = language === 'en'
     ? `[RESPOND IN ENGLISH ONLY]\n\n${userMessage}`
+    : language === 'pt'
+    ? `[RESPONDE APENAS EM PORTUGUÊS EUROPEU]\n\n${userMessage}`
     : userMessage;
 
   const sdkTools: Anthropic.Tool[] = tools.map(t => ({

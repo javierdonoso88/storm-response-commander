@@ -198,9 +198,11 @@ No escribas análisis extensos entre fases — una frase de transición es sufic
 Nunca omitas invoke_crew_dispatch, invoke_resource ni invoke_comms.
 ${params.language === 'en'
   ? 'CRITICAL LANGUAGE RULE: You MUST write ALL output in English — every transition phrase, every summary, every reasoning step. No Spanish allowed.'
+  : params.language === 'pt'
+  ? 'REGRA DE IDIOMA CRÍTICA: Deves escrever TODO o output em Português Europeu — cada frase de transição, cada resumo, cada passo de raciocínio. Sem Espanhol nem Inglês.'
   : 'Responde en español.'}`;
 
-  const userMessage = `${params.language === 'en' ? '[RESPOND IN ENGLISH ONLY]\n\n' : ''}INCIDENTE ACTIVO — Comarques de Girona — T+00:00
+  const userMessage = `${params.language === 'en' ? '[RESPOND IN ENGLISH ONLY]\n\n' : params.language === 'pt' ? '[RESPONDE APENAS EM PORTUGUÊS EUROPEU]\n\n' : ''}INCIDENTE ACTIVO — Comarques de Girona — T+00:00
 
 PARÁMETROS:
   SLA objetivo        : ${params.minuteSLA} minutos
