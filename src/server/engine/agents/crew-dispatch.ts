@@ -148,7 +148,7 @@ Reglas:
 - Si no hay brigada con el skill necesario disponible, usa skip_fault
 - DROLIUS: tienes disponible el robot de inspección Drolius. Úsalo opcionalmente en sitios críticos con batería muy baja o zonas de difícil acceso ANTES de enviar brigada, para confirmar datos. Una sola misión a la vez.
 Llama a dispatch_crew para cada asignación posible, skip_fault para inasignables, luego complete_dispatch.
-Responde en español. Sé operacional y preciso.`,
+Sé operacional y preciso.`,
     userMessage: `BRIGADAS DISPONIBLES (${availableCrews.length} total):
 ${crewList || 'Ninguna brigada disponible'}
 

@@ -74,7 +74,7 @@ Tu misión: ejecutar conmutaciones remotas (telecontrol) para restaurar suminist
 Solo puedes hacer ${params.switchableFaults} operaciones de telecontrol (límite autorizado).
 Llama a attempt_remote_switch para cada fallo que quieras restaurar (hasta el límite).
 Al finalizar, llama a complete_rerouting con el resumen de operaciones.
-Responde en español. Sé directo y operacional.`,
+Sé directo y operacional.`,
     userMessage: `FALLOS CONMUTABLES DISPONIBLES (${switchable.length} total):
 ${faultList}
 
