@@ -116,7 +116,7 @@ Reglas:
 - REGLA DE ORO: Technician Briefing Agent prevalece — sitios críticos tienen prioridad sobre material disponible
 - Puedes asignar generadores móviles (mobile_generator) como medida temporal
 Llama a allocate_resource para cada asignación posible, flag_conflict si hay déficit, luego complete_resources.
-Sé preciso.`,
+${params.language === 'pt' ? 'Responde em Português Europeu.' : params.language === 'en' ? 'Respond in English.' : 'Responde en español.'} Sé preciso.`,
     userMessage: `FALLOS CON BRIGADA EN CAMINO (${deployedFaults.length} total):
 ${faultInfo || 'Ningún fallo con brigada asignada'}
 

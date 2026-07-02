@@ -109,7 +109,7 @@ Tu misión: redactar y enviar 3 comunicaciones obligatorias en este orden:
 2. send_press_release: nota formal para medios locales (El Punt Avui, Diari de Girona, RAC1, Catalunya Ràdio). Puedes escribirla en catalán.
 3. send_regulatory: notificación técnica formal para CTEPC/CNMC con datos del incidente${hadConflict ? '\nIMPORTANTE: Hay conflicto de recursos (material limitado). Menciónalo en la notificación regulatoria.' : ''}${criticalAtRisk.length > 0 ? `\nALERTA: ${criticalAtRisk.length} sitio(s) crítico(s) con batería bajo el umbral SLA. Menciónalo en la notificación regulatoria.` : ''}
 Llama a send_sms, send_press_release y send_regulatory (en ese orden), luego complete_comms.
-Sé profesional y preciso. El idioma lo recibirás en la instrucción de idioma.`,
+${params.language === 'pt' ? 'Responde em Português Europeu.' : params.language === 'en' ? 'Respond in English.' : 'Responde en español.'} Sé profesional y preciso.`,
     userMessage: `SITUACIÓN ACTUAL DEL INCIDENTE — Comarques de Girona
 
 Fallos totales      : ${state.faults.length}

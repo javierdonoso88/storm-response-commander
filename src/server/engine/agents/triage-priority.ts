@@ -94,7 +94,7 @@ Tu misión tiene dos etapas:
 2. PRIORITY: una vez clasificados todos, rankea los fallos FÍSICOS (transformadores y cables) usando set_priority.
    - Sitios críticos con menor batería tienen máxima prioridad (batería ASC, clientes DESC).
 Al finalizar ambas etapas llama a complete_assessment con el resumen ejecutivo.
-Sé analítico y operacional.`,
+${params.language === 'pt' ? 'Responde em Português Europeu.' : params.language === 'en' ? 'Respond in English.' : 'Responde en español.'} Sé analítico y operacional.`,
     userMessage: `INFORME DE INCIDENTE — Comarques de Girona
 SLA objetivo: ${params.minuteSLA} min | Ventana tormenta 2: ${params.storm2Window}
 Piezas limitadas: ${params.limitedParts === 1 ? 'SÍ — solo 1 transformador disponible' : 'NO'}
