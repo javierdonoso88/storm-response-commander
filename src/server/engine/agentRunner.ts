@@ -100,19 +100,6 @@ export async function runAgent(opts: {
     }
 
     if (toolResults.length === 0) break;
-
-    // Prepend language reminder to every tool-result turn so the model
-    // doesn't drift back to Spanish after reading Spanish tool outputs
-    const langReminder = language === 'en'
-      ? '[RESPOND IN ENGLISH ONLY]'
-      : language === 'pt'
-      ? '[RESPONDE APENAS EM PORTUGUÊS EUROPEU]'
-      : null;
-
-    const userContent: Anthropic.MessageParam['content'] = langReminder
-      ? [{ type: 'text', text: langReminder }, ...toolResults]
-      : toolResults;
-
-    messages.push({ role: 'user', content: userContent });
+    messages.push({ role: 'user', content: toolResults });
   }
 }
