@@ -48,7 +48,11 @@ export async function runRerouting(
           : params.language === 'pt'
           ? `Comutação remota executada: ${fault.id} — ${fault.zone} (${fault.affectedClients.toLocaleString()} clientes reconectados)`
           : `Conmutación remota ejecutada: ${fault.id} — ${fault.zone} (${fault.affectedClients.toLocaleString()} clientes reconectados)` });
-        return `Conmutación exitosa: ${fault.id} (${fault.zone}) restaurado — ${fault.affectedClients.toLocaleString()} clientes reconectados`;
+        return params.language === 'en'
+          ? `Switch successful: ${fault.id} (${fault.zone}) restored — ${fault.affectedClients.toLocaleString()} customers reconnected`
+          : params.language === 'pt'
+          ? `Comutação bem-sucedida: ${fault.id} (${fault.zone}) restaurado — ${fault.affectedClients.toLocaleString()} clientes reconectados`
+          : `Conmutación exitosa: ${fault.id} (${fault.zone}) restaurado — ${fault.affectedClients.toLocaleString()} clientes reconectados`;
       },
     },
     {

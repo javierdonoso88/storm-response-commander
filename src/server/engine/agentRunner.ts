@@ -25,9 +25,9 @@ export async function runAgent(opts: {
   const modelName = haiku ? MODEL_HAIKU : MODEL_SONNET;
 
   const langInstruction = language === 'en'
-    ? 'CRITICAL LANGUAGE RULE: You MUST write ALL your output in English — reasoning, analysis, tool call text fields, summaries, and any narrative. Do NOT use Spanish under any circumstances.'
+    ? 'CRITICAL LANGUAGE RULE: You MUST write ALL your output in English — reasoning, analysis, tool call text fields, summaries, and any narrative. Do NOT use Spanish or Portuguese under any circumstances.'
     : language === 'pt'
-    ? 'REGRA DE IDIOMA CRÍTICA: Deves escrever TODO o teu output em Português Europeu — raciocínio, análise, campos de texto de ferramentas, resumos e qualquer narrativa. NÃO uses Espanhol ou Inglês em nenhuma circunstância.'
+    ? 'REGRA DE IDIOMA CRÍTICA: DEVES escrever TODA a saída em Português Europeu — raciocínio, análise, campos de texto das ferramentas, resumos e qualquer narrativa. NÃO uses Espanhol nem Inglês em nenhuma circunstância.'
     : 'REGLA DE IDIOMA: Responde completamente en español.';
 
   const effectiveSystem = instructions?.trim()
