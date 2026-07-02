@@ -35,6 +35,8 @@ export async function runComms(
         emit({ type: 'comms', channel: 'sms', msg });
         emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: params.language === 'en'
           ? `Mass SMS sent via SAP CX — ${msg.slice(0, 60)}${msg.length > 60 ? '…' : ''}`
+          : params.language === 'pt'
+          ? `SMS em massa enviado via SAP CX — ${msg.slice(0, 60)}${msg.length > 60 ? '…' : ''}`
           : `SMS masivo enviado vía SAP CX — ${msg.slice(0, 60)}${msg.length > 60 ? '…' : ''}` });
         return 'SMS enviado.';
       },
@@ -55,6 +57,8 @@ export async function runComms(
         emit({ type: 'comms', channel: 'press', msg });
         emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: params.language === 'en'
           ? `Press release published via SAP CX → local Girona media (El Punt Avui, Diari de Girona)`
+          : params.language === 'pt'
+          ? `Comunicado de imprensa publicado via SAP CX → media local de Girona (El Punt Avui, Diari de Girona)`
           : `Nota de prensa publicada vía SAP CX → medios locales Girona (El Punt Avui, Diari de Girona)` });
         return 'Nota de prensa enviada.';
       },
@@ -75,6 +79,8 @@ export async function runComms(
         emit({ type: 'comms', channel: 'regulatory', msg });
         emit({ type: 'action', agent: 'comms', system: 'SAP Customer Experience', msg: params.language === 'en'
           ? `Regulatory notification sent via SAP CX → CTEPC/CNMC`
+          : params.language === 'pt'
+          ? `Notificação regulatória enviada via SAP CX → CTEPC/CNMC`
           : `Notificación regulatoria enviada vía SAP CX → CTEPC/CNMC` });
         return 'Notificación regulatoria enviada.';
       },
