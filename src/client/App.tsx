@@ -73,13 +73,12 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen" style={{ background: 'var(--bg-base)' }}>
 
-      {/* Header */}
-      <header className="flex items-center gap-3 px-4 h-11 flex-shrink-0 border-b"
-        style={{ background: 'var(--bg-header)', borderColor: 'var(--border)' }}>
-        <span className="font-bold text-sm tracking-wide flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 18, width: 'auto' }} />
-          {t.app.title}
-        </span>
+      {/* Header — same style as landing nav */}
+      <header className="flex items-center gap-3 px-8 h-14 flex-shrink-0 border-b"
+        style={{ background: 'var(--bg-header)', backdropFilter: 'blur(14px)', borderColor: 'var(--border)' }}>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/SAP_2011_logo.svg/1280px-SAP_2011_logo.svg.png" alt="SAP" style={{ height: 17, width: 'auto' }} />
+        <span className="text-sm font-semibold" style={{ color: 'var(--text-ghost)', margin: '0 2px' }}>|</span>
+        <span className="text-sm font-semibold tracking-wide" style={{ color: 'var(--text-muted)' }}>{t.app.title}</span>
 
         {/* Status chip */}
         <div className="ml-2">
